@@ -1,4 +1,4 @@
-# Resin
+![Resin wordmark logo](assets/logo/logo-wordmark.png)
 
 Resin is a Pixelfed client designed to minimize the chance the user will use it
 unhealthily. In other words, this app practices
