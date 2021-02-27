@@ -1,4 +1,7 @@
-![Resin wordmark logo](assets/logo/logo-wordmark.png)
+<img 
+    src="assets/logo/logo-wordmark.png"
+    alt="A screenshot of the timeline"
+    width="400" />
 
 Resin is a Pixelfed client designed to minimize the chance the user will use it
 unhealthily. In other words, this app practices
@@ -17,6 +20,25 @@ developed by companies that do. While these dark patterns may seem like industry
 standards, we have no need to follow them. This project seeks to demonstrate
 the different ways to go about doing that.
 
+## Screenshots
+
+As of late February, the UI of Resin is still ACTIVELY under development and 
+will likely change quite a bit. These screenshots probably won't be up to
+date most of the time.
+
+<img 
+    src="assets/screenshots/timeline-2021-02-27.png"
+    alt="A screenshot of the timeline"
+    width="200" />
+<img 
+    src="assets/screenshots/search-2021-02-27.png"
+    alt="A screenshot of the search menu"
+    width="200" />
+<img 
+    src="assets/screenshots/profile-2021-02-27.png"
+    alt="A screenshot of the profile page"
+    width="200" />
+
 ## Building
 
 This project is written in React Native and built using Expo.
@@ -29,7 +51,7 @@ $ npm install # Install the dependencies
 $ expo start # start the development server
 ```
 
-# Contributing
+## Contributing
 
 This project is still extremely early in development; however, contributions
 are still more than welcome. If you're interested in helping out, the easiest
