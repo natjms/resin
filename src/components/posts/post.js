@@ -1,10 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { Image, View, Text, Dimensions } from "react-native";
+import { Image, View, Text, Dimensions, TouchableWithoutFeedback } from "react-native";
+
+import {
+    Menu,
+    MenuOptions,
+    MenuOption,
+    MenuTrigger,
+    renderers
+} from "react-native-popup-menu";
 
 import PostActionBarJsx from "src/components/posts/post-action-bar";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const TEST_IMAGE = "https://cache.desktopnexus.com/thumbseg/2255/2255124-bigthumbnail.jpg";
+
+// Extract the SlideInMenu function from `renderers`
+// This will be used in RawPostJsx
+const { SlideInMenu } = renderers;
 
 function getAutoHeight(w1, h1, w2) {
     /*
@@ -60,21 +72,35 @@ export const RawPostJsx = (props) => {
     return (
         <View>
             <View style = { styles.postHeader }>
-                <Image 
+                <Image
                     style = { styles.pfp }
                     source = { { uri: props.data.avatar } } />
-                <Text 
+                <Text
                     style = { styles.postHeaderName }>{ props.data.username }</Text>
+                <View style = { styles.menu }>
+                    <Menu renderer = { SlideInMenu }>
+                        <MenuTrigger>
+                            <Image
+                                source = { require("assets/eva-icons/ellipsis.png") }
+                                style = { styles.ellipsis }/>
+                        </MenuTrigger>
+                        <MenuOptions customStyles = { optionsStyles }>
+                            <MenuOption text="Hide" />
+                            <MenuOption text="Unfollow" />
+                            <MenuOption text="Block" />
+                        </MenuOptions>
+                    </Menu>
+                </View>
             </View>
             { /* TODO: support for more than one image per post */ }
             <Image
-                source = { { uri: TEST_IMAGE/* props.data.media_attachments[0] */ } } 
+                source = { { uri: TEST_IMAGE/* props.data.media_attachments[0] */ } }
                 style = { {
                     flex: 1,
                     width: SCREEN_WIDTH,
                     height: getAutoHeight(props.width, props.height, SCREEN_WIDTH)
                 } } />
-            <PostActionBarJsx 
+            <PostActionBarJsx
                 favourited = { props.data.favourited }
                 reblogged = {props.data.reblogged } />
             <View style = { styles.caption }>
@@ -108,7 +134,7 @@ export const PostByDataJsx = (props) => {
             setState({
                 width: SCREEN_WIDTH,
                 height: newHeight,
-                loaded: true 
+                loaded: true
             });
         });
     });
@@ -145,7 +171,7 @@ export const PostByIdJsx = (props) => {
         ((/* This would be the data retrieved */) => {
             Image.getSize(TEST_IMAGE, (width, height) => {
                 const newHeight = getAutoHeight(width, height, SCREEN_WIDTH)
-    
+
                 setState({
                     avatar: TEST_IMAGE,
                     username: "njms",
@@ -156,7 +182,7 @@ export const PostByIdJsx = (props) => {
                     timestamp: 1596745156000,
                     width: SCREEN_WIDTH,
                     height: newHeight,
-                    loaded: true 
+                    loaded: true
                 });
             });
         })();
@@ -164,8 +190,8 @@ export const PostByIdJsx = (props) => {
 
     return (
         <View>
-            { state.loaded ? 
-                <RawPostJsx 
+            { state.loaded ?
+                <RawPostJsx
                     data = { state }
                     width = { state.width }
                     height = { state.height } />
@@ -190,11 +216,19 @@ const styles = {
         fontWeight: "bold",
         marginTop: -2
     },
+    menu: {
+        marginLeft: "auto",
+        marginRight: SCREEN_WIDTH / 30
+    },
     pfp: {
         width: SCREEN_WIDTH / 10,
         height: SCREEN_WIDTH / 10,
         marginRight: SCREEN_WIDTH / 28,
         borderRadius: "100%"
+    },
+    ellipsis: {
+        width: SCREEN_WIDTH / 15,
+        height: SCREEN_WIDTH / 15
     },
     photo: {
         flex: 1,
@@ -209,3 +243,26 @@ const styles = {
         paddingTop: 10
     }
 };
+
+// customStyles for react-native-popup-menu should be defined in particular
+// objects to be interpreted correctly.
+
+//const menuStyles = {
+//    menuProviderWrapper
+//}
+
+const optionsStyles = {
+    optionWrapper: { // The wrapper around a single option
+        paddingLeft: SCREEN_WIDTH / 15,
+        paddingTop: SCREEN_WIDTH / 30,
+        paddingBottom: SCREEN_WIDTH / 30
+    },
+    optionsWrapper: { // The wrapper around all options
+        marginTop: SCREEN_WIDTH / 20,
+        marginBottom: SCREEN_WIDTH / 20,
+    },
+    optionsContainer: { // The Animated.View
+        borderTopLeftRadius: 10,
+        borderTopRightRadius: 10
+    }
+}
