@@ -18,6 +18,14 @@ const TEST_IMAGE = "https://cache.desktopnexus.com/thumbseg/2255/2255124-bigthum
 // This will be used in RawPostJsx
 const { SlideInMenu } = renderers;
 
+function pluralize(n, singular, plural) {
+    if (n < 2) {
+        return singular;
+    } else {
+        return plural;
+    }
+}
+
 function getAutoHeight(w1, h1, w2) {
     /*
     Given the original dimensions and the new width, calculate what would
@@ -44,7 +52,6 @@ function timeToAge(time1, time2) {
     */
 
     const between = (n, lower, upper) => n >= lower && n < upper;
-    const pluralize = (n, singular, plural) => n < 2 ? singular : plural;
 
     const diff = time1 - time2;
 
@@ -69,6 +76,17 @@ function timeToAge(time1, time2) {
 }
 
 export const RawPostJsx = (props) => {
+    const repliesCount = props.data.replies_count;
+
+    let commentsText;
+    if (repliesCount == 0) {
+        commentsText = "View comments";
+    } else {
+        commentsText = "View "
+            + repliesCount
+            + pluralize(repliesCount, " comment", " comments");
+    }
+
     return (
         <View>
             <View style = { styles.postHeader }>
@@ -107,6 +125,12 @@ export const RawPostJsx = (props) => {
                 <Text>
                     <strong>{ props.data.username }</strong>&nbsp;{ props.data.content }
                 </Text>
+                <TouchableWithoutFeedback>
+                    <View>
+                        <Text style = { styles.comments }>{ commentsText }</Text>
+                    </View>
+                </TouchableWithoutFeedback>
+
                 <Text style = { styles.captionDate }>
                     { timeToAge((new Date()).getTime(), props.data.timestamp) }
                 </Text>
@@ -237,10 +261,13 @@ const styles = {
     caption: {
         padding: SCREEN_WIDTH / 24,
     },
+    comments: {
+        paddingTop: SCREEN_WIDTH / 50,
+        color: "#666",
+    },
     captionDate: {
         fontSize: "0.8em",
         color: "#666",
-        paddingTop: 10
     }
 };
 

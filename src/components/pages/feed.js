@@ -12,6 +12,7 @@ const TEST_POSTS = [
         id: 1,
         avatar: TEST_IMAGE,
         username: "njms",
+        replies_count: 3,
         favourited: false,
         reblogged: false,
         content: "Also learning Claire de Lune feels a lot like reading the communist manifesto",
@@ -26,6 +27,7 @@ const TEST_POSTS = [
         username: "njms",
         favourited: false,
         reblogged: false,
+        replies_count: 0,
         content: "Also learning Claire de Lune feels a lot like reading the communist manifesto",
         timestamp: 1596745156000,
         media_attachments: [
@@ -47,7 +49,7 @@ const FeedJsx = (props) => {
                     <Image
                         source = { checkmark }
                         style = { styles.checkmark }/>
-                    
+
                     <Text style = { styles.interruptionHeader }>
                         You're all caught up.
                     </Text>
@@ -61,7 +63,7 @@ const FeedJsx = (props) => {
                 </View>
             </div>
         </ScreenWithTrayJsx>
-        
+
     );
 };
 

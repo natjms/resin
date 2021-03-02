@@ -62,10 +62,6 @@ const PostActionBarJsx = (props) => {
             active: require("assets/eva-icons/post-actions/heart-active.png"),
             inactive: require("assets/eva-icons/post-actions/heart-inactive.png")
         },
-        comment: {
-            active: require("assets/eva-icons/post-actions/comment-active.png"),
-            inactive: require("assets/eva-icons/post-actions/comment-inactive.png")
-        },
         reblog: {
             active: require("assets/eva-icons/post-actions/reblog-active.png"),
             inactive: require("assets/eva-icons/post-actions/reblog-inactive.png")
@@ -82,13 +78,7 @@ const PostActionBarJsx = (props) => {
                 pack = { icons.heart }
                 state = { state }
                 callback = { () => favouritedCallback(state, setState) } />
-            
-            <PostActionJsx
-                field = "commenting"
-                pack = { icons.comment }
-                state = { state }
-                callback = { () => commentCallback(state, setState) } />
-            
+
             <PostActionJsx
                 field = "reblogged"
                 pack = { icons.reblog }
@@ -105,16 +95,17 @@ const PostActionBarJsx = (props) => {
     )
 }
 
+const SCREEN_WIDTH = Dimensions.get("window").width;
 const styles = {
     flexContainer: {
         display: "flex",
         flexDirection: "row",
-        padding: Dimensions.get("window").width / 40
+        padding: SCREEN_WIDTH / 40
     },
     icon: {
         width: 30,
         height: 30,
-        marginRight: Dimensions.get("window").width / 20
+        marginRight: SCREEN_WIDTH / 20
     },
     lastIcon: {
         marginLeft: "auto"
