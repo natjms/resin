@@ -36,7 +36,7 @@ const styles = {
     },
     searchBar: {
         padding: 10,
-        fontSize: "1.1em",
+        fontSize: 17,
         color: "#888"
     },
 };

@@ -1,7 +1,7 @@
 import React from "react";
 import { Image } from "react-native";
 import { activeOrNot } from "src/interface/interactions"
-import { TouchableWithoutFeedback } from "react-native";
+import { TouchableWithoutFeedback, View } from "react-native";
 
 const TrayButtonJsx = (props) => {
     return (
@@ -43,45 +43,35 @@ const TrayJsx = (props) => {
     }
     
     return (
-        <nav style = { styles.tray }>
-            <ul style = { styles.iconList }>
-                <li>
+        <View style = { styles.tray }>
+            <View style = { styles.iconList }>
                     <TrayButtonJsx
                         where = "Feed"
                         pack = { icons.feed }
                         active = { props.active }
                         nav = { nav } />
-                </li>
-                <li>
                     <TrayButtonJsx
                         where = "Discover"
                         pack = { icons.discover }
                         active = { props.active }
                         nav = { nav } />
-                </li>
-                <li>
                     <TrayButtonJsx
                         where = "Publish"
                         pack = { icons.publish }
                         active = { props.active }
                         nav = { nav } />
-                </li>
-                <li>
                     <TrayButtonJsx
                         where = "Direct"
                         pack = { icons.direct }
                         active = { props.active }
                         nav = { nav } />
-                </li>
-                <li>
                     <TrayButtonJsx
                         where = "Profile"
                         pack = { icons.profile }
                         active = { props.active }
                         nav = { nav } />
-                </li>
-            </ul>
-        </nav>
+            </View>
+        </View>
     );
 };
 

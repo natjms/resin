@@ -7,7 +7,7 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/test.jpg",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },

@@ -46,7 +46,7 @@ const ViewHashtagJsx = ({navigation}) => {
                             #{ state.name } 
                         </Text>
                         <Text>
-                            <strong>{ state.nPosts }</strong> posts
+                            <Text style = { styles.strong}>{ state.nPosts }</Text> posts
                         </Text>
 
                         <FollowHashtagButtonJsx 
@@ -84,7 +84,7 @@ const styles = {
     },
     hashtag: {
         fontWeight: "bold",
-        fontSize: "1.2em"
+        fontSize: 20
     },
     button: {
         border: "2px solid black",
@@ -93,6 +93,9 @@ const styles = {
         paddingLeft: 30,
         paddingRight: 30,
         marginTop: 10
+    },
+    strong: {
+        fontWeight: "bold"
     },
 }
 

@@ -20,7 +20,7 @@ const GridViewJsx = (props) => {
             {   
                 rows.map((row, i) => {
                     return (
-                        <ul style = { styles.gridRow }
+                        <View style = { styles.gridRow }
                             key = { i }>
                             {
                                 row.map((post) => {
@@ -29,7 +29,7 @@ const GridViewJsx = (props) => {
                                         .preview_url;
 
                                     return (
-                                        <li key = { post.id }>
+                                        <View key = { post.id }>
                                             <GridPostJsx
                                                 id = { post.id }
                                                 previewUrl = { post_url }
@@ -37,11 +37,11 @@ const GridViewJsx = (props) => {
                                                     (id) => props.openPostCallback(id)
                                                 }
                                                 />
-                                        </li>
+                                        </View>
                                     );
                                 })
                             }
-                        </ul>
+                        </View>
                     )
                 })
             }
