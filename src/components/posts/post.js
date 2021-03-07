@@ -79,7 +79,7 @@ export const RawPostJsx = (props) => {
                 reblogged = {props.data.reblogged } />
             <View style = { styles.caption }>
                 <Text>
-                    <strong>{ props.data.username }</strong>&nbsp;{ props.data.content }
+                    <Text style = { styles.strong }>{ props.data.username }</Text>&nbsp;{ props.data.content }
                 </Text>
                 <Text style = { styles.captionDate }>
                     { timeToAge((new Date()).getTime(), props.data.timestamp) }
@@ -186,15 +186,16 @@ const styles = {
         marginRight: SCREEN_WIDTH / 36
     },
     postHeaderName: {
-        fontSize: "1em",
+        fontSize: 16,
         fontWeight: "bold",
+        color: "#000",
         marginTop: -2
     },
     pfp: {
         width: SCREEN_WIDTH / 10,
         height: SCREEN_WIDTH / 10,
         marginRight: SCREEN_WIDTH / 28,
-        borderRadius: "100%"
+        borderRadius: 50
     },
     photo: {
         flex: 1,
@@ -204,8 +205,12 @@ const styles = {
         padding: SCREEN_WIDTH / 24,
     },
     captionDate: {
-        fontSize: "0.8em",
+        fontSize: 0.8,
         color: "#666",
         paddingTop: 10
+    },
+    strong: {
+        fontWeight: 'bold',
+        color: "#666",
     }
 };
