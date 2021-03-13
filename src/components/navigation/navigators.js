@@ -9,7 +9,7 @@ import TrayJsx from "src/components/navigation/tray";
 
 // Provider for context menus
 // Allows for establishing global styling of context menus
-const ContextJsx = (props) => {
+export const ContextJsx = (props) => {
     return (
         <MenuProvider customStyles = { providerStyles }>
             { props.children }

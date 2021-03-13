@@ -8,7 +8,9 @@ const ViewPostJsx = (props) => {
         <ScreenWithFullNavigationJsx
             active = { props.navigation.getParam("originTab", "Timeline") }
             navigation = { props.navigation }>
-            <PostByIdJsx id = { props.id } />
+            <PostByIdJsx
+                navigation = { props.navigation }
+                id = { props.id } />
         </ScreenWithFullNavigationJsx>
     );
 }

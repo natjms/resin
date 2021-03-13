@@ -43,7 +43,9 @@ const FeedJsx = (props) => {
         <ScreenWithTrayJsx
                 active = "Feed"
                 navigation = { props.navigation }>
-            <TimelineViewJsx posts = { TEST_POSTS } />
+            <TimelineViewJsx
+                    navigation = { props.navigation }
+                    posts = { TEST_POSTS } />
             <div style = { styles.interruptionOuter }>
                 <View style = { styles.interruption }>
                     <Image
