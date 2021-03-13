@@ -1,35 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { 
+import {
     Image,
+    Text,
     View,
     Dimensions,
     TouchableWithoutFeedback
 } from "react-native";
 import { activeOrNot } from "src/interface/interactions";
-
-function invertField (field, state, updater) {
-    // Takes a function (like `setState`) and uses it to invert the given field of `state`
-    let newState = state;
-    newState[field] = !newState[field];
-    updater(newState);
-}
-
-// These callbacks will eventually make calls to the instance's API
-function favouritedCallback(state, updater) {
-    invertField("favourited", state, updater);
-}
-
-function commentCallback(state, updater) {
-    invertField("commenting", state, updater);
-}
-
-function reblogCallback(state, updater) {
-    invertField("reblogged", state, updater);
-}
-
-function bookmarkCallback(state, updater) {
-    invertField("bookmarked", state, updater);
-}
 
 const PostActionJsx = (props) => {
     return (
@@ -77,20 +54,32 @@ const PostActionBarJsx = (props) => {
                 field = "favourited"
                 pack = { icons.heart }
                 state = { state }
-                callback = { () => favouritedCallback(state, setState) } />
+                callback = {
+                    () => {
+                        setState({ ...state, favourited: !state.favourited });
+                    }
+                } />
 
             <PostActionJsx
                 field = "reblogged"
                 pack = { icons.reblog }
                 state = { state }
-                callback = { () => reblogCallback(state, setState) } />
+                callback = {
+                    () => {
+                        setState({ ...state, reblogged: !state.reblogged });
+                    }
+                } />
 
             <PostActionJsx
                 field = "bookmarked"
                 pack = { icons.bookmark }
                 last = { true }
                 state = { state }
-                callback = { () => bookmarkCallback(state, setState) } />
+                callback = {
+                    () => {
+                        setState({ ...state, bookmarked: !state.bookmarked });
+                    }
+                } />
         </View>
     )
 }

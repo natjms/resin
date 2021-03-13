@@ -175,7 +175,7 @@ export const PostByDataJsx = (props) => {
                 loaded: true
             });
         });
-    });
+    }, []);
 
     return (
         <View>
@@ -224,7 +224,7 @@ export const PostByIdJsx = (props) => {
                 });
             });
         })();
-    });
+    }, []);
 
     return (
         <View>
