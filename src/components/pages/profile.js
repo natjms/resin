@@ -127,7 +127,7 @@ const ProfileDisplayJsx = ({navigation}) => {
                             style = { styles.displayName }> 
                             {state.displayName}
                         </Text>
-                        <Text><strong> @{state.username} </strong></Text>
+                        <Text><Text style={ styles.strong}> @{state.username} </Text></Text>
                     </View>
                     <TouchableWithoutFeedback>
                         <Image 
@@ -175,7 +175,7 @@ const styles = {
         marginBottom: screen_width / 20
     },
     displayName: {
-        fontSize: "1.5em"
+        fontSize: 24
     },
     avatar: {
         width: screen_width / 5,
@@ -192,11 +192,11 @@ const styles = {
         marginRight: screen_width / 15
     },
     accountStats: {
-        fontSize: "0.8em",
+        fontSize: 14,
         fontWeight: "bold"
     },
     note: {
-        fontSize: "1em",
+        fontSize: 16,
         marginTop: 10,
     },
     button: {
@@ -210,7 +210,10 @@ const styles = {
     },
     buttonText: {
         textAlign: "center"
-    }
+    },
+    strong: {
+        fontWeight: "bold",
+    },
 };
 
 export { ViewProfileJsx, ProfileDisplayJsx };

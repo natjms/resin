@@ -45,10 +45,12 @@ const FeedJsx = (props) => {
         <ScreenWithTrayJsx
                 active = "Feed"
                 navigation = { props.navigation }>
+
             <TimelineViewJsx
                     navigation = { props.navigation }
                     posts = { TEST_POSTS } />
-            <div style = { styles.interruptionOuter }>
+            <View style = { styles.interruptionOuter }>
+
                 <View style = { styles.interruption }>
                     <Image
                         source = { checkmark }
@@ -57,7 +59,6 @@ const FeedJsx = (props) => {
                     <Text style = { styles.interruptionHeader }>
                         You're all caught up.
                     </Text>
-                    <br />
                     <Text> Wow, it sure is a lovely day outside 🌳 </Text>
 
                     <TouchableWithoutFeedback
@@ -65,7 +66,7 @@ const FeedJsx = (props) => {
                         <Text> See older posts </Text>
                     </TouchableWithoutFeedback>
                 </View>
-            </div>
+            </View>
         </ScreenWithTrayJsx>
 
     );
@@ -89,7 +90,7 @@ const styles = {
         alignItems: "center",
     },
     interruptionHeader: {
-        fontSize: "1.3em"
+        fontSize: 21
     },
     checkmark: {
         width: screen_width * 0.3,

@@ -85,21 +85,21 @@ const SearchItemJsx = (props) => {
     return (
         <TouchableWithoutFeedback
              onPress = { () => props.callback(props.params) }>
-            <li style = { styles.searchResultContainer }>
+            <View style = { styles.searchResultContainer }>
                 <Image
                     style = { styles.thumbnail }
                     source = { props.thumbnail } />
                 <View style = { styles.queried }>
                     { props.children }
                 </View>
-            </li>
+            </View>
         </TouchableWithoutFeedback>
     );
 };
 
 const AccountsListJsx = (props) => {
     return (
-        <ul style = { styles.searchList }>
+        <View style = { styles.searchList }>
             {
                 props.data.map(item => {
                     return (
@@ -118,13 +118,13 @@ const AccountsListJsx = (props) => {
                     );
                 })
             }
-        </ul>
+        </View>
     );
 };
 
 const HashtagListJsx = (props) => {
     return (
-        <ul style = { styles.searchList }>
+        <View style = { styles.searchList }>
             {
                 props.data.map(item => {
                     return (
@@ -140,7 +140,7 @@ const HashtagListJsx = (props) => {
                     );
                 })
             }
-        </ul>
+        </View>
     );
 }
 
@@ -153,10 +153,9 @@ const styles = {
     },
     searchBar: {
         padding: 10,
-        fontSize: "1.1em",
+        fontSize: 17,
         color: "#888"
     },
-
     searchList: { padding: 0 },
     searchResultContainer: {
         display: "flex",

@@ -134,7 +134,7 @@ export const RawPostJsx = (props) => {
                 reblogged = { props.data.reblogged } />
             <View style = { styles.caption }>
                 <Text>
-                    <strong>{ props.data.username }</strong>&nbsp;{ props.data.content }
+                    <Text style = { styles.strong }>{ props.data.username }</Text>&nbsp;{ props.data.content }
                 </Text>
                 <TouchableWithoutFeedback
                       onPress = {
@@ -250,8 +250,9 @@ const styles = {
         marginRight: SCREEN_WIDTH / 36
     },
     postHeaderName: {
-        fontSize: "1em",
+        fontSize: 16,
         fontWeight: "bold",
+        color: "#000",
         marginTop: -2
     },
     menu: {
@@ -262,7 +263,7 @@ const styles = {
         width: SCREEN_WIDTH / 10,
         height: SCREEN_WIDTH / 10,
         marginRight: SCREEN_WIDTH / 28,
-        borderRadius: "100%"
+        borderRadius: 50
     },
     ellipsis: {
         width: SCREEN_WIDTH / 15,
@@ -287,8 +288,12 @@ const styles = {
         color: "#666",
     },
     captionDate: {
-        fontSize: "0.8em",
+        fontSize: 0.8,
         color: "#666",
+        paddingTop: 10
+    },
+    strong: {
+        fontWeight: 'bold',
     }
 };
 
