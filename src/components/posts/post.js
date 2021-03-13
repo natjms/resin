@@ -1,10 +1,32 @@
 import React, { useEffect, useState } from "react";
-import { Image, View, Text, Dimensions } from "react-native";
+import {
+    Image,
+    View,
+    Text,
+    Dimensions,
+    TouchableWithoutFeedback,
+    ScrollView
+} from "react-native";
+
+import {
+    Menu,
+    MenuOptions,
+    MenuOption,
+    MenuTrigger,
+    renderers
+} from "react-native-popup-menu";
+
+
+import { pluralize, timeToAge } from "src/interface/rendering"
 
 import PostActionBarJsx from "src/components/posts/post-action-bar";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const TEST_IMAGE = "https://cache.desktopnexus.com/thumbseg/2255/2255124-bigthumbnail.jpg";
+
+// Extract the SlideInMenu function from `renderers`
+// This will be used in RawPostJsx
+const { SlideInMenu } = renderers;
 
 function getAutoHeight(w1, h1, w2) {
     /*
@@ -25,62 +47,107 @@ function getAutoHeight(w1, h1, w2) {
     return w2 * (h1 / w1)
 }
 
-function timeToAge(time1, time2) {
-    /*
-    Output a friendly string to describe the age of a post, where `time1` and
-    `time2` are in milliseconds
-    */
+function getDimensionsPromises(uris) {
+    return uris.map(attachment => new Promise(resolve => {
+        Image.getSize(attachment.url, (width, height) => {
+            const autoHeight = getAutoHeight(width, height, SCREEN_WIDTH)
 
-    const between = (n, lower, upper) => n >= lower && n < upper;
-    const pluralize = (n, singular, plural) => n < 2 ? singular : plural;
-
-    const diff = time1 - time2;
-
-    if (diff < 60000) {
-        return "Seconds ago"
-    } else if (between(diff, 60000, 3600000)) {
-        const nMin = Math.floor(diff / 60000);
-        return nMin + " " + pluralize(nMin, "minute", "minutes") + " ago";
-    } else if (between(diff, 3600000, 86400000)) {
-        const nHours = Math.floor(diff / 3600000);
-        return nHours + " " + pluralize(nHours, "hour", "hours") + " ago";
-    } else if (between(diff, 86400000, 2629800000)) {
-        const nDays = Math.floor(diff / 86400000);
-        return nDays + " " + pluralize(nDays, "day", "days") + " ago";
-    } else if (between(diff, 2629800000, 31557600000)) {
-        const nMonths = Math.floor(diff / 2629800000);
-        return nMonths + " " + pluralize(nMonths, "month", "months") + " ago";
-    } else {
-        const nYears = Math.floor(diff / 31557600000);
-        return nYears + " " + pluralize(nYears, "year", "years") + " ago";
-    }
+            resolve([SCREEN_WIDTH, autoHeight]);
+        });
+    }));
 }
 
+const PostImageJsx = (props) => {
+    return <Image
+        source = { { uri: props.uri } }
+        style = {
+            {
+                flex: 1,
+                width: SCREEN_WIDTH,
+                height: getAutoHeight(props.width, props.height, SCREEN_WIDTH),
+                objectFit: "cover"
+            }
+        } />
+};
+
 export const RawPostJsx = (props) => {
+    const repliesCount = props.data.replies_count;
+
+    let commentsText;
+    if (repliesCount == 0) {
+        commentsText = "View comments";
+    } else {
+        commentsText = "View "
+            + repliesCount
+            + pluralize(repliesCount, " comment", " comments");
+    }
+
     return (
         <View>
             <View style = { styles.postHeader }>
-                <Image 
+                <Image
                     style = { styles.pfp }
                     source = { { uri: props.data.avatar } } />
-                <Text 
+                <Text
                     style = { styles.postHeaderName }>{ props.data.username }</Text>
+                <View style = { styles.menu }>
+                    <Menu renderer = { SlideInMenu }>
+                        <MenuTrigger>
+                            <Image
+                                source = { require("assets/eva-icons/ellipsis.png") }
+                                style = { styles.ellipsis }/>
+                        </MenuTrigger>
+                        <MenuOptions customStyles = { optionsStyles }>
+                            <MenuOption text="Hide" />
+                            <MenuOption text="Unfollow" />
+                            <MenuOption text="Block" />
+                        </MenuOptions>
+                    </Menu>
+                </View>
             </View>
-            { /* TODO: support for more than one image per post */ }
-            <Image
-                source = { { uri: TEST_IMAGE/* props.data.media_attachments[0] */ } } 
-                style = { {
-                    flex: 1,
-                    width: SCREEN_WIDTH,
-                    height: getAutoHeight(props.width, props.height, SCREEN_WIDTH)
-                } } />
-            <PostActionBarJsx 
+            {
+                props.data.media_attachments.length > 1 ?
+                <ScrollView
+                      horizontal = { true }
+                      snapToInterval = { SCREEN_WIDTH }
+                      decelerationRate = { "fast" }
+                      style = { styles.carousel }
+                      contentContainerStyle = { styles.carouselContainer }>
+                    {
+                        props.data.media_attachments
+                            .map((attachment, i) => {
+                                return (<PostImageJsx
+                                    key = { i }
+                                    uri = { attachment.url }
+                                    width = { props.dimensions[i][0] }
+                                    height = { props.dimensions[i][1] } />);
+                            })
+                    }
+                </ScrollView>
+                : <PostImageJsx
+                    uri = { props.data.media_attachments[0].url }
+                    width = { props.dimensions[0][0] }
+                    height = { props.dimensions[0][1] } />
+            }
+            <PostActionBarJsx
                 favourited = { props.data.favourited }
-                reblogged = {props.data.reblogged } />
+                reblogged = { props.data.reblogged } />
             <View style = { styles.caption }>
                 <Text>
                     <Text style = { styles.strong }>{ props.data.username }</Text>&nbsp;{ props.data.content }
                 </Text>
+                <TouchableWithoutFeedback
+                      onPress = {
+                        () => props.navigation.navigate("ViewComments", {
+                            originTab: props.navigation.getParam("originTab"),
+                            postData: props.data
+                        })
+                      }>
+                    <View>
+                        <Text style = { styles.comments }>{ commentsText }</Text>
+                    </View>
+                </TouchableWithoutFeedback>
+
                 <Text style = { styles.captionDate }>
                     { timeToAge((new Date()).getTime(), props.data.timestamp) }
                 </Text>
@@ -96,19 +163,16 @@ export const PostByDataJsx = (props) => {
     */
 
     let [state, setState] = useState({
-        width: 0,
-        height: 0,
-        loaded: false
+        loaded: false,
+        dimensions: []
     });
 
     useEffect(() => {
-        Image.getSize(TEST_IMAGE, (width, height) => {
-            const newHeight = getAutoHeight(width, height, SCREEN_WIDTH)
-
+        Promise.all(getDimensionsPromises(props.data.media_attachments))
+              .then(dimensions => {
             setState({
-                width: SCREEN_WIDTH,
-                height: newHeight,
-                loaded: true 
+                dimensions: dimensions,
+                loaded: true
             });
         });
     });
@@ -118,8 +182,8 @@ export const PostByDataJsx = (props) => {
             { state.loaded ?
                 <RawPostJsx
                     data = { props.data }
-                    width = { state.width }
-                    height = { state.height } />
+                    dimensions = { state.dimensions }
+                    navigation = { props.navigation }/>
                 : <View></View> }
         </View>
     );
@@ -138,25 +202,25 @@ export const PostByIdJsx = (props) => {
         reblogged: false,
         content: "",
         timestamp: 0,
+        loaded: false,
+        dimensions: []
     });
 
     useEffect(() => {
         // TODO: Make API request using props.id, set it as the state
-        ((/* This would be the data retrieved */) => {
-            Image.getSize(TEST_IMAGE, (width, height) => {
-                const newHeight = getAutoHeight(width, height, SCREEN_WIDTH)
-    
+        (() => {
+            Promise.all(getDimensionsPromises([{ url: TEST_IMAGE }]))
+                  .then(dimensions => {
                 setState({
                     avatar: TEST_IMAGE,
                     username: "njms",
-                    media_attachments: [TEST_IMAGE],
+                    media_attachments: [{ url: TEST_IMAGE }],
                     favourited: false,
                     reblogged: false,
                     content: "Also learning Claire de Lune feels a lot like reading the communist manifesto",
                     timestamp: 1596745156000,
-                    width: SCREEN_WIDTH,
-                    height: newHeight,
-                    loaded: true 
+                    loaded: true,
+                    dimensions: dimensions
                 });
             });
         })();
@@ -164,11 +228,11 @@ export const PostByIdJsx = (props) => {
 
     return (
         <View>
-            { state.loaded ? 
-                <RawPostJsx 
+            { state.loaded ?
+                <RawPostJsx
                     data = { state }
-                    width = { state.width }
-                    height = { state.height } />
+                    dimensions = { state.dimensions }
+                    navigation = { props.navigation }/>
                 : <View></View>
             }
         </View>
@@ -191,18 +255,37 @@ const styles = {
         color: "#000",
         marginTop: -2
     },
+    menu: {
+        marginLeft: "auto",
+        marginRight: SCREEN_WIDTH / 30
+    },
     pfp: {
         width: SCREEN_WIDTH / 10,
         height: SCREEN_WIDTH / 10,
         marginRight: SCREEN_WIDTH / 28,
         borderRadius: 50
     },
+    ellipsis: {
+        width: SCREEN_WIDTH / 15,
+        height: SCREEN_WIDTH / 15
+    },
     photo: {
         flex: 1,
     },
-
+    carousel: {
+        width: SCREEN_WIDTH,
+        height: SCREEN_WIDTH,
+    },
+    carouselContainer: {
+        display: "flex",
+        alignItems: "center"
+    },
     caption: {
         padding: SCREEN_WIDTH / 24,
+    },
+    comments: {
+        paddingTop: SCREEN_WIDTH / 50,
+        color: "#666",
     },
     captionDate: {
         fontSize: 0.8,
@@ -211,6 +294,28 @@ const styles = {
     },
     strong: {
         fontWeight: 'bold',
-        color: "#666",
     }
 };
+
+// customStyles for react-native-popup-menu should be defined in particular
+// objects to be interpreted correctly.
+
+//const menuStyles = {
+//    menuProviderWrapper
+//}
+
+const optionsStyles = {
+    optionWrapper: { // The wrapper around a single option
+        paddingLeft: SCREEN_WIDTH / 15,
+        paddingTop: SCREEN_WIDTH / 30,
+        paddingBottom: SCREEN_WIDTH / 30
+    },
+    optionsWrapper: { // The wrapper around all options
+        marginTop: SCREEN_WIDTH / 20,
+        marginBottom: SCREEN_WIDTH / 20,
+    },
+    optionsContainer: { // The Animated.View
+        borderTopLeftRadius: 10,
+        borderTopRightRadius: 10
+    }
+}

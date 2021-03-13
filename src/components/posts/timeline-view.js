@@ -9,7 +9,9 @@ const TimelineViewJsx = (props) => {
             { props.posts.map((post, i) => {
                 return (
                     <View key = { i } >
-                        <PostByDataJsx data = { post } />
+                        <PostByDataJsx
+                            navigation = { props.navigation }
+                            data = { post } />
                     </View>
                 );
             }) }

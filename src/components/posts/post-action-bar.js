@@ -27,10 +27,8 @@ function reblogCallback(state, updater) {
     invertField("reblogged", state, updater);
 }
 
-function downloadCallback(state, updater) {
-    let newState = state;
-    newState.downloaded = true;
-    updater(newState);
+function bookmarkCallback(state, updater) {
+    invertField("bookmarked", state, updater);
 }
 
 const PostActionJsx = (props) => {
@@ -41,7 +39,12 @@ const PostActionJsx = (props) => {
                 source = {
                     activeOrNot(props.state[props.field], props.pack)
                 }
-                style = { styles.icon } />
+                style = {
+                    [
+                        styles.icon,
+                        props.last ? styles.lastIcon : {}
+                    ]
+                } />
         </TouchableWithoutFeedback>
     )
 }
@@ -51,7 +54,7 @@ const PostActionBarJsx = (props) => {
         favourited: props.favourited,
         commenting: false,
         reblogged: props.reblogged,
-        downloaded: false
+        bookmarked: false
     });
 
     const icons = {
@@ -59,17 +62,13 @@ const PostActionBarJsx = (props) => {
             active: require("assets/eva-icons/post-actions/heart-active.png"),
             inactive: require("assets/eva-icons/post-actions/heart-inactive.png")
         },
-        comment: {
-            active: require("assets/eva-icons/post-actions/comment-active.png"),
-            inactive: require("assets/eva-icons/post-actions/comment-inactive.png")
-        },
         reblog: {
             active: require("assets/eva-icons/post-actions/reblog-active.png"),
             inactive: require("assets/eva-icons/post-actions/reblog-inactive.png")
         },
-        download: {
-            active: require("assets/eva-icons/post-actions/download-active.png"),
-            inactive: require("assets/eva-icons/post-actions/download-inactive.png")
+        bookmark: {
+            active: require("assets/eva-icons/post-actions/bookmark-active.png"),
+            inactive: require("assets/eva-icons/post-actions/bookmark-inactive.png")
         }
     }
     return (
@@ -79,13 +78,7 @@ const PostActionBarJsx = (props) => {
                 pack = { icons.heart }
                 state = { state }
                 callback = { () => favouritedCallback(state, setState) } />
-            
-            <PostActionJsx
-                field = "commenting"
-                pack = { icons.comment }
-                state = { state }
-                callback = { () => commentCallback(state, setState) } />
-            
+
             <PostActionJsx
                 field = "reblogged"
                 pack = { icons.reblog }
@@ -93,24 +86,29 @@ const PostActionBarJsx = (props) => {
                 callback = { () => reblogCallback(state, setState) } />
 
             <PostActionJsx
-                field = "downloaded"
-                pack = { icons.download }
+                field = "bookmarked"
+                pack = { icons.bookmark }
+                last = { true }
                 state = { state }
-                callback = { () => downloadCallback(state, setState) } />
+                callback = { () => bookmarkCallback(state, setState) } />
         </View>
     )
 }
 
+const SCREEN_WIDTH = Dimensions.get("window").width;
 const styles = {
     flexContainer: {
         display: "flex",
         flexDirection: "row",
-        padding: Dimensions.get("window").width / 40
+        padding: SCREEN_WIDTH / 40
     },
     icon: {
         width: 30,
         height: 30,
-        marginRight: Dimensions.get("window").width / 20
+        marginRight: SCREEN_WIDTH / 20
+    },
+    lastIcon: {
+        marginLeft: "auto"
     }
 }
 
