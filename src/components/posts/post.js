@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Image, View, Text, Dimensions, TouchableWithoutFeedback } from "react-native";
+import {
+    Image,
+    View,
+    Text,
+    Dimensions,
+    TouchableWithoutFeedback,
+    ScrollView
+} from "react-native";
 
 import {
     Menu,
@@ -8,6 +15,7 @@ import {
     MenuTrigger,
     renderers
 } from "react-native-popup-menu";
+
 
 import { pluralize, timeToAge } from "src/interface/rendering"
 
@@ -38,6 +46,29 @@ function getAutoHeight(w1, h1, w2) {
     */
     return w2 * (h1 / w1)
 }
+
+function getDimensionsPromises(uris) {
+    return uris.map(attachment => new Promise(resolve => {
+        Image.getSize(attachment.url, (width, height) => {
+            const autoHeight = getAutoHeight(width, height, SCREEN_WIDTH)
+
+            resolve([SCREEN_WIDTH, autoHeight]);
+        });
+    }));
+}
+
+const PostImageJsx = (props) => {
+    return <Image
+        source = { { uri: props.uri } }
+        style = {
+            {
+                flex: 1,
+                width: SCREEN_WIDTH,
+                height: getAutoHeight(props.width, props.height, SCREEN_WIDTH),
+                objectFit: "cover"
+            }
+        } />
+};
 
 export const RawPostJsx = (props) => {
     const repliesCount = props.data.replies_count;
@@ -74,17 +105,33 @@ export const RawPostJsx = (props) => {
                     </Menu>
                 </View>
             </View>
-            { /* TODO: support for more than one image per post */ }
-            <Image
-                source = { { uri: TEST_IMAGE/* props.data.media_attachments[0] */ } }
-                style = { {
-                    flex: 1,
-                    width: SCREEN_WIDTH,
-                    height: getAutoHeight(props.width, props.height, SCREEN_WIDTH)
-                } } />
+            {
+                props.data.media_attachments.length > 1 ?
+                <ScrollView
+                      horizontal = { true }
+                      snapToInterval = { SCREEN_WIDTH }
+                      decelerationRate = { "fast" }
+                      style = { styles.carousel }
+                      contentContainerStyle = { styles.carouselContainer }>
+                    {
+                        props.data.media_attachments
+                            .map((attachment, i) => {
+                                return (<PostImageJsx
+                                    key = { i }
+                                    uri = { attachment.url }
+                                    width = { props.dimensions[i][0] }
+                                    height = { props.dimensions[i][1] } />);
+                            })
+                    }
+                </ScrollView>
+                : <PostImageJsx
+                    uri = { props.data.media_attachments[0].url }
+                    width = { props.dimensions[0][0] }
+                    height = { props.dimensions[0][1] } />
+            }
             <PostActionBarJsx
                 favourited = { props.data.favourited }
-                reblogged = {props.data.reblogged } />
+                reblogged = { props.data.reblogged } />
             <View style = { styles.caption }>
                 <Text>
                     <strong>{ props.data.username }</strong>&nbsp;{ props.data.content }
@@ -116,18 +163,15 @@ export const PostByDataJsx = (props) => {
     */
 
     let [state, setState] = useState({
-        width: 0,
-        height: 0,
-        loaded: false
+        loaded: false,
+        dimensions: []
     });
 
     useEffect(() => {
-        Image.getSize(TEST_IMAGE, (width, height) => {
-            const newHeight = getAutoHeight(width, height, SCREEN_WIDTH)
-
+        Promise.all(getDimensionsPromises(props.data.media_attachments))
+              .then(dimensions => {
             setState({
-                width: SCREEN_WIDTH,
-                height: newHeight,
+                dimensions: dimensions,
                 loaded: true
             });
         });
@@ -138,8 +182,7 @@ export const PostByDataJsx = (props) => {
             { state.loaded ?
                 <RawPostJsx
                     data = { props.data }
-                    width = { state.width }
-                    height = { state.height }
+                    dimensions = { state.dimensions }
                     navigation = { props.navigation }/>
                 : <View></View> }
         </View>
@@ -159,37 +202,36 @@ export const PostByIdJsx = (props) => {
         reblogged: false,
         content: "",
         timestamp: 0,
+        loaded: false,
+        dimensions: []
     });
 
     useEffect(() => {
         // TODO: Make API request using props.id, set it as the state
-        ((/* This would be the data retrieved */) => {
-            Image.getSize(TEST_IMAGE, (width, height) => {
-                const newHeight = getAutoHeight(width, height, SCREEN_WIDTH)
-
+        (() => {
+            Promise.all(getDimensionsPromises([{ url: TEST_IMAGE }]))
+                  .then(dimensions => {
                 setState({
                     avatar: TEST_IMAGE,
                     username: "njms",
-                    media_attachments: [TEST_IMAGE],
+                    media_attachments: [{ url: TEST_IMAGE }],
                     favourited: false,
                     reblogged: false,
                     content: "Also learning Claire de Lune feels a lot like reading the communist manifesto",
                     timestamp: 1596745156000,
-                    width: SCREEN_WIDTH,
-                    height: newHeight,
-                    loaded: true
+                    loaded: true,
+                    dimensions: dimensions
                 });
             });
         })();
-    }, []);
+    });
 
     return (
         <View>
             { state.loaded ?
                 <RawPostJsx
                     data = { state }
-                    width = { state.width }
-                    height = { state.height }
+                    dimensions = { state.dimensions }
                     navigation = { props.navigation }/>
                 : <View></View>
             }
@@ -229,7 +271,14 @@ const styles = {
     photo: {
         flex: 1,
     },
-
+    carousel: {
+        width: SCREEN_WIDTH,
+        height: SCREEN_WIDTH,
+    },
+    carouselContainer: {
+        display: "flex",
+        alignItems: "center"
+    },
     caption: {
         padding: SCREEN_WIDTH / 24,
     },

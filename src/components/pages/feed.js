@@ -18,7 +18,7 @@ const TEST_POSTS = [
         content: "Also learning Claire de Lune feels a lot like reading the communist manifesto",
         timestamp: 1596745156000,
         media_attachments: [
-            {preview_url: TEST_IMAGE}
+            {url: TEST_IMAGE}
         ]
     },
     {
@@ -31,7 +31,9 @@ const TEST_POSTS = [
         content: "Also learning Claire de Lune feels a lot like reading the communist manifesto",
         timestamp: 1596745156000,
         media_attachments: [
-            {preview_url: TEST_IMAGE}
+            { url: "https://college.mayo.edu/media/mccms/content-assets/campus-amp-community/arizona/mayo-clinic-phoenix-arizona-is453080663-hero-mobile.jpg" },
+            { url: TEST_IMAGE },
+            { url: TEST_IMAGE }
         ]
     }
 ];
