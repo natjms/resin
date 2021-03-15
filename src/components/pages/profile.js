@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { View, Dimensions, Image, Text, TouchableWithoutFeedback } from "react-native";
+import {
+    View,
+    Dimensions,
+    Image,
+    Text,
+    TouchableWithoutFeedback
+} from "react-native";
+
+import * as Linking from "expo-linking";
 
 import { activeOrNot } from "src/interface/interactions"
 
@@ -37,6 +45,54 @@ const TEST_POSTS = [
     }
 ];
 
+const TEST_PROFILE = {
+    username: "njms",
+    acct: "njms",
+    display_name: "Nat🔆",
+    locked: false,
+    bot: false,
+    note: "Yeah heart emoji.",
+    avatar: TEST_IMAGE,
+    followers_count: "1 jillion",
+    statuses_count: 334,
+    fields: [
+        {
+            name: "Blog",
+            value: "<a href=\"https://njms.ca\">https://njms.ca</a>",
+            verified_at: "some time"
+        },
+        {
+            name: "Github",
+            value: "<a href=\"https://github.com/natjms\">https://github.com/natjms</a>",
+            verified_at: null
+        }
+    ]
+};
+
+function withoutHTML(string) {
+    return string.replaceAll(/<[^>]*>/ig, "");
+}
+
+const HTMLLink = ({link}) => {
+    let url = link.match(/https?:\/\/\w+\.\w+/);
+
+    if (url) {
+        return (
+            <Text
+                style = { styles.anchor }
+                onPress = {
+                    () => {
+                        Linking.openURL(url[0]);
+                    }
+            }>
+                { withoutHTML(link) }
+            </Text>
+        );
+    } else {
+        return (<Text> { withoutHTML(link) } </Text>);
+    }
+}
+
 const ProfileJsx = ({navigation}) => {
     return (
         <ScreenWithTrayJsx
@@ -61,15 +117,6 @@ const ViewProfileJsx = ({navigation}) => {
 const ProfileDisplayJsx = ({navigation}) => {
     const accountName = navigation.getParam("acct", "");
     let [state, setState] = useState({
-        avatar: "",
-        displayName: "Somebody",
-        username: "somebody",
-        statusesCount: 0,
-        followersCount: 0,
-        followingCount: 0,
-        note: "Not much here...",
-        unread_notifications: false,
-        own: false,
         loaded: false
     });
 
@@ -80,21 +127,11 @@ const ProfileDisplayJsx = ({navigation}) => {
 
     useEffect(() => {
         // do something to get the profile based on given account name
-        if (!state.loaded) {
-            setState({
-                avatar: TEST_IMAGE,
-                displayName: "Nat🔆",
-                username: "njms",
-                statusesCount: 334,
-                followersCount: "1 jillion",
-                followingCount: 7,
-                note: "Yeah heart emoji.",
-                own: true,
-                unread_notifs: false,
-                loaded: true
-            });
-        }
-    });
+        setState({
+            profile: TEST_PROFILE,
+            loaded: true
+        });
+    }, []);
 
     let profileButton;
     if (state.own) {
@@ -117,45 +154,71 @@ const ProfileDisplayJsx = ({navigation}) => {
 
     return (
         <View>
-            <View style = { styles.jumbotron }>
-                <View style = { styles.profileHeader }>
-                    <Image
-                        source = { { uri: state.avatar } }
-                        style = { styles.avatar } />
-                    <View>
-                        <Text 
-                            style = { styles.displayName }> 
-                            {state.displayName}
+            { state.loaded ?
+                <>
+                    <View style = { styles.jumbotron }>
+                        <View style = { styles.profileHeader }>
+                            <Image
+                                source = { { uri: state.profile.avatar } }
+                                style = { styles.avatar } />
+                            <View>
+                                <Text
+                                    style = { styles.displayName }>
+                                    {state.profile.display_name}
+                                </Text>
+                                <Text style={ styles.strong }>
+                                    @{state.profile.username }
+                                </Text>
+                            </View>
+                            <TouchableWithoutFeedback>
+                                <Image
+                                    source = { activeOrNot(state.unread_notifs, notif_pack) }
+                                    style = { styles.bell } />
+                            </TouchableWithoutFeedback>
+                        </View>
+                        <Text style = { styles.accountStats }>
+                            { state.profile.statuses_count } posts &#8226;&nbsp;
+                            { state.profile.followers_count } followers &#8226;&nbsp;
+                            { state.profile.following_count } following
                         </Text>
-                        <Text><Text style={ styles.strong}> @{state.username} </Text></Text>
+                        <Text style = { styles.note }>
+                            {state.profile.note}
+                        </Text>
+                        <table style = { styles.metaData }>
+                            {
+                                state.profile.fields.map((row, i) =>
+                                    <tr
+                                          key = { i }
+                                          style = { styles.row }>
+                                        <td style = { styles.rowName } >
+                                            <Text>{ row.name }</Text>
+                                        </td>
+                                        <td style = { styles.rowValue }>
+                                            <Text>
+                                                <HTMLLink
+                                                    link = { row.value } />
+                                            </Text>
+                                        </td>
+                                    </tr>
+                                )
+                            }
+                        </table>
+                        {profileButton}
                     </View>
-                    <TouchableWithoutFeedback>
-                        <Image 
-                            source = { activeOrNot(state.unread_notifs, notif_pack) }
-                            style = { styles.bell } />
-                    </TouchableWithoutFeedback>
-                </View>
-                <Text style = { styles.accountStats }>
-                    { state.statusesCount } posts &#8226;&nbsp;
-                    { state.followersCount } followers &#8226;&nbsp;
-                    { state.followingCount } following
-                </Text>
-                <Text style = { styles.note }>
-                    {state.note}
-                </Text>
-                {profileButton}
-            </View>
 
-            <GridViewJsx 
-                posts = { TEST_POSTS }
-                openPostCallback = {
-                    (id) => {
-                        navigation.navigate("ViewPost", {
-                            id: id,
-                            originTab: "Profile"
-                        });
-                    }
-                } />
+                    <GridViewJsx
+                        posts = { TEST_POSTS }
+                        openPostCallback = {
+                            (id) => {
+                                navigation.navigate("ViewPost", {
+                                    id: id,
+                                    originTab: "Profile"
+                                });
+                            }
+                        } />
+                </>
+            : <View></View>
+            }
         </View>
     );
 };
@@ -171,7 +234,6 @@ const styles = {
         display: "flex",
         flexDirection: "row",
         alignItems: "center",
-        
         marginBottom: screen_width / 20
     },
     displayName: {
@@ -199,6 +261,23 @@ const styles = {
         fontSize: 16,
         marginTop: 10,
     },
+
+    metaData: {
+        marginTop: 20
+    },
+    row: {
+        padding: 10
+    },
+    rowName: {
+        width: "33%",
+        textAlign: "center"
+    },
+    rowValue: { width: "67%" },
+    anchor: {
+        color: "#888",
+        textDecoration: "underline"
+    },
+
     button: {
         borderWidth: 1,
         borderStyle: "solid",
