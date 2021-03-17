@@ -69,8 +69,32 @@ const TEST_PROFILE = {
     ]
 };
 
+const TEST_YOUR_FOLLOWERS = [
+    { id: 1 },
+    { id: 2 },
+    { id: 3 },
+    { id: 4 },
+    { id: 5 },
+];
+
+const TEST_THEIR_FOLLOWERS = [
+    { id: 2 },
+    { id: 3 },
+    { id: 4 },
+    { id: 6 },
+];
+
 function withoutHTML(string) {
     return string.replaceAll(/<[^>]*>/ig, "");
+}
+
+function getMutuals(yours, theirs) {
+    // Where yours and theirs are arrays of followers, as returned by the oAPI
+
+    const idify = ({id}) => id;
+    const asIDs = new Set(theirs.map(idify));
+
+    return yours.filter(x => asIDs.has(idify(x)));
 }
 
 const HTMLLink = ({link}) => {
@@ -129,6 +153,7 @@ const ProfileDisplayJsx = ({navigation}) => {
         // do something to get the profile based on given account name
         setState({
             profile: TEST_PROFILE,
+            mutuals: getMutuals(TEST_YOUR_FOLLOWERS, TEST_THEIR_FOLLOWERS),
             loaded: true
         });
     }, []);
@@ -178,8 +203,7 @@ const ProfileDisplayJsx = ({navigation}) => {
                         </View>
                         <Text style = { styles.accountStats }>
                             { state.profile.statuses_count } posts &#8226;&nbsp;
-                            { state.profile.followers_count } followers &#8226;&nbsp;
-                            { state.profile.following_count } following
+                            { state.mutuals.length } mutuals
                         </Text>
                         <Text style = { styles.note }>
                             {state.profile.note}
