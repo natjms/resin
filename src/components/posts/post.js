@@ -8,25 +8,14 @@ import {
     ScrollView
 } from "react-native";
 
-import {
-    Menu,
-    MenuOptions,
-    MenuOption,
-    MenuTrigger,
-    renderers
-} from "react-native-popup-menu";
-
-
-import { pluralize, timeToAge } from "src/interface/rendering"
+import { pluralize, timeToAge} from "src/interface/rendering"
 
 import PostActionBarJsx from "src/components/posts/post-action-bar";
 
+import ModerateMenuJsx from "src/components/moderate-menu.js";
+
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const TEST_IMAGE = "https://cache.desktopnexus.com/thumbseg/2255/2255124-bigthumbnail.jpg";
-
-// Extract the SlideInMenu function from `renderers`
-// This will be used in RawPostJsx
-const { SlideInMenu } = renderers;
 
 function getAutoHeight(w1, h1, w2) {
     /*
@@ -90,20 +79,9 @@ export const RawPostJsx = (props) => {
                     source = { { uri: props.data.avatar } } />
                 <Text
                     style = { styles.postHeaderName }>{ props.data.username }</Text>
-                <View style = { styles.menu }>
-                    <Menu renderer = { SlideInMenu }>
-                        <MenuTrigger>
-                            <Image
-                                source = { require("assets/eva-icons/ellipsis.png") }
-                                style = { styles.ellipsis }/>
-                        </MenuTrigger>
-                        <MenuOptions customStyles = { optionsStyles }>
-                            <MenuOption text="Hide" />
-                            <MenuOption text="Unfollow" />
-                            <MenuOption text="Block" />
-                        </MenuOptions>
-                    </Menu>
-                </View>
+                <ModerateMenuJsx
+                    containerStyle = { styles.menu }
+                    triggerStyle = { styles.ellipsis } />
             </View>
             {
                 props.data.media_attachments.length > 1 ?

@@ -17,6 +17,8 @@ import {
     ScreenWithFullNavigationJsx
 } from "src/components/navigation/navigators";
 
+import ModerateMenuJsx from "src/components/moderate-menu.js";
+
 const TEST_IMAGE = "https://cache.desktopnexus.com/thumbseg/2255/2255124-bigthumbnail.jpg";
 const TEST_POSTS = [
     {
@@ -141,7 +143,8 @@ const ViewProfileJsx = ({navigation}) => {
 const ProfileDisplayJsx = ({navigation}) => {
     const accountName = navigation.getParam("acct", "");
     let [state, setState] = useState({
-        loaded: false
+        loaded: false,
+        own: false
     });
 
     const notif_pack = {
@@ -195,11 +198,22 @@ const ProfileDisplayJsx = ({navigation}) => {
                                     @{state.profile.username }
                                 </Text>
                             </View>
-                            <TouchableWithoutFeedback>
-                                <Image
-                                    source = { activeOrNot(state.unread_notifs, notif_pack) }
-                                    style = { styles.bell } />
-                            </TouchableWithoutFeedback>
+                            {
+                                state.own ?
+                                    <TouchableWithoutFeedback>
+                                        <Image
+                                            source = { activeOrNot(state.unread_notifs, notif_pack) }
+                                            style = {
+                                                [
+                                                    styles.profileHeaderIcon,
+                                                    styles.profileContextConatiner
+                                                ]
+                                            } />
+                                    </TouchableWithoutFeedback>
+                                : <ModerateMenuJsx
+                                    triggerStyle = { styles.profileHeaderIcon }
+                                    containerStyle = { styles.profileContextContainer } />
+                            }
                         </View>
                         <Text style = { styles.accountStats }>
                             { state.profile.statuses_count } posts &#8226;&nbsp;
@@ -270,10 +284,11 @@ const styles = {
         borderRadius: "100%",
         marginRight: screen_width / 20
     },
-    bell: {
+    profileHeaderIcon: {
         width: screen_width / 12,
         height: screen_width / 12,
-
+    },
+    profileContextContainer: {
         marginLeft: "auto",
         marginRight: screen_width / 15
     },
