@@ -15,23 +15,25 @@ import DiscoverJsx from 'src/components/pages/discover';
 import SearchJsx from 'src/components/pages/discover/search';
 import ViewHashtagJsx from 'src/components/pages/discover/view-hashtag';
 import NotificationsJsx from 'src/components/pages/profile/notifications';
+import UserListJsx from "src/components/pages/user-list.js";
 
 const Stack = createStackNavigator({
-  Feed: { screen: FeedJsx, },
-  Discover: { screen: DiscoverJsx },
-  Notifications: { screen: NotificationsJsx },
-  Profile: { screen: ProfileJsx, },
-  Search: { screen: SearchJsx },
-  ViewPost: { screen: ViewPostJsx },
-  ViewComments: { screen: ViewCommentsJsx },
-  ViewProfile: { screen: ViewProfileJsx },
-  ViewHashtag: { screen: ViewHashtagJsx }
+    Feed: { screen: FeedJsx, },
+    Discover: { screen: DiscoverJsx },
+    Notifications: { screen: NotificationsJsx },
+    Profile: { screen: ProfileJsx, },
+    Search: { screen: SearchJsx },
+    ViewPost: { screen: ViewPostJsx },
+    ViewComments: { screen: ViewCommentsJsx },
+    ViewProfile: { screen: ViewProfileJsx },
+    ViewHashtag: { screen: ViewHashtagJsx },
+    UserList: { screen: UserListJsx }
 }, {
-  initialRouteKey: "Feed",
-  headerMode: "none",
-  navigationOptions: {
-    headerVisible: false
-  }
+    initialRouteKey: "Feed",
+    headerMode: "none",
+    navigationOptions: {
+        headerVisible: false
+    }
 });
 
 const App = createAppContainer(Stack);

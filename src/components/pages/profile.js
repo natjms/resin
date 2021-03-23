@@ -217,7 +217,17 @@ const ProfileDisplayJsx = ({navigation}) => {
                         </View>
                         <Text style = { styles.accountStats }>
                             { state.profile.statuses_count } posts &#8226;&nbsp;
-                            { state.mutuals.length } mutuals
+                            <Text
+                                  onPress = {
+                                    () => {
+                                        navigation.navigate("UserList", {
+                                            data: [/*Some array of users*/],
+                                            context: "Your mutual followers with " + state.profile.display_name
+                                        });
+                                    }
+                                  }>
+                                { state.mutuals.length } mutuals
+                            </Text>
                         </Text>
                         <Text style = { styles.note }>
                             {state.profile.note}
