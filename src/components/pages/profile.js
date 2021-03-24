@@ -144,7 +144,6 @@ const ProfileDisplayJsx = ({navigation}) => {
     const accountName = navigation.getParam("acct", "");
     let [state, setState] = useState({
         loaded: false,
-        own: false
     });
 
     const notif_pack = {
@@ -157,7 +156,8 @@ const ProfileDisplayJsx = ({navigation}) => {
         setState({
             profile: TEST_PROFILE,
             mutuals: getMutuals(TEST_YOUR_FOLLOWERS, TEST_THEIR_FOLLOWERS),
-            loaded: true
+            own: true,
+            loaded: true,
         });
     }, []);
 
@@ -200,16 +200,13 @@ const ProfileDisplayJsx = ({navigation}) => {
                             </View>
                             {
                                 state.own ?
-                                    <TouchableWithoutFeedback>
-                                        <Image
-                                            source = { activeOrNot(state.unread_notifs, notif_pack) }
-                                            style = {
-                                                [
-                                                    styles.profileHeaderIcon,
-                                                    styles.profileContextConatiner
-                                                ]
-                                            } />
-                                    </TouchableWithoutFeedback>
+                                    <View style = { styles.profileContextContainer }>
+                                        <TouchableWithoutFeedback>
+                                            <Image
+                                                source = { activeOrNot(state.unread_notifs, notif_pack) }
+                                                style = { styles.profileHeaderIcon } />
+                                        </TouchableWithoutFeedback>
+                                    </View>
                                 : <ModerateMenuJsx
                                     triggerStyle = { styles.profileHeaderIcon }
                                     containerStyle = { styles.profileContextContainer } />
@@ -220,13 +217,21 @@ const ProfileDisplayJsx = ({navigation}) => {
                             <Text
                                   onPress = {
                                     () => {
+                                        const context = state.own ?
+                                            "People following you"
+                                            : "Your mutual followers with " + state.profile.display_name;
                                         navigation.navigate("UserList", {
                                             data: [/*Some array of users*/],
-                                            context: "Your mutual followers with " + state.profile.display_name
+                                            context: context
                                         });
                                     }
                                   }>
-                                { state.mutuals.length } mutuals
+                                {
+                                    state.own ?
+                                        "View followers"
+                                        :state.mutuals.length + " mutuals"
+                                }
+
                             </Text>
                         </Text>
                         <Text style = { styles.note }>
