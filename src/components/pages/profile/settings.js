@@ -46,8 +46,6 @@ const SettingsJsx = (props) => {
         newProfile: TEST_PROFILE,
     });
 
-    useEffect(() => { console.log(state) });
-
     const fields = state.newProfile.fields;
 
     return (
