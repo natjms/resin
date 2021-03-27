@@ -16,12 +16,14 @@ import SearchJsx from 'src/components/pages/discover/search';
 import ViewHashtagJsx from 'src/components/pages/discover/view-hashtag';
 import NotificationsJsx from 'src/components/pages/profile/notifications';
 import UserListJsx from "src/components/pages/user-list.js";
+import SettingsJsx from "src/components/pages/profile/settings.js";
 
 const Stack = createStackNavigator({
     Feed: { screen: FeedJsx, },
     Discover: { screen: DiscoverJsx },
     Notifications: { screen: NotificationsJsx },
     Profile: { screen: ProfileJsx, },
+    Settings: { screen: SettingsJsx },
     Search: { screen: SearchJsx },
     ViewPost: { screen: ViewPostJsx },
     ViewComments: { screen: ViewCommentsJsx },

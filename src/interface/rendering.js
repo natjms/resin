@@ -1,3 +1,7 @@
+export function withoutHTML(string) {
+    return string.replaceAll(/<[^>]*>/ig, "");
+}
+
 export function pluralize(n, singular, plural) {
     if (n < 2) {
         return singular;

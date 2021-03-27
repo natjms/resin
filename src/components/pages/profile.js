@@ -4,12 +4,13 @@ import {
     Dimensions,
     Image,
     Text,
-    TouchableWithoutFeedback
+    TouchableOpacity
 } from "react-native";
 
 import * as Linking from "expo-linking";
 
-import { activeOrNot } from "src/interface/interactions"
+import { activeOrNot } from "src/interface/interactions";
+import { withoutHTML } from "src/interface/rendering";
 
 import GridViewJsx from "src/components/posts/grid-view";
 import {
@@ -86,10 +87,6 @@ const TEST_THEIR_FOLLOWERS = [
     { id: 6 },
 ];
 
-function withoutHTML(string) {
-    return string.replaceAll(/<[^>]*>/ig, "");
-}
-
 function getMutuals(yours, theirs) {
     // Where yours and theirs are arrays of followers, as returned by the oAPI
 
@@ -164,19 +161,24 @@ const ProfileDisplayJsx = ({navigation}) => {
     let profileButton;
     if (state.own) {
         profileButton = (
-            <TouchableWithoutFeedback>
+            <TouchableOpacity
+                  onPress = {
+                    () => {
+                        navigation.navigate("Settings");
+                    }
+                  }>
                 <View style = { styles.button }>
-                    <Text style = { styles.buttonText }>Edit profile</Text>
+                    <Text style = { styles.buttonText }>Settings</Text>
                 </View>
-            </TouchableWithoutFeedback>
+            </TouchableOpacity>
         );
     } else {
         profileButton = (
-            <TouchableWithoutFeedback>
+            <TouchableOpacity>
                 <View style = { styles.button }>
                     <Text style = { styles.buttonText }>Follow</Text>
                 </View>
-            </TouchableWithoutFeedback>
+            </TouchableOpacity>
         )
     }
 
@@ -201,11 +203,11 @@ const ProfileDisplayJsx = ({navigation}) => {
                             {
                                 state.own ?
                                     <View style = { styles.profileContextContainer }>
-                                        <TouchableWithoutFeedback>
+                                        <TouchableOpacity>
                                             <Image
                                                 source = { activeOrNot(state.unread_notifs, notif_pack) }
                                                 style = { styles.profileHeaderIcon } />
-                                        </TouchableWithoutFeedback>
+                                        </TouchableOpacity>
                                     </View>
                                 : <ModerateMenuJsx
                                     triggerStyle = { styles.profileHeaderIcon }
@@ -214,8 +216,7 @@ const ProfileDisplayJsx = ({navigation}) => {
                         </View>
                         <Text style = { styles.accountStats }>
                             { state.profile.statuses_count } posts &#8226;&nbsp;
-                            <Text
-                                  onPress = {
+                            <Text onPress = {
                                     () => {
                                         const context = state.own ?
                                             "People following you"
@@ -228,8 +229,8 @@ const ProfileDisplayJsx = ({navigation}) => {
                                   }>
                                 {
                                     state.own ?
-                                        "View followers"
-                                        :state.mutuals.length + " mutuals"
+                                        <>View followers</>
+                                        : <>{state.mutuals.length + " mutuals"}</>
                                 }
 
                             </Text>
