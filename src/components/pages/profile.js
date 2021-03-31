@@ -8,6 +8,7 @@ import {
 } from "react-native";
 
 import * as Linking from "expo-linking";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { activeOrNot } from "src/interface/interactions";
 import { withoutHTML } from "src/interface/rendering";
@@ -149,12 +150,13 @@ const ProfileDisplayJsx = ({navigation}) => {
     }
 
     useEffect(() => {
-        // do something to get the profile based on given account name
-        setState({
-            profile: TEST_PROFILE,
-            mutuals: getMutuals(TEST_YOUR_FOLLOWERS, TEST_THEIR_FOLLOWERS),
-            own: true,
-            loaded: true,
+        AsyncStorage.getItem("@user_profile").then((profileJSON) => {
+            setState({
+                profile: JSON.parse(profileJSON),
+                mutuals: getMutuals(TEST_YOUR_FOLLOWERS, TEST_THEIR_FOLLOWERS),
+                own: true,
+                loaded: true,
+            });
         });
     }, []);
 
