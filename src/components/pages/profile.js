@@ -149,14 +149,18 @@ const ProfileDisplayJsx = ({navigation}) => {
         inactive: require("assets/eva-icons/bell-black.png")
     }
 
-    useEffect(() => {
-        AsyncStorage.getItem("@user_profile").then((profileJSON) => {
-            setState({
-                profile: JSON.parse(profileJSON),
-                mutuals: getMutuals(TEST_YOUR_FOLLOWERS, TEST_THEIR_FOLLOWERS),
-                own: true,
-                loaded: true,
-            });
+    useEffect(async () => {
+        const profile = JSON.parse(await AsyncStorage.getItem("@user_profile"));
+        const notifications = JSON.parse(
+            await AsyncStorage.getItem("@user_notifications")
+        );
+
+        setState({
+            profile: profile,
+            unreadNotifications: notifications.unread,
+            mutuals: getMutuals(TEST_YOUR_FOLLOWERS, TEST_THEIR_FOLLOWERS),
+            own: true,
+            loaded: true,
         });
     }, []);
 
@@ -207,7 +211,12 @@ const ProfileDisplayJsx = ({navigation}) => {
                                     <View style = { styles.profileContextContainer }>
                                         <TouchableOpacity>
                                             <Image
-                                                source = { activeOrNot(state.unread_notifs, notif_pack) }
+                                                source = {
+                                                    activeOrNot(
+                                                        state.unreadNotifications,
+                                                        notif_pack
+                                                    )
+                                                }
                                                 style = { styles.profileHeaderIcon } />
                                         </TouchableOpacity>
                                     </View>
