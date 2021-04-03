@@ -53,19 +53,21 @@ const AuthenticateJsx = ({navigation}) => {
         });
     }, []);
 
-    const loginCallback = async () => {
-        const profileJSON = JSON.stringify(TEST_PROFILE);
+    const loginCallback = () => {
+        const initialization = [
+            [ "@user_profile", JSON.stringify(TEST_PROFILE) ],
+            [
+                "@user_notifications",
+                JSON.stringify({
+                    unread: false,
+                    memory: [{ id: 1 }, { id: 2 }],
+                })
+            ]
+        ];
 
-        // TODO: Should fetch initial notifications to prevent bugging a newly
-        // logged in user about the notifications already on their account
-        const notificationsJSON = JSON.stringify({
-            unread: false,
-            memory: [{ id: 1 }, { id: 2 }],
+        AsyncStorage.multiSet(initialization).then(() => {
+            navigation.navigate("Feed");
         });
-        await AsyncStorage.setItem("@user_profile", profileJSON);
-        await AsyncStorage.setItem("@user_notifications", notificationsJSON);
-
-        navigation.navigate("Feed");
     };
 
     return (
