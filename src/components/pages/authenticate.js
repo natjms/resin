@@ -44,9 +44,9 @@ const AuthenticateJsx = ({navigation}) => {
     });
 
     useEffect(() => {
-        const profile = AsyncStorage.getItem("@user_profile").then((profile) => {
-            if (profile != null) {
-                navigation.navigate("feed");
+        AsyncStorage.getItem("@user_profile").then((profile) => {
+            if (profile) {
+                navigation.navigate("Feed");
             }
 
             setState({...state, authChecked: true});
@@ -55,9 +55,17 @@ const AuthenticateJsx = ({navigation}) => {
 
     const loginCallback = async () => {
         const profileJSON = JSON.stringify(TEST_PROFILE);
-        AsyncStorage.setItem("@user_profile", profileJSON).then(() => {
-            navigation.navigate("Feed");
+
+        // TODO: Should fetch initial notifications to prevent bugging a newly
+        // logged in user about the notifications already on their account
+        const notificationsJSON = JSON.stringify({
+            unread: false,
+            memory: [{ id: 1 }, { id: 2 }],
         });
+        await AsyncStorage.setItem("@user_profile", profileJSON);
+        await AsyncStorage.setItem("@user_notifications", notificationsJSON);
+
+        navigation.navigate("Feed");
     };
 
     return (
