@@ -149,19 +149,22 @@ const ProfileDisplayJsx = ({navigation}) => {
         inactive: require("assets/eva-icons/bell-black.png")
     }
 
-    useEffect(async () => {
-        const profile = JSON.parse(await AsyncStorage.getItem("@user_profile"));
-        const notifications = JSON.parse(
-            await AsyncStorage.getItem("@user_notifications")
-        );
+    useEffect(() => {
+        AsyncStorage.multiGet(["@user_profile", "@user_notifications"])
+            .then(values => {
+                const [profileJSON, notificationsJSON] = values;
 
-        setState({
-            profile: profile,
-            unreadNotifications: notifications.unread,
-            mutuals: getMutuals(TEST_YOUR_FOLLOWERS, TEST_THEIR_FOLLOWERS),
-            own: true,
-            loaded: true,
-        });
+                const profile = JSON.parse(profileJSON[1]);
+                const notifications = JSON.parse(notificationsJSON[1]);
+                console.log(notifications);
+                setState({
+                    profile: profile,
+                    unreadNotifications: notifications.unread,
+                    mutuals: getMutuals(TEST_YOUR_FOLLOWERS, TEST_THEIR_FOLLOWERS),
+                    own: true,
+                    loaded: true,
+                });
+            });
     }, []);
 
     let profileButton;
@@ -209,7 +212,12 @@ const ProfileDisplayJsx = ({navigation}) => {
                             {
                                 state.own ?
                                     <View style = { styles.profileContextContainer }>
-                                        <TouchableOpacity>
+                                        <TouchableOpacity
+                                              onPress = {
+                                                () => {
+                                                    navigation.navigate("Notifications");
+                                                }
+                                              }>
                                             <Image
                                                 source = {
                                                     activeOrNot(

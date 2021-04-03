@@ -17,9 +17,6 @@ export async function checkUnreadNotifications() {
 
         const isUnread = JSON.stringify(newNotifs) != JSON.stringify(notifications.memory);
 
-        console.log(JSON.stringify(newNotifs));
-        console.log(JSON.stringify(notifications.memory));
-
         // Update stored notifications
         await AsyncStorage.setItem(
             "@user_notifications",
