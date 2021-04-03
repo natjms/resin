@@ -67,11 +67,11 @@ const SearchJsx = ({navigation}) => {
             { state.query == "" ?
                 <View></View>
                 : <View>
-                        <Text>Accounts</Text>
+                        <Text style = { styles.label }>Accounts</Text>
                         <AccountsListJsx
                             data = { TEST_ACCOUNTS }
                             callback = { accountCallback } />
-                        <Text>Hashtags</Text>
+                        <Text style = { styles.label }>Hashtags</Text>
                         <HashtagListJsx 
                             data = { TEST_HASHTAGS }
                             callback = { hashtagCallback } />
@@ -155,6 +155,10 @@ const styles = {
         padding: 10,
         fontSize: 17,
         color: "#888"
+    },
+    label: {
+        padding: 10,
+        fontSize: 15,
     },
     searchList: { padding: 0 },
     searchResultContainer: {
