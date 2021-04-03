@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Dimensions, View, Image, TextInput, Text } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { timeToAge } from "src/interface/rendering";
 import { activeOrNot } from "src/interface/interactions";
@@ -212,21 +213,22 @@ const ViewCommentsJsx = (props) => {
     });
 
     useEffect(() => {
-        (() => { // Some magical function that will get all the data needed
+        AsyncStorage.getItem("@user_profile").then((profileJSON) => {
             setState({ ...state,
                 descendants: threadify(TEST_CONTEXT.descendants),
                 postData: props.navigation.getParam("postData"),
+                profile: JSON.parse(profileJSON),
                 loaded: true,
             });
-        })();
+        });
     }, []);
 
     return (
         <ContextJsx>
-            <View style = { { flex: 1 } }>
-                <BackBarJsx navigation = { props.navigation }/>
-                <ScrollView>
-                    { state.loaded ?
+            { state.loaded ?
+                <View style = { { flex: 1 } }>
+                    <BackBarJsx navigation = { props.navigation }/>
+                    <ScrollView>
                         <View style = { { display: state.loaded ? "block" : "none" } }>
                             <View style = { styles.parentPost }>
                                 <CommentJsx
@@ -237,7 +239,6 @@ const ViewCommentsJsx = (props) => {
                                     state.descendants.map((thread, i) => {
                                         const comment = thread[0];
                                         const subs = thread.slice(1);
-
                                         return (
                                             <View key = { i }>
                                                 <CommentJsx data = { comment }/>
@@ -259,27 +260,27 @@ const ViewCommentsJsx = (props) => {
                                 }
                             </View>
                         </View>
-                        : <View></View>
-                    }
-                </ScrollView>
-                <View style = { styles.commentForm }>
-                    <Image
-                        style = { styles.avatar }
-                        source = { { uri: TEST_IMAGE } }/>
-                    <TextInput
-                        style = { styles.commentInput }
-                        placeholder = "Say something..."
-                        multiline = { true }
-                        onChangeText = { c => setState({...state, reply: c }) }/>
-                    <View style = { styles.submitContainer }>
-                        <TouchableWithoutFeedback>
-                            <Image
-                                style = { styles.commentSubmit }
-                                source = { require("assets/eva-icons/paper-plane.png") }/>
-                        </TouchableWithoutFeedback>
+                    </ScrollView>
+                    <View style = { styles.commentForm }>
+                        <Image
+                            style = { styles.avatar }
+                            source = { { uri: state.profile.avatar } }/>
+                        <TextInput
+                            style = { styles.commentInput }
+                            placeholder = "Say something..."
+                            multiline = { true }
+                            onChangeText = { c => setState({...state, reply: c }) }/>
+                        <View style = { styles.submitContainer }>
+                            <TouchableWithoutFeedback>
+                                <Image
+                                    style = { styles.commentSubmit }
+                                    source = { require("assets/eva-icons/paper-plane.png") }/>
+                            </TouchableWithoutFeedback>
+                        </View>
                     </View>
                 </View>
-            </View>
+                : <></>
+            }
         </ContextJsx>
     );
 }
