@@ -10,6 +10,8 @@ import {
     Dimensions,
 } from "react-native";
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 import { withoutHTML } from "src/interface/rendering";
 
 import { ScreenWithBackBarJsx } from "src/components/navigation/navigators";
@@ -203,7 +205,17 @@ const SettingsJsx = (props) => {
                 <TouchableOpacity style = { styles.largeButton }>
                     <Text> Save Profile </Text>
                 </TouchableOpacity>
-                <TouchableOpacity style = { styles.largeButton }>
+                <TouchableOpacity
+                      style = { styles.largeButton }
+                      onPress = {
+                        () => {
+                            AsyncStorage.multiRemove(
+                                ["@user_profile", "@user_notifications"]
+                            ).then(() => {
+                                props.navigation.navigate("Authenticate");
+                            });
+                        }
+                      }>
                     <Text style = { styles.textWarning }> Log out </Text>
                 </TouchableOpacity>
             </View>

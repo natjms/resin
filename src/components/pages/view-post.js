@@ -3,14 +3,20 @@ import React from "react";
 import { ScreenWithFullNavigationJsx } from "src/components/navigation/navigators";
 import { PostByIdJsx } from "src/components/posts/post";
 
-const ViewPostJsx = (props) => {
+const ViewPostJsx = ({navigation}) => {
+    const id = navigation.getParam("id", undefined);
+
+    if (id == undefined) {
+        throw Error("ID not specified when navigating to ViewPost!");
+    }
+
     return (
         <ScreenWithFullNavigationJsx
-            active = { props.navigation.getParam("originTab", "Timeline") }
-            navigation = { props.navigation }>
+            active = { navigation.getParam("originTab", "Timeline") }
+            navigation = { navigation }>
             <PostByIdJsx
-                navigation = { props.navigation }
-                id = { props.id } />
+                navigation = { navigation }
+                id = { id } />
         </ScreenWithFullNavigationJsx>
     );
 }

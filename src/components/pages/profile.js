@@ -150,14 +150,21 @@ const ProfileDisplayJsx = ({navigation}) => {
     }
 
     useEffect(() => {
-        AsyncStorage.getItem("@user_profile").then((profileJSON) => {
-            setState({
-                profile: JSON.parse(profileJSON),
-                mutuals: getMutuals(TEST_YOUR_FOLLOWERS, TEST_THEIR_FOLLOWERS),
-                own: true,
-                loaded: true,
+        AsyncStorage.multiGet(["@user_profile", "@user_notifications"])
+            .then(values => {
+                const [profileJSON, notificationsJSON] = values;
+
+                const profile = JSON.parse(profileJSON[1]);
+                const notifications = JSON.parse(notificationsJSON[1]);
+                console.log(notifications);
+                setState({
+                    profile: profile,
+                    unreadNotifications: notifications.unread,
+                    mutuals: getMutuals(TEST_YOUR_FOLLOWERS, TEST_THEIR_FOLLOWERS),
+                    own: true,
+                    loaded: true,
+                });
             });
-        });
     }, []);
 
     let profileButton;
@@ -205,9 +212,19 @@ const ProfileDisplayJsx = ({navigation}) => {
                             {
                                 state.own ?
                                     <View style = { styles.profileContextContainer }>
-                                        <TouchableOpacity>
+                                        <TouchableOpacity
+                                              onPress = {
+                                                () => {
+                                                    navigation.navigate("Notifications");
+                                                }
+                                              }>
                                             <Image
-                                                source = { activeOrNot(state.unread_notifs, notif_pack) }
+                                                source = {
+                                                    activeOrNot(
+                                                        state.unreadNotifications,
+                                                        notif_pack
+                                                    )
+                                                }
                                                 style = { styles.profileHeaderIcon } />
                                         </TouchableOpacity>
                                     </View>

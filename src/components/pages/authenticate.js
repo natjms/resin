@@ -44,18 +44,28 @@ const AuthenticateJsx = ({navigation}) => {
     });
 
     useEffect(() => {
-        const profile = AsyncStorage.getItem("@user_profile").then((profile) => {
-            if (profile != null) {
-                navigation.navigate("feed");
+        AsyncStorage.getItem("@user_profile").then((profile) => {
+            if (profile) {
+                navigation.navigate("Feed");
             }
 
             setState({...state, authChecked: true});
         });
     }, []);
 
-    const loginCallback = async () => {
-        const profileJSON = JSON.stringify(TEST_PROFILE);
-        AsyncStorage.setItem("@user_profile", profileJSON).then(() => {
+    const loginCallback = () => {
+        const initialization = [
+            [ "@user_profile", JSON.stringify(TEST_PROFILE) ],
+            [
+                "@user_notifications",
+                JSON.stringify({
+                    unread: false,
+                    memory: [{ id: 1 }, { id: 2 }],
+                })
+            ]
+        ];
+
+        AsyncStorage.multiSet(initialization).then(() => {
             navigation.navigate("Feed");
         });
     };

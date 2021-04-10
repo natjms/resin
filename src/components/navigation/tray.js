@@ -1,5 +1,8 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Image } from "react-native";
+
+import { checkUnreadNotifications } from "src/requests";
+
 import { activeOrNot } from "src/interface/interactions"
 import { TouchableWithoutFeedback, View } from "react-native";
 
@@ -18,6 +21,19 @@ const TrayButtonJsx = (props) => {
 
 const TrayJsx = (props) => {
     const nav = props.navigation;
+    const [state, setState] = useState({
+        unreadNotifications: false
+    });
+
+    useEffect(() => {
+        checkUnreadNotifications()
+            .then(isUnread => {
+                setState({...state,
+                    unreadNotifications: isUnread,
+                });
+            });
+    }, []);
+
 
     const icons = {
         feed: {
@@ -40,8 +56,12 @@ const TrayJsx = (props) => {
             active: require("assets/eva-icons/person-black.png"),
             inactive: require("assets/eva-icons/person-grey.png")
         },
+        profileNotif: {
+            active: require("assets/eva-icons/person-black-notif.png"),
+            inactive: require("assets/eva-icons/person-grey-notif.png")
+        },
     }
-    
+
     return (
         <View style = { styles.tray }>
             <View style = { styles.iconList }>
@@ -67,7 +87,11 @@ const TrayJsx = (props) => {
                         nav = { nav } />
                     <TrayButtonJsx
                         where = "Profile"
-                        pack = { icons.profile }
+                        pack = {
+                            state.unreadNotifications ?
+                                icons.profileNotif
+                                : icons.profile
+                        }
                         active = { props.active }
                         nav = { nav } />
             </View>

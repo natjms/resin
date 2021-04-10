@@ -2,15 +2,15 @@ import React, { useState } from "react";
 import { View, Image, Dimensions, Text } from "react-native";
 import { ScreenWithFullNavigationJsx } from "src/components/navigation/navigators";
 import PagedGridJsx from "src/components/posts/paged-grid";
-import { TouchableWithoutFeedback } from "react-native-gesture-handler";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 const FollowHashtagButtonJsx = ({followed, onPress}) => {
     return (
-        <TouchableWithoutFeedback
+        <TouchableOpacity
              style = {
                 [
                     styles.button,
-                    followed ? { backgroundColor: "black" } : {}
+                    followed ? { backgroundColor: "#888" } : {}
                 ]
              }
              onPress = { onPress }>
@@ -18,7 +18,7 @@ const FollowHashtagButtonJsx = ({followed, onPress}) => {
                 style = { followed ? { color: "white" } : {} }>
                 { followed ? "Followed" : "Follow" }
             </Text>
-        </TouchableWithoutFeedback>
+        </TouchableOpacity>
     );
 };
 
@@ -43,13 +43,13 @@ const ViewHashtagJsx = ({navigation}) => {
                     </View>
                     <View style = { styles.headerText }>
                         <Text style = { styles.hashtag}>
-                            #{ state.name } 
+                            #{ state.name }
                         </Text>
                         <Text>
                             <Text style = { styles.strong}>{ state.nPosts }</Text> posts
                         </Text>
 
-                        <FollowHashtagButtonJsx 
+                        <FollowHashtagButtonJsx
                             followed = { state.followed }
                             onPress = { () => {
                                 // Send request to follow hashtag and such...
@@ -69,33 +69,33 @@ const ViewHashtagJsx = ({navigation}) => {
 const screen_width = Dimensions.get("window").width;
 const styles = {
     headerContainer: {
-        display: "flex",
         flexDirection: "row",
         alignItems: "center",
         padding: 15,
-        borderBottom: "2px solid black"
     },
     image: {
         width: screen_width / 3,
         height: screen_width / 3,
-        border: "2px solid black",
+        borderWidth: 1,
+        borderColor: "#888",
         borderRadius: "100%",
-        marginRight: 20
+        marginRight: 20,
     },
     hashtag: {
         fontWeight: "bold",
         fontSize: 20
     },
     button: {
-        border: "2px solid black",
+        borderWidth: 1,
+        borderColor: "#888",
         borderRadius: 5,
         padding: 10,
         paddingLeft: 30,
         paddingRight: 30,
-        marginTop: 10
+        marginTop: 10,
     },
     strong: {
-        fontWeight: "bold"
+        fontWeight: "bold",
     },
 }
 
