@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, TouchableWithoutFeedback, Text } from "react-native";
+import { View, TouchableOpacity, Text } from "react-native";
 
 import GridViewJsx from "src/components/posts/grid-view";
 
@@ -49,7 +49,7 @@ const PagedGridJSX = (props) => {
 
     return (
         <View>
-            <GridViewJsx 
+            <GridViewJsx
                     posts = { state.posts }
                     openPostCallback = {
                         (id) => {
@@ -60,16 +60,16 @@ const PagedGridJSX = (props) => {
                         }
                     } />
             <View style = { styles.buttonContainer }>
-                <TouchableWithoutFeedback
+                <TouchableOpacity
                         onPress = { () => {
                             // TODO: actually get more posts :)
                             let morePosts = state.posts.concat(TEST_POSTS);
-                            setState({ posts: morePosts, loaded: true });
+                            setState({...state, posts: morePosts});
                         } }>
                     <View style = { styles.buttonMore }>
                         <Text>Show more?</Text>
                     </View>
-                </TouchableWithoutFeedback>
+                </TouchableOpacity>
             </View>
         </View>
     );
@@ -82,7 +82,8 @@ const styles = {
         alignItems: "center"
     },
     buttonMore: {
-        border: "2px solid black",
+        borderWidth: 1,
+        borderColor: "#888",
         borderRadius: 5,
         padding: 10,
         margin: 20

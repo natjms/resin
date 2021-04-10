@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Dimensions, Image } from "react-native";
 
-import GridPostJsx from "src/components/posts/grid-post"
+import GridPostJsx from "src/components/posts/grid-post";
 
 function partition(arr, size) {
     let newArray = [];
@@ -17,7 +17,7 @@ const GridViewJsx = (props) => {
     let rows = partition(props.posts, 3);
     return (
         <View>
-            {   
+            {
                 rows.map((row, i) => {
                     return (
                         <View style = { styles.gridRow }
