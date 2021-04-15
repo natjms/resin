@@ -123,7 +123,8 @@ const DirectJsx = ({ navigation }) => {
                         }
                     }/>
                 <TouchableOpacity
-                      style = { styles.form.compose }>
+                      style = { styles.form.compose }
+                      onPress = { () => { navigation.navigate("Compose") } }>
                     <Ionicons name = "md-create" size = { 24 } color = "black"/>
                 </TouchableOpacity>
             </View>

@@ -28,6 +28,8 @@ const styles = {
 
         flexDirection: "row",
         alignItems: "center",
+        paddingLeft: 10,
+        paddingRight: 10,
     },
     rest: {
         flexGrow: 1,
@@ -37,7 +39,9 @@ const styles = {
         height: 30,
     },
     button: {
-        padding: 10,
+        paddingRight: 10,
+        paddingTop: 10,
+        paddingBottom: 10,
     },
 }
 

@@ -16,7 +16,7 @@ import DiscoverJsx from 'src/components/pages/discover';
 import SearchJsx from 'src/components/pages/discover/search';
 import ViewHashtagJsx from 'src/components/pages/discover/view-hashtag';
 import DirectJsx from "src/components/pages/direct";
-import ConversationJsx from "src/components/pages/direct/conversation";
+import ConversationJsx, { ComposeJsx } from "src/components/pages/direct/conversation";
 import NotificationsJsx from 'src/components/pages/profile/notifications';
 import UserListJsx from "src/components/pages/user-list.js";
 import SettingsJsx from "src/components/pages/profile/settings.js";
@@ -26,6 +26,7 @@ const Stack = createStackNavigator({
     Feed: { screen: FeedJsx, },
     Discover: { screen: DiscoverJsx },
     Direct: { screen: DirectJsx },
+    Compose: { screen: ComposeJsx },
     Conversation: { screen: ConversationJsx },
     Notifications: { screen: NotificationsJsx },
     Profile: { screen: ProfileJsx, },

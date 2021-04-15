@@ -48,6 +48,71 @@ const TEST_MESSAGES = [
     { ...TEST_STATUS, id: 5 },
 ];
 
+const ConversationContainerJsx = (props) => (
+    <ContextJsx>
+        <View style = { { flex: 1 } }>
+            <BackBarJsx navigation = { props.navigation }>
+                { props.renderBackBar() }
+            </BackBarJsx>
+            <ScrollView>
+                { props.children }
+            </ScrollView>
+            <View style = { [ styles.row, styles.send.container ] }>
+                <TextInput
+                    placeholder = "Say something..."
+                    multiline
+                    value = { props.state.newMessage }
+                    style = { styles.input }
+                    onChangeText = {
+                        value => {
+                            props.setState({...props.state,
+                                newMessage: value,
+                            });
+                        }
+                    }/>
+                <TouchableOpacity
+                      style = { styles.send.button }
+                      onPress = { props.onSubmit }>
+                    <Ionicons
+                        name = "ios-send"
+                        size = { 24 }
+                        color = "black" />
+                </TouchableOpacity>
+            </View>
+        </View>
+    </ContextJsx>
+);
+
+const ComposeJsx = ({ navigation }) => {
+    const [state, setState] = useState({
+        accts: [],
+        newMessage: "",
+    });
+    const renderBackBar = () => (
+        <TextInput
+            style = { styles.input }
+            placeholder = "someone@example.tld, someone_else..."
+            onChangeText = {
+                (value) => {
+                    setState({...state,
+                        accts: value.split(",").map(acct => acct.trim())
+                    });
+                }
+            }/>
+    );
+
+    return <ConversationContainerJsx
+        renderBackBar = { renderBackBar }
+        navigation = { navigation }
+        state = { state }
+        setState = { setState }
+        onSubmit = {
+            () => {
+                // Create the conversation, navigate to conversation.js
+            }
+        }/>;
+};
+
 const ConversationJsx = ({ navigation }) => {
     const conversation = navigation.getParam("conversation", {});
     const [state, setState] = useState({
@@ -165,42 +230,19 @@ const ConversationJsx = ({ navigation }) => {
     };
 
     return (
-        <ContextJsx>
-            <View style = { { flex: 1 } }>
-                <BackBarJsx navigation = { navigation }>
-                    { renderBackBar() }
-                </BackBarJsx>
-                <ScrollView>
-                    { state.loaded
-                        ? <FlatList
-                            data = { state.messages }
-                            renderItem = { renderMessage }
-                            keyExtractor = { item => item.id }/>
-                        : <></>
-                    }
-                </ScrollView>
-                <View style = { [ styles.row, styles.send.container ] }>
-                    <TextInput
-                        placeholder = "Say something..."
-                        multiline
-                        value = { state.newMessage }
-                        style = { styles.send.input }
-                        onChangeText = {
-                            value => {
-                                setState({...state,
-                                    newMessage: value,
-                                });
-                            }
-                        }/>
-                    <TouchableOpacity style = { styles.send.button }>
-                        <Ionicons
-                            name = "ios-send"
-                            size = { 24 }
-                            color = "black" />
-                    </TouchableOpacity>
-                </View>
-            </View>
-        </ContextJsx>
+        <ConversationContainerJsx
+              renderBackBar = { renderBackBar }
+              navigation = { navigation }
+              state = { state }
+              setState = { setState }>
+            { state.loaded
+                ? <FlatList
+                    data = { state.messages }
+                    renderItem = { renderMessage }
+                    keyExtractor = { item => item.id }/>
+                : <></>
+            }
+        </ConversationContainerJsx>
     );
 };
 
@@ -276,19 +318,19 @@ const styles = {
             marginBottom: 10,
             marginLeft: 10,
         },
-        input: {
-            padding: 10,
-            borderWidth: 1,
-            borderColor: "#888",
-            borderRadius: 5,
-            flexGrow: 1,
-        },
         button: {
             marginLeft: 10,
             marginRight: 10,
         }
     },
     bold: { fontWeight: "bold", },
+    input: {
+        padding: 10,
+        borderWidth: 1,
+        borderColor: "#888",
+        borderRadius: 5,
+        flexGrow: 1,
+    },
 };
 
-export { ConversationJsx as default };
+export { ConversationJsx as default, ComposeJsx, };
