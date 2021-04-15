@@ -10,14 +10,14 @@ const TEST_ACCOUNTS = [
         avatar: TEST_IMAGE,
         username: "njms",
         acct: "njms",
-        display_name: "Nathan Scott"
+        display_name: "Nat🔆"
     },
     {
         id: 1,
         avatar: TEST_IMAGE,
         username: "njms",
         acct: "njms",
-        display_name: "Nathan Scott"
+        display_name: "Nat🔆"
     }
 ];
 
