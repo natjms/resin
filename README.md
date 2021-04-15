@@ -15,28 +15,62 @@ actions that are otherwise unavoidable.
 The goal of this project is to create a model for what social media could look
 like were it not designed to be addictive. The Fediverse, not being dependent
 on ad revenue, shouldn't need to capitalize on people's attention. Still, many
-of the apps we use to interact with the Fediverse use the same dark patterns 
+of the apps we use to interact with the Fediverse use the same dark patterns
 developed by companies that do. While these dark patterns may seem like industry
 standards, we have no need to follow them. This project seeks to demonstrate
 the different ways to go about doing that.
 
 ## Screenshots
 
-As of late February, the UI of Resin is still ACTIVELY under development and 
-will likely change quite a bit. These screenshots probably won't be up to
-date most of the time.
+The Resin UI is fully implemented but incomplete; there are some components, like
+the interface for posting new content, that'll be implemented along side the API
+integration. Besides much needed polishing and some consistency improvements, the
+UI likely won't change too drastically from this point forward.
 
-<img 
-    src="assets/screenshots/timeline-2021-02-27.png"
-    alt="A screenshot of the timeline"
+<img
+    src="assets/screenshots/login.png"
+    alt="A screenshot of the login interface"
     width="200" />
-<img 
-    src="assets/screenshots/search-2021-02-27.png"
-    alt="A screenshot of the search menu"
+<img
+    src="assets/screenshots/feed.png"
+    alt="A screenshot of the followers feed"
     width="200" />
-<img 
-    src="assets/screenshots/profile-2021-02-27.png"
+<img
+    src="assets/screenshots/comments.png"
+    alt="A screenshot of the comments page"
+    width="200" />
+<img
+    src="assets/screenshots/moderation.png"
+    alt="A screenshot of the moderation menu on a post"
+    width="200" />
+<img
+    src="assets/screenshots/discover.png"
+    alt="A screenshot of the discover page"
+    width="200" />
+<img
+    src="assets/screenshots/search.png"
+    alt="A screenshot of the search interface"
+    width="200" />
+
+<img
+    src="assets/screenshots/profile.png"
     alt="A screenshot of the profile page"
+    width="200" />
+<img
+    src="assets/screenshots/notifications.png"
+    alt="A screenshot of the notifications page"
+    width="200" />
+<img
+    src="assets/screenshots/settings.png"
+    alt="A screenshot of the settings page"
+    width="200" />
+<img
+    src="assets/screenshots/direct-messages.png"
+    alt="A screenshot of the list of direct message conversations"
+    width="200" />
+<img
+    src="assets/screenshots/conversation.png"
+    alt="A screenshot of a conversation over direct messaging"
     width="200" />
 
 ## Building
@@ -55,6 +89,6 @@ $ expo start # start the development server
 
 This project is still extremely early in development; however, contributions
 are still more than welcome. If you're interested in helping out, the easiest
-way to get started would be to contact 
+way to get started would be to contact
 [the project maintainer](https://social.njms.ca/nat) who would be more than
 happy to talk to you about it.
