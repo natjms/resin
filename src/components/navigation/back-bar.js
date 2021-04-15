@@ -1,33 +1,44 @@
 import React from "react";
 import { Image } from "react-native";
-import { TouchableWithoutFeedback, View } from "react-native";
+import { TouchableOpacity, View } from "react-native";
 
 const BackBarJsx = (props) => {
     const backIcon = require("assets/eva-icons/back.png");
 
     return (
         <View style = { styles.nav }>
-            <TouchableWithoutFeedback 
-                onPress = { () => props.navigation.goBack() }>
+            <TouchableOpacity
+                  onPress = { () => props.navigation.goBack() }
+                  style = { styles.button }>
                 <Image
-                    style = { styles.button }
+                    style = { styles.chevron }
                     source = { backIcon }/>
-            </TouchableWithoutFeedback>
+            </TouchableOpacity>
+            <View style = { styles.rest }>
+                { props.children }
+            </View>
         </View>
     );
 };
 
 const styles = {
     nav: {
-        padding: 15,
-
         borderBottom: "2px solid #CCC",
-        backgroundColor: "white"
+        backgroundColor: "white",
+
+        flexDirection: "row",
+        alignItems: "center",
+    },
+    rest: {
+        flexGrow: 1,
+    },
+    chevron: {
+        width: 30,
+        height: 30,
     },
     button: {
-        width: 30,
-        height: 30
-    }
+        padding: 10,
+    },
 }
 
 export default BackBarJsx;

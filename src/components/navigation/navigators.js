@@ -36,7 +36,12 @@ export const ScreenWithBackBarJsx = (props) => {
     return (
         <ContextJsx>
             <View style = { { flex: 1 } }>
-                <BackBarJsx navigation = { props.navigation } />
+                <BackBarJsx navigation = { props.navigation }>
+                    { props.renderBackBar != undefined
+                        ? props.renderBackBar()
+                        : <></>
+                    }
+                </BackBarJsx>
                 <ScrollView>
                     { props.children }
                 </ScrollView>
@@ -49,7 +54,12 @@ export const ScreenWithFullNavigationJsx = (props) => {
     return (
         <ContextJsx>
             <View style = { { flex: 1 } }>
-                <BackBarJsx navigation = { props.navigation } />
+                <BackBarJsx navigation = { props.navigation }>
+                    { props.renderBackBar != undefined
+                        ? props.renderBackBar()
+                        : <></>
+                    }
+                </BackBarJsx>
                 <ScrollView>
                     { props.children }
                 </ScrollView>

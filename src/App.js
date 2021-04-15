@@ -15,6 +15,8 @@ import ProfileJsx, { ViewProfileJsx } from "src/components/pages/profile";
 import DiscoverJsx from 'src/components/pages/discover';
 import SearchJsx from 'src/components/pages/discover/search';
 import ViewHashtagJsx from 'src/components/pages/discover/view-hashtag';
+import DirectJsx from "src/components/pages/direct";
+import ConversationJsx from "src/components/pages/direct/conversation";
 import NotificationsJsx from 'src/components/pages/profile/notifications';
 import UserListJsx from "src/components/pages/user-list.js";
 import SettingsJsx from "src/components/pages/profile/settings.js";
@@ -23,6 +25,8 @@ const Stack = createStackNavigator({
     Authenticate: { screen: AuthenticateJsx },
     Feed: { screen: FeedJsx, },
     Discover: { screen: DiscoverJsx },
+    Direct: { screen: DirectJsx },
+    Conversation: { screen: ConversationJsx },
     Notifications: { screen: NotificationsJsx },
     Profile: { screen: ProfileJsx, },
     Settings: { screen: SettingsJsx },
