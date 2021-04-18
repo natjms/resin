@@ -265,7 +265,11 @@ const ProfileDisplayJsx = ({navigation}) => {
                                           style = { styles.fields.row }
                                           key = { index }>
                                         <View style = { styles.fields.cell.name }>
-                                            <Text>{ field.name }</Text>
+                                            <Text style = {
+                                                { textAlign: "center", }
+                                            }>
+                                                { field.name }
+                                            </Text>
                                         </View>
                                         <View style = { styles.fields.cell.value }>
                                             <HTMLLink link = { field.value }/>
@@ -341,7 +345,6 @@ const styles = {
         cell: {
             name: {
                 width: screen_width / 3,
-                textAlgin: "center",
             },
             value: {
                 width: (screen_width / 3) * 2,

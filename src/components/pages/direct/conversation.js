@@ -4,7 +4,6 @@ import {
     Text,
     Image,
     TextInput,
-    FlatList,
     ScrollView,
     Dimensions,
     TouchableOpacity,
@@ -30,8 +29,8 @@ import { timeToAge } from "src/interface/rendering";
 
 const TEST_IMAGE_1 = "https://cache.desktopnexus.com/thumbseg/2255/2255124-bigthumbnail.jpg";
 const TEST_IMAGE_2 = "https://natureproducts.net/Forest_Products/Cutflowers/Musella_cut.jpg";
-const TEST_ACCOUNT_1 = { acct: "someone", display_name: "Someone", avatar: TEST_IMAGE_1 };
-const TEST_ACCOUNT_2 = { acct: "someone_else", display_name: "Another person", avatar: TEST_IMAGE_2 };
+const TEST_ACCOUNT_1 = { id: 1, acct: "someone", display_name: "Someone", avatar: TEST_IMAGE_1 };
+const TEST_ACCOUNT_2 = { id: 2, acct: "someone_else", display_name: "Another person", avatar: TEST_IMAGE_2 };
 
 const TEST_STATUS = {
     account: TEST_ACCOUNT_1,
@@ -168,7 +167,7 @@ const ConversationJsx = ({ navigation }) => {
                 <MenuOptions customStyles = { accountListOptionsStyles }>
                     {
                         conversation.accounts.map(account =>
-                            <MenuOption>
+                            <MenuOption key = { account.id }>
                                 <Image
                                     source = { { uri: account.avatar } }
                                     style = { styles.backBar.accountList.avatar }/>
@@ -188,9 +187,9 @@ const ConversationJsx = ({ navigation }) => {
         </View>
     );
 
-    const renderMessage = ({ item }) => {
+    const renderMessage = (item) => {
         const yours = state.profile.acct == item.account.acct;
-        return <>
+        return <View key = { item.id }>
             { !yours
                 ? <Text style = { styles.message.acct }>
                     { item.account.acct }
@@ -223,7 +222,7 @@ const ConversationJsx = ({ navigation }) => {
                     </Text>
                 </View>
             </View>
-        </>;
+        </View>;
     };
 
     return (
@@ -233,10 +232,7 @@ const ConversationJsx = ({ navigation }) => {
               state = { state }
               setState = { setState }>
             { state.loaded
-                ? <FlatList
-                    data = { state.messages }
-                    renderItem = { renderMessage }
-                    keyExtractor = { item => item.id }/>
+                ? state.messages.map(renderMessage)
                 : <></>
             }
         </ConversationContainerJsx>

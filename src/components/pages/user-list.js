@@ -4,7 +4,6 @@ import {
     View,
     Image,
     Text,
-    FlatList,
     Dimensions,
     TouchableOpacity,
 } from "react-native";
@@ -42,48 +41,13 @@ const TEST_DATA = [
     {...TEST_PROFILE, id: 3},
     {...TEST_PROFILE, id: 4},
     {...TEST_PROFILE, id: 5},
-    {...TEST_PROFILE, id: 6}
+    {...TEST_PROFILE, id: 6},
 ]
-
-function renderItemFactory(navigation) {
-    // Returns a renderItem function with the context of props.navigation so
-    // that it can enable the person to navigate to the selected account.
-    return ({item}) => (
-        <View style = { [ styles.flexContainer, styles.itemContainer ] }>
-            <TouchableOpacity
-              style = { styles.accountButton }
-              onPress = {
-                () => {
-                    navigation.navigate("Profile", { acct: item.acct });
-                }
-              }>
-                <View style = { styles.flexContainer }>
-                    <Image
-                        source = { { uri: item.avatar} }
-                        style = { styles.avatar } />
-                    <View>
-                        <Text style = { styles.acct }>
-                            @{ item.acct }
-                        </Text>
-                        <Text style = { styles.displayName }>
-                            { item.display_name }
-                        </Text>
-                    </View>
-                </View>
-            </TouchableOpacity>
-            <ModerateMenuJsx
-                containerStyle = { styles.moderateMenu }
-                triggerStyle = { styles.ellipsis } />
-        </View>
-    );
-}
 
 const UserListJsx = ({navigation}) => {
     // const data = navigation.getParam("data", [])
     const data = TEST_DATA;
     const context = navigation.getParam("context", "");
-
-    const renderItem = renderItemFactory(navigation);
 
     return (
         <ScreenWithBackBarJsx navigation = { navigation }>
@@ -94,10 +58,38 @@ const UserListJsx = ({navigation}) => {
                     </Text>
                     : <></>
             }
-            <FlatList
-                data = { data }
-                renderItem = { renderItem }
-                keyExtractor = { item => item.id }/>
+            {
+                data.map(item =>
+                    <View
+                          key = { item.id }
+                          style = { [ styles.flexContainer, styles.itemContainer ] }>
+                        <TouchableOpacity
+                          style = { styles.accountButton }
+                          onPress = {
+                            () => {
+                                navigation.navigate("Profile", { acct: item.acct });
+                            }
+                          }>
+                            <View style = { styles.flexContainer }>
+                                <Image
+                                    source = { { uri: item.avatar} }
+                                    style = { styles.avatar } />
+                                <View>
+                                    <Text style = { styles.acct }>
+                                        @{ item.acct }
+                                    </Text>
+                                    <Text style = { styles.displayName }>
+                                        { item.display_name }
+                                    </Text>
+                                </View>
+                            </View>
+                        </TouchableOpacity>
+                        <ModerateMenuJsx
+                            containerStyle = { styles.moderateMenu }
+                            triggerStyle = { styles.ellipsis } />
+                    </View>
+                )
+            }
         </ScreenWithBackBarJsx>
     );
 };

@@ -56,7 +56,7 @@ const App = (props) => {
         }
     };
 
-    return <MenuProvider style = { providerStyles }>
+    return <MenuProvider customStyles = { providerStyles }>
         <AppContainer />
     </MenuProvider>;
 };

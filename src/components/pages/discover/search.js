@@ -10,23 +10,25 @@ const TEST_ACCOUNTS = [
         avatar: TEST_IMAGE,
         username: "njms",
         acct: "njms",
-        display_name: "Nat🔆"
+        display_name: "Nat🔆",
     },
     {
-        id: 1,
+        id: 2,
         avatar: TEST_IMAGE,
         username: "njms",
         acct: "njms",
-        display_name: "Nat🔆"
+        display_name: "Nat🔆",
     }
 ];
 
 const TEST_HASHTAGS = [
     {
-        name: "hashtag1"
+        id: 1,
+        name: "hashtag1",
     },
     {
-        name: "hashtag2"
+        id: 2,
+        name: "hashtag2",
     },
 ];
 
@@ -72,7 +74,7 @@ const SearchJsx = ({navigation}) => {
                             data = { TEST_ACCOUNTS }
                             callback = { accountCallback } />
                         <Text style = { styles.label }>Hashtags</Text>
-                        <HashtagListJsx 
+                        <HashtagListJsx
                             data = { TEST_HASHTAGS }
                             callback = { hashtagCallback } />
                 </View>

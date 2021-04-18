@@ -202,11 +202,11 @@ const SettingsJsx = (props) => {
                         style = { styles.fields.plus }
                         source = { require("assets/eva-icons/plus.png") } />
                 </TouchableOpacity>
-                <TouchableOpacity style = { styles.largeButton }>
-                    <Text> Save Profile </Text>
+                <TouchableOpacity style = { styles.button.container }>
+                    <Text style = { styles.button.text }> Save Profile </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                      style = { styles.largeButton }
+                      style = { styles.button.container }
                       onPress = {
                         () => {
                             AsyncStorage.multiRemove(
@@ -216,7 +216,11 @@ const SettingsJsx = (props) => {
                             });
                         }
                       }>
-                    <Text style = { styles.textWarning }> Log out </Text>
+                    <Text style = {
+                            [ styles.button.text, styles.button.warning ]
+                          }>
+                        Log out
+                    </Text>
                 </TouchableOpacity>
             </View>
         </ScreenWithBackBarJsx>
@@ -284,21 +288,23 @@ const styles = {
             width: SCREEN_WIDTH / 2.5,
         },
     },
-    largeButton: {
-        width: SCREEN_WIDTH / 1.2,
-        padding: 15,
-        marginTop: 10,
-        marginBottom: 5,
-        marginLeft: "auto",
-        marginRight: "auto",
-        borderWidth: 1,
-        borderColor: "#888",
-        borderRadius: 5,
-        textAlign: "center",
-    },
-    textWarning: {
-        fontWeight: "bold",
-        textDecorationLine: "underline",
+    button: {
+        container: {
+            width: SCREEN_WIDTH / 1.2,
+            padding: 15,
+            marginTop: 10,
+            marginBottom: 5,
+            marginLeft: "auto",
+            marginRight: "auto",
+            borderWidth: 1,
+            borderColor: "#888",
+            borderRadius: 5,
+        },
+        text: { textAlign: "center" },
+        warning: {
+            fontWeight: "bold",
+            textDecorationLine: "underline",
+        },
     },
 };
 

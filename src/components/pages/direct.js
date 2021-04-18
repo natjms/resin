@@ -16,8 +16,8 @@ import ModerateMenuJsx from "src/components/moderate-menu.js";
 
 const TEST_IMAGE_1 = "https://cache.desktopnexus.com/thumbseg/2255/2255124-bigthumbnail.jpg";
 const TEST_IMAGE_2 = "https://natureproducts.net/Forest_Products/Cutflowers/Musella_cut.jpg";
-const TEST_ACCOUNT_1 = { acct: "njms", display_name: "Nat🔆", avatar: TEST_IMAGE_1 };
-const TEST_ACCOUNT_2 = { acct: "someone", display_name: "Some person", avatar: TEST_IMAGE_2 };
+const TEST_ACCOUNT_1 = { id: 1, acct: "njms", display_name: "Nat🔆", avatar: TEST_IMAGE_1 };
+const TEST_ACCOUNT_2 = { id: 2, acct: "someone", display_name: "Some person", avatar: TEST_IMAGE_2 };
 
 const TEST_STATUS = {
     id: 1,
@@ -68,42 +68,46 @@ const DirectJsx = ({ navigation }) => {
         }
     };
 
-    const renderConversation = ({ item }) => {
+    const renderConversation = (item) => {
         const boldIfUnread = item.unread ? styles.bold : {};
 
-        return <View style = { [styles.row, styles.conv.container] }>
-            <TouchableOpacity
-                  style = { [styles.row, styles.conv.containerButton] }
-                  onPress = {
-                    onPressConversationFactory(item)
-                  }>
-                <View style = { styles.conv.avatar.container }>
-                    <Image
-                        source = { { uri: item.accounts[0].avatar } }
-                        style = { styles.conv.avatar.image }/>
+        return (
+            <View
+                  style = { [styles.row, styles.conv.container] }
+                  key = { item.id }>
+                <TouchableOpacity
+                      style = { [styles.row, styles.conv.containerButton] }
+                      onPress = {
+                        onPressConversationFactory(item)
+                      }>
+                    <View style = { styles.conv.avatar.container }>
+                        <Image
+                            source = { { uri: item.accounts[0].avatar } }
+                            style = { styles.conv.avatar.image }/>
+                    </View>
+                    <View style = { styles.conv.body }>
+                        <Text style = { boldIfUnread }>
+                            { item.accounts.map(account => account.acct).join(", ") }
+                        </Text>
+                        <Text style = { boldIfUnread }>
+                            {
+                                // Prefix message with acct
+                                [
+                                    item.accounts.length > 1 ?
+                                        item.last_status.account.acct + ": "
+                                        : "",
+                                    item.last_status.content,
+                                ].join("")
+                            }
+                        </Text>
+                    </View>
+                </TouchableOpacity>
+                <View style = { styles.conv.context }>
+                    <ModerateMenuJsx
+                        triggerStyle = { styles.menu.trigger } />
                 </View>
-                <View style = { styles.conv.body }>
-                    <Text style = { boldIfUnread }>
-                        { item.accounts.map(account => account.acct).join(", ") }
-                    </Text>
-                    <Text style = { boldIfUnread }>
-                        {
-                            // Prefix message with acct
-                            [
-                                item.accounts.length > 1 ?
-                                    item.last_status.account.acct + ": "
-                                    : "",
-                                item.last_status.content,
-                            ].join("")
-                        }
-                    </Text>
-                </View>
-            </TouchableOpacity>
-            <View style = { styles.conv.context }>
-                <ModerateMenuJsx
-                    triggerStyle = { styles.menu.trigger } />
             </View>
-        </View>
+        );
     };
 
     return (
@@ -129,10 +133,10 @@ const DirectJsx = ({ navigation }) => {
                 </TouchableOpacity>
             </View>
             { state.loaded ?
-                <FlatList
-                    data = { filterConversations(state.conversations, state.query) }
-                    renderItem = { renderConversation }
-                    keyExtractor = { conv => conv.id }/>
+                filterConversations(
+                    state.conversations,
+                    state.query
+                ).map(renderConversation)
                 : <></>
             }
         </ScreenWithTrayJsx>

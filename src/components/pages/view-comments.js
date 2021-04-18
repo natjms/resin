@@ -223,7 +223,7 @@ const ViewCommentsJsx = (props) => {
     }, []);
 
     return (
-        <View>
+        <>
             { state.loaded ?
                 <View style = { { flex: 1 } }>
                     <BackBarJsx navigation = { props.navigation }/>
@@ -283,7 +283,7 @@ const ViewCommentsJsx = (props) => {
                 </View>
                 : <></>
             }
-        </View>
+        </>
     );
 }
 
