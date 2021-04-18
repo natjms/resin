@@ -1,5 +1,9 @@
 import React from "react";
-import { View, Dimensions, Image } from "react-native";
+import {
+    View,
+    Dimensions,
+    Image,
+} from "react-native";
 
 import GridPostJsx from "src/components/posts/grid-post";
 
@@ -54,10 +58,6 @@ const styles = {
     gridRow: {
         padding: 0,
         margin: 0,
-
-        listStyle: "none",
-
-        display: "flex",
         flexDirection: "row"
     }
 };

@@ -83,7 +83,6 @@ const DiscoverJsx = (props) => {
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const styles = {
     form: {
-        display: "flex",
         justifyContent: "center",
         backgroundColor: "white",
         padding: 20

@@ -178,7 +178,7 @@ const CommentJsx = (props) => {
                 style = { styles.avatar } />
             <View style = { styles.contentContainer }>
                 <Text style = { styles.content }>
-                    <span style = { styles.bold }>{ props.data.username }</span>&nbsp;
+                    <Text style = { styles.bold }>{ props.data.username }</Text>&nbsp;
                     { props.data.content }
                 </Text>
                 <View style = { styles.commentActions }>
@@ -229,37 +229,40 @@ const ViewCommentsJsx = (props) => {
                 <View style = { { flex: 1 } }>
                     <BackBarJsx navigation = { props.navigation }/>
                     <ScrollView>
-                        <View style = { { display: state.loaded ? "block" : "none" } }>
-                            <View style = { styles.parentPost }>
-                                <CommentJsx
-                                    data = { state.postData } />
+                        { state.loaded
+                            ? <View>
+                                <View style = { styles.parentPost }>
+                                    <CommentJsx
+                                        data = { state.postData } />
+                                </View>
+                                <View>
+                                    {
+                                        state.descendants.map((thread, i) => {
+                                            const comment = thread[0];
+                                            const subs = thread.slice(1);
+                                            return (
+                                                <View key = { i }>
+                                                    <CommentJsx data = { comment }/>
+                                                    {
+                                                        subs.map((sub, j) => {
+                                                            return (
+                                                                <View
+                                                                      key = { j }
+                                                                      style = { styles.sub }>
+                                                                    <CommentJsx
+                                                                        data = { sub }/>
+                                                                </View>
+                                                            )
+                                                        })
+                                                    }
+                                                </View>
+                                            );
+                                        })
+                                    }
+                                </View>
                             </View>
-                            <View>
-                                {
-                                    state.descendants.map((thread, i) => {
-                                        const comment = thread[0];
-                                        const subs = thread.slice(1);
-                                        return (
-                                            <View key = { i }>
-                                                <CommentJsx data = { comment }/>
-                                                {
-                                                    subs.map((sub, j) => {
-                                                        return (
-                                                            <View
-                                                                  key = { j }
-                                                                  style = { styles.sub }>
-                                                                <CommentJsx
-                                                                    data = { sub }/>
-                                                            </View>
-                                                        )
-                                                    })
-                                                }
-                                            </View>
-                                        );
-                                    })
-                                }
-                            </View>
-                        </View>
+                            : <></>
+                        }
                     </ScrollView>
                     <View style = { styles.commentForm }>
                         <Image
@@ -292,7 +295,6 @@ const styles = {
         fontWeight: "bold",
     },
     container: {
-        display: "flex",
         flexDirection: "row",
         flexShrink: 1,
         marginTop: 10,
@@ -304,7 +306,7 @@ const styles = {
         marginRight: 20,
         width: 50,
         height: 50,
-        borderRadius: "100%"
+        borderRadius: 25,
     },
     contentContainer: {
         flexShrink: 1
@@ -312,24 +314,23 @@ const styles = {
     parentPost: {
         borderBottomWidth: 1,
         borderBottomColor: "#CCC",
-        marginBottom: 10
+        marginBottom: 10,
     },
     sub: {
-        marginLeft: SCREEN_WIDTH / 8
+        marginLeft: SCREEN_WIDTH / 8,
     },
     commentActions: {
-        display: "flex",
         flexDirection: "row",
         alignItems: "center",
     },
     actionText: {
         fontSize: 13,
         color: "#666",
-        paddingRight: 10
+        paddingRight: 10,
     },
     heart: {
         width: 15,
-        height: 15
+        height: 15,
     },
 
     commentForm: {
@@ -341,17 +342,17 @@ const styles = {
         borderTopColor: "#CCC",
 
         paddingTop: 10,
-        paddingBottom: 10
+        paddingBottom: 10,
     },
     commentInput: {
         borderWidth: 0,
         padding: 10,
         flexGrow: 3,
-        marginRight: 20
+        marginRight: 20,
     },
     submitContainer: {
         marginLeft: "auto",
-        marginRight: 20
+        marginRight: 20,
     },
     commentSubmit: {
         width: 30,

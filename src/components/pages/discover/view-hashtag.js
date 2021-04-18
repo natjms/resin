@@ -78,7 +78,7 @@ const styles = {
         height: screen_width / 3,
         borderWidth: 1,
         borderColor: "#888",
-        borderRadius: "100%",
+        borderRadius: screen_width / 6,
         marginRight: 20,
     },
     hashtag: {

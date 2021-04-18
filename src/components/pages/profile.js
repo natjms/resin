@@ -304,10 +304,9 @@ const styles = {
         padding: screen_width / 20,
     },
     profileHeader: {
-        display: "flex",
         flexDirection: "row",
         alignItems: "center",
-        marginBottom: screen_width / 20
+        marginBottom: screen_width / 20,
     },
     displayName: {
         fontSize: 24
@@ -316,8 +315,8 @@ const styles = {
         width: screen_width / 5,
         height: screen_width / 5,
 
-        borderRadius: "100%",
-        marginRight: screen_width / 20
+        borderRadius: screen_width / 10,
+        marginRight: screen_width / 20,
     },
     profileHeaderIcon: {
         width: screen_width / 12,
@@ -325,7 +324,7 @@ const styles = {
     },
     profileContextContainer: {
         marginLeft: "auto",
-        marginRight: screen_width / 15
+        marginRight: screen_width / 15,
     },
     accountStats: {
         fontSize: 14,
@@ -343,10 +342,10 @@ const styles = {
         padding: 10
     },
     rowName: {
-        width: "33%",
+        width: screen_width / 3,
         textAlign: "center"
     },
-    rowValue: { width: "67%" },
+    rowValue: { width: (screen_width / 3) * 2 },
     anchor: {
         color: "#888",
         textDecoration: "underline"
@@ -354,7 +353,6 @@ const styles = {
 
     button: {
         borderWidth: 1,
-        borderStyle: "solid",
         borderColor: "#888",
         borderRadius: 5,
 

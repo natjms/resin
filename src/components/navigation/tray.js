@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Image } from "react-native";
+import {
+    Image,
+    Dimensions,
+} from "react-native";
 
 import { checkUnreadNotifications } from "src/requests";
 
@@ -101,25 +104,24 @@ const TrayJsx = (props) => {
 
 const iconSize = 30;
 
+const SCREEN_WIDTH = Dimensions.get("window").width;
 const styles = {
     tray: {
-        width: "100%",
+        width: SCREEN_WIDTH,
         paddingTop: iconSize / 2,
         paddingBottom: iconSize / 2,
 
-        borderTop: "2px solid #CCC",
+        borderTopWidth: 2,
+        borderTopColor: "#CCC",
         backgroundColor: "white"
     },
     iconList: {
-        display: "flex",
         flexDirection: "row",
         justifyContent: "space-evenly",
         alignItems: "center",
 
         margin: 0,
         paddingLeft: 0,
-
-        listStyle: "none",
     },
     icon: {
         width: iconSize,

@@ -87,7 +87,6 @@ const PostActionBarJsx = (props) => {
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const styles = {
     flexContainer: {
-        display: "flex",
         flexDirection: "row",
         padding: SCREEN_WIDTH / 40
     },

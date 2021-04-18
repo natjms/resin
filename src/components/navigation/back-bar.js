@@ -23,7 +23,8 @@ const BackBarJsx = (props) => {
 
 const styles = {
     nav: {
-        borderBottom: "2px solid #CCC",
+        borderBottomWidth: 1,
+        borderBottomColor: "#CCC",
         backgroundColor: "white",
 
         flexDirection: "row",

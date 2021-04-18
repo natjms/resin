@@ -176,7 +176,7 @@ const styles = {
     thumbnail: {
         width: 50,
         height: 50,
-        borderRadius: "100%",
+        borderRadius: 25,
         marginRight: 10,
     }
 }

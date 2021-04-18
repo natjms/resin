@@ -79,13 +79,13 @@ const styles = {
         height: screen_height - (screen_height / 12)
     },
     interruptionOuter: {
-        borderTop: "2px solid #CCC",
+        borderTopWidth: 1,
+        borderTopColor: "#CCC",
     },
     interruption: {
         marginTop: 10,
         marginBottom: 10,
 
-        flex: 1,
         justifyContent: "center",
         alignItems: "center",
     },
@@ -97,7 +97,8 @@ const styles = {
         height: screen_width * 0.3
     },
     buttonOlder: {
-        border: "2px solid black",
+        borderWidth: 1,
+        borderColor: "#888",
         borderRadius: 5,
 
         margin: 30,

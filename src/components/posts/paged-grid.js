@@ -77,7 +77,6 @@ const PagedGridJSX = (props) => {
 
 const styles = {
     buttonContainer: {
-        display: "flex",
         justifyContent: "center",
         alignItems: "center"
     },
