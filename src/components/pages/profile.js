@@ -4,7 +4,8 @@ import {
     Dimensions,
     Image,
     Text,
-    TouchableOpacity
+    TouchableOpacity,
+    FlatList,
 } from "react-native";
 
 import * as Linking from "expo-linking";
@@ -257,25 +258,22 @@ const ProfileDisplayJsx = ({navigation}) => {
                         <Text style = { styles.note }>
                             {state.profile.note}
                         </Text>
-                        <table style = { styles.metaData }>
+                        <View style = { styles.fields.container }>
                             {
-                                state.profile.fields.map((row, i) =>
-                                    <tr
-                                          key = { i }
-                                          style = { styles.row }>
-                                        <td style = { styles.rowName } >
-                                            <Text>{ row.name }</Text>
-                                        </td>
-                                        <td style = { styles.rowValue }>
-                                            <Text>
-                                                <HTMLLink
-                                                    link = { row.value } />
-                                            </Text>
-                                        </td>
-                                    </tr>
-                                )
+                                state.profile.fields.map((field, index) => (
+                                    <View
+                                          style = { styles.fields.row }
+                                          key = { index }>
+                                        <View style = { styles.fields.cell.name }>
+                                            <Text>{ field.name }</Text>
+                                        </View>
+                                        <View style = { styles.fields.cell.value }>
+                                            <HTMLLink link = { field.value }/>
+                                        </View>
+                                    </View>
+                                ))
                             }
-                        </table>
+                        </View>
                         {profileButton}
                     </View>
 
@@ -334,23 +332,26 @@ const styles = {
         fontSize: 16,
         marginTop: 10,
     },
-
-    metaData: {
-        marginTop: 20
+    fields: {
+        container: { marginTop: 20, },
+        row: {
+            padding: 10,
+            flexDirection: "row",
+        },
+        cell: {
+            name: {
+                width: screen_width / 3,
+                textAlgin: "center",
+            },
+            value: {
+                width: (screen_width / 3) * 2,
+            },
+        }
     },
-    row: {
-        padding: 10
-    },
-    rowName: {
-        width: screen_width / 3,
-        textAlign: "center"
-    },
-    rowValue: { width: (screen_width / 3) * 2 },
     anchor: {
         color: "#888",
-        textDecoration: "underline"
+        textDecorationLine: "underline"
     },
-
     button: {
         borderWidth: 1,
         borderColor: "#888",
