@@ -25,7 +25,6 @@ import {
 const { SlideInMenu } = renderers;
 
 import BackBarJsx from "src/components/navigation/back-bar";
-import { ContextJsx } from "src/components/navigation/navigators";
 
 import { timeToAge } from "src/interface/rendering";
 
@@ -49,38 +48,36 @@ const TEST_MESSAGES = [
 ];
 
 const ConversationContainerJsx = (props) => (
-    <ContextJsx>
-        <View style = { { flex: 1 } }>
-            <BackBarJsx navigation = { props.navigation }>
-                { props.renderBackBar() }
-            </BackBarJsx>
-            <ScrollView>
-                { props.children }
-            </ScrollView>
-            <View style = { [ styles.row, styles.send.container ] }>
-                <TextInput
-                    placeholder = "Say something..."
-                    multiline
-                    value = { props.state.newMessage }
-                    style = { styles.input }
-                    onChangeText = {
-                        value => {
-                            props.setState({...props.state,
-                                newMessage: value,
-                            });
-                        }
-                    }/>
-                <TouchableOpacity
-                      style = { styles.send.button }
-                      onPress = { props.onSubmit }>
-                    <Ionicons
-                        name = "ios-send"
-                        size = { 24 }
-                        color = "black" />
-                </TouchableOpacity>
-            </View>
+    <View style = { { flex: 1 } }>
+        <BackBarJsx navigation = { props.navigation }>
+            { props.renderBackBar() }
+        </BackBarJsx>
+        <ScrollView>
+            { props.children }
+        </ScrollView>
+        <View style = { [ styles.row, styles.send.container ] }>
+            <TextInput
+                placeholder = "Say something..."
+                multiline
+                value = { props.state.newMessage }
+                style = { styles.input }
+                onChangeText = {
+                    value => {
+                        props.setState({...props.state,
+                            newMessage: value,
+                        });
+                    }
+                }/>
+            <TouchableOpacity
+                  style = { styles.send.button }
+                  onPress = { props.onSubmit }>
+                <Ionicons
+                    name = "ios-send"
+                    size = { 24 }
+                    color = "black" />
+            </TouchableOpacity>
         </View>
-    </ContextJsx>
+    </View>
 );
 
 const ComposeJsx = ({ navigation }) => {

@@ -1,8 +1,9 @@
 import 'react-native-gesture-handler';
-
+import React from "react";
 
 import { createAppContainer } from 'react-navigation';
 import { createStackNavigator } from "react-navigation-stack";
+import { MenuProvider } from "react-native-popup-menu";
 
 import { registerRootComponent } from 'expo';
 
@@ -45,6 +46,19 @@ const Stack = createStackNavigator({
     }
 });
 
-const App = createAppContainer(Stack);
+const AppContainer = createAppContainer(Stack);
+
+const App = (props) => {
+    const providerStyles = {
+        backdrop: {
+            backgroundColor: "black",
+            opacity: 0.5
+        }
+    };
+
+    return <MenuProvider style = { providerStyles }>
+        <AppContainer />
+    </MenuProvider>;
+};
 
 export default registerRootComponent(App);

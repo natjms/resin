@@ -7,7 +7,6 @@ import { timeToAge } from "src/interface/rendering";
 import { activeOrNot } from "src/interface/interactions";
 
 import TimelineViewJsx from "src/components/posts/timeline-view";
-import { ContextJsx } from "src/components/navigation/navigators";
 import BackBarJsx from "src/components/navigation/back-bar";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 
@@ -224,7 +223,7 @@ const ViewCommentsJsx = (props) => {
     }, []);
 
     return (
-        <ContextJsx>
+        <View>
             { state.loaded ?
                 <View style = { { flex: 1 } }>
                     <BackBarJsx navigation = { props.navigation }/>
@@ -284,7 +283,7 @@ const ViewCommentsJsx = (props) => {
                 </View>
                 : <></>
             }
-        </ContextJsx>
+        </View>
     );
 }
 
