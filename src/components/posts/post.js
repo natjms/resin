@@ -54,7 +54,7 @@ const PostImageJsx = (props) => {
                 flex: 1,
                 width: SCREEN_WIDTH,
                 height: getAutoHeight(props.width, props.height, SCREEN_WIDTH),
-                objectFit: "cover"
+                // objectFit: "cover"
             }
         } />
 };
