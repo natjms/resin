@@ -1,3 +1,15 @@
+import React from "react";
+import { View, StatusBar } from "react-native";
+
+export function StatusBarSpace(props) {
+    return <View style = {
+        {
+            height: StatusBar.currentHeight,
+            backgroundColor: props.color ? props.color : "transparent",
+        }
+    }></View>;
+};
+
 export function withoutHTML(string) {
     return string.replace(/<[^>]*>/ig, "");
 }

@@ -59,7 +59,8 @@ const DiscoverJsx = (props) => {
     return (
         <ScreenWithTrayJsx
                 active = "Discover"
-                navigation = { props.navigation }>
+                navigation = { props.navigation }
+                statusBarColor = "white">
             <TouchableWithoutFeedback
                 onPress = { () => props.navigation.navigate("Search") }>
                 <View style = { styles.form }>

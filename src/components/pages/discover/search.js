@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { View, TextInput, Text, Dimensions, Image } from "react-native";
+
+import { StatusBarSpace } from "src/interface/rendering";
 import { ScreenWithTrayJsx } from "src/components/navigation/navigators";
+
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 
 const TEST_IMAGE = "https://cache.desktopnexus.com/thumbseg/2255/2255124-bigthumbnail.jpg";
@@ -49,8 +52,9 @@ const SearchJsx = ({navigation}) => {
 
     return (
         <ScreenWithTrayJsx
-             active = "Discover"
-             navigation = { navigation }>
+              active = "Discover"
+              navigation = { navigation }>
+            <StatusBarSpace />
             <View style = { styles.form }>
                 <TextInput
                     style = { styles.searchBar }

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import {
     View,
+    SafeAreaView,
     Text,
     Image,
     TextInput,
@@ -24,8 +25,7 @@ import {
 const { SlideInMenu } = renderers;
 
 import BackBarJsx from "src/components/navigation/back-bar";
-
-import { timeToAge } from "src/interface/rendering";
+import { timeToAge, StatusBarSpace } from "src/interface/rendering";
 
 const TEST_IMAGE_1 = "https://cache.desktopnexus.com/thumbseg/2255/2255124-bigthumbnail.jpg";
 const TEST_IMAGE_2 = "https://natureproducts.net/Forest_Products/Cutflowers/Musella_cut.jpg";
@@ -47,7 +47,8 @@ const TEST_MESSAGES = [
 ];
 
 const ConversationContainerJsx = (props) => (
-    <View style = { { flex: 1 } }>
+    <SafeAreaView style = { { flex: 1 } }>
+        <StatusBarSpace color = "white"/>
         <BackBarJsx navigation = { props.navigation }>
             { props.renderBackBar() }
         </BackBarJsx>
@@ -76,7 +77,7 @@ const ConversationContainerJsx = (props) => (
                     color = "black" />
             </TouchableOpacity>
         </View>
-    </View>
+    </SafeAreaView>
 );
 
 const ComposeJsx = ({ navigation }) => {

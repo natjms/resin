@@ -1,9 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { Dimensions, View, Image, TextInput, Text } from "react-native";
+import {
+    Dimensions,
+    View,
+    SafeAreaView,
+    Image,
+    TextInput,
+    Text
+} from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import { timeToAge } from "src/interface/rendering";
+import { timeToAge, StatusBarSpace } from "src/interface/rendering";
 import { activeOrNot } from "src/interface/interactions";
 
 import TimelineViewJsx from "src/components/posts/timeline-view";
@@ -225,7 +232,8 @@ const ViewCommentsJsx = (props) => {
     return (
         <>
             { state.loaded ?
-                <View style = { { flex: 1 } }>
+                <SafeAreaView style = { { flex: 1 } }>
+                    <StatusBarSpace color = "white"/>
                     <BackBarJsx navigation = { props.navigation }/>
                     <ScrollView>
                         { state.loaded
@@ -280,7 +288,7 @@ const ViewCommentsJsx = (props) => {
                             </TouchableWithoutFeedback>
                         </View>
                     </View>
-                </View>
+                </SafeAreaView>
                 : <></>
             }
         </>
