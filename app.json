@@ -3,6 +3,7 @@
     "entryPoint": "./src/App.js",
     "name": "Resin",
     "slug": "Resin",
+    "scheme": "resin",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",

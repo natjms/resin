@@ -6,6 +6,7 @@ import { createStackNavigator } from "react-navigation-stack";
 import { MenuProvider } from "react-native-popup-menu";
 
 import { registerRootComponent } from 'expo';
+import * as Linking from "expo-linking";
 
 import ViewPostJsx from "src/components/pages/view-post";
 import ViewCommentsJsx from "src/components/pages/view-comments.js";
@@ -23,7 +24,10 @@ import UserListJsx from "src/components/pages/user-list.js";
 import SettingsJsx from "src/components/pages/profile/settings.js";
 
 const Stack = createStackNavigator({
-    Authenticate: { screen: AuthenticateJsx },
+    Authenticate: {
+        screen: AuthenticateJsx,
+        path: "authenticate",
+    },
     Feed: { screen: FeedJsx, },
     Discover: { screen: DiscoverJsx },
     Direct: { screen: DirectJsx },
@@ -48,6 +52,8 @@ const Stack = createStackNavigator({
 
 const AppContainer = createAppContainer(Stack);
 
+const prefix = Linking.makeUrl("/");
+
 const App = (props) => {
     const providerStyles = {
         backdrop: {
@@ -57,7 +63,7 @@ const App = (props) => {
     };
 
     return <MenuProvider customStyles = { providerStyles }>
-        <AppContainer />
+        <AppContainer uriPrefix = { prefix }/>
     </MenuProvider>;
 };
 

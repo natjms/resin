@@ -47,9 +47,9 @@ const AuthenticateJsx = ({navigation}) => {
         AsyncStorage.getItem("@user_profile").then((profile) => {
             if (profile) {
                 navigation.navigate("Feed");
+            } else {
+                setState({...state, authChecked: true});
             }
-
-            setState({...state, authChecked: true});
         });
     }, []);
 
