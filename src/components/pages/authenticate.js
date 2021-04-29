@@ -10,41 +10,101 @@ import {
 } from "react-native";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Linking from "expo-linking";
+import * as WebBrowser from "expo-web-browser";
+import Constants from "expo-constants";
 
-const TEST_IMAGE = "https://cache.desktopnexus.com/thumbseg/2255/2255124-bigthumbnail.jpg";
-const TEST_PROFILE = {
-    username: "njms",
-    acct: "njms",
-    display_name: "Nat🔆",
-    locked: false,
-    bot: false,
-    note: "Yeah heart emoji.",
-    avatar: TEST_IMAGE,
-    followers_count: "1 jillion",
-    statuses_count: 334,
-    fields: [
-        {
-            name: "Blog",
-            value: "<a href=\"https://njms.ca\">https://njms.ca</a>",
-            verified_at: "some time"
-        },
-        {
-            name: "Github",
-            value: "<a href=\"https://github.com/natjms\">https://github.com/natjms</a>",
-            verified_at: null
-        }
-    ]
-};
+async function postForm(url, data, token = false) {
+    // Send a POST request with data formatted with FormData returning JSON
+    let form = new FormData();
+    for (let key in data) {
+        form.append(key, data[key]);
+    }
+
+    const response = await fetch(url, {
+        method: "POST",
+        body: form,
+        headers: token
+            ? { "Authorization": `Bearer ${token}`, }
+            : {},
+    });
+
+    return response.json();
+}
+
+async function get(url, token = false) {
+    const response = await fetch(url, {
+        method: "GET",
+        headers: token
+            ? { "Authorization": `Bearer ${token}`, }
+            : {},
+    });
+    return response.json();
+}
 
 const AuthenticateJsx = ({navigation}) => {
+    const REDIRECT_URI = Linking.makeUrl("authenticate");
     const [state, setState] = useState({
-        acct: "",
-        password: "",
+        instance: "",
         authChecked: false,
     });
 
+    const _handleUrl = async ({ url }) => {
+        // When the app is foregrounded after authorizing the app from their
+        // instance's website...
+        if (Constants.platform.ios) {
+            WebBrowser.dismissBrowser();
+        } else {
+            Linking.removeEventListener("url", _handleUrl)
+        }
+
+        const { path, queryParams } = Linking.parse(url);
+
+        const instance = await AsyncStorage.getItem("@user_instance");
+        const api = `https://${instance}`;
+        const app = JSON.parse(
+            await AsyncStorage.getItem("@app_object")
+        );
+
+        // Fetch the access token
+        const tokenRequestBody = {
+            client_id: app.client_id,
+            client_secret: app.client_secret,
+            redirect_uri: REDIRECT_URI,
+            grant_type: "authorization_code",
+            code: queryParams.code,
+            scope: "read write follow push",
+        };
+
+        const token = await postForm(`${api}/oauth/token`, tokenRequestBody);
+
+        // Store the token
+        AsyncStorage.setItem("@user_token", JSON.stringify(token));
+
+        const profile = await get(
+            `${api}/api/v1/accounts/verify_credentials`,
+            token.access_token
+        );
+
+        await AsyncStorage.multiSet([
+            [ "@user_profile", JSON.stringify(profile), ],
+            [ // TODO: Enable storing notifications
+                "@user_notifications",
+                JSON.stringify({
+                    unread: false,
+                    memory: []
+                }),
+            ],
+        ]);
+
+        navigation.navigate("Feed");
+    };
+
     useEffect(() => {
-        AsyncStorage.getItem("@user_profile").then((profile) => {
+        Linking.addEventListener("url", _handleUrl);
+        AsyncStorage
+              .getItem("@user_profile")
+              .then(profile => {
             if (profile) {
                 navigation.navigate("Feed");
             } else {
@@ -53,21 +113,44 @@ const AuthenticateJsx = ({navigation}) => {
         });
     }, []);
 
-    const loginCallback = () => {
-        const initialization = [
-            [ "@user_profile", JSON.stringify(TEST_PROFILE) ],
-            [
-                "@user_notifications",
-                JSON.stringify({
-                    unread: false,
-                    memory: [{ id: 1 }, { id: 2 }],
-                })
-            ]
-        ];
+    const _login = async () => {
+        const url = `https://${state.instance}`;
 
-        AsyncStorage.multiSet(initialization).then(() => {
-            navigation.navigate("Feed");
-        });
+        let appJSON = await AsyncStorage.getItem("@app_object");
+        let app;
+
+        // Ensure the app has been created
+        if (appJSON == null) {
+            // Register app: https://docs.joinmastodon.org/methods/apps/#create-an-application
+            app = await postForm(`${url}/api/v1/apps`, {
+                client_name: "Resin",
+                redirect_uris: REDIRECT_URI,
+                scopes: "read write follow push",
+                website: "https://github.com/natjms/resin",
+            });
+
+            await AsyncStorage
+                .setItem("@app_object", JSON.stringify(app))
+        } else {
+            // The app has already been registered
+            app = JSON.parse(appJSON);
+        }
+
+        // Store the domain name of the instance for use in
+        // the _handleUrl callback
+        // NOTE: state.instance is not accessible from _handleUrl; this
+        // probably has something to do with the fact that the app loses
+        // focus when WebBrowser.openAuthSessionAsync gets called.
+        await AsyncStorage.setItem("@user_instance", state.instance);
+
+        // Get the user to authorize the app
+        await WebBrowser.openAuthSessionAsync(
+            `${url}/oauth/authorize`
+                + `?client_id=${app.client_id}`
+                + `&scope=read+write+follow+push`
+                + `&redirect_uri=${REDIRECT_URI}`
+                + `&response_type=code`
+        );
     };
 
     return (
@@ -81,25 +164,18 @@ const AuthenticateJsx = ({navigation}) => {
                                     resizeMode = { "contain" }
                                     source = { require("assets/logo/logo-standalone.png") }/>
                         </View>
-                        <Text style = { styles.label }> Account name </Text>
+                        <Text style = { styles.label }> Instance domain name </Text>
                         <TextInput
                             style = { styles.input }
-                            placeholder = { "name@domain.tld" }
+                            placeholder = { "domain.tld" }
+                            value = { state.instance }
                             onChangeText = {
-                                value => setState({ ...state, acct: value })
+                                value => setState({ ...state, instance: value })
                             }/>
 
-                        <Text style = { styles.label }> Password </Text>
-                        <TextInput
-                            style = { styles.input }
-                            placeholder = { "************" }
-                            secureTextEntry = { true }
-                            onChangeText = {
-                                value => setState({ ...state, password: value })
-                            }/>
                         <TouchableOpacity
                               style = { styles.login.button }
-                              onPress = { loginCallback }>
+                              onPress = { _login }>
                             <Text style = { styles.login.label }> Login </Text>
                         </TouchableOpacity>
                     </View>
