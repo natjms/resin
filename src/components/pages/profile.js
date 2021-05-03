@@ -157,7 +157,6 @@ const ProfileDisplayJsx = ({navigation}) => {
 
                 const profile = JSON.parse(profileJSON[1]);
                 const notifications = JSON.parse(notificationsJSON[1]);
-                console.log(notifications);
                 setState({
                     profile: profile,
                     unreadNotifications: notifications.unread,
@@ -259,8 +258,8 @@ const ProfileDisplayJsx = ({navigation}) => {
                             {state.profile.note}
                         </Text>
                         <View style = { styles.fields.container }>
-                            {
-                                state.profile.fields.map((field, index) => (
+                            { state.profile.fields
+                                ? state.profile.fields.map((field, index) => (
                                     <View
                                           style = { styles.fields.row }
                                           key = { index }>
@@ -276,6 +275,7 @@ const ProfileDisplayJsx = ({navigation}) => {
                                         </View>
                                     </View>
                                 ))
+                                : <></>
                             }
                         </View>
                         {profileButton}
