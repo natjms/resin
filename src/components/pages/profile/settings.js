@@ -13,6 +13,7 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { withoutHTML } from "src/interface/rendering";
+import * as requests from "src/requests";
 
 import { ScreenWithBackBarJsx } from "src/components/navigation/navigators";
 
@@ -46,184 +47,235 @@ const SettingsJsx = (props) => {
         // Use Context to get this stuff eventually
         profile: TEST_PROFILE,
         newProfile: TEST_PROFILE,
+        loaded: false,
     });
 
     const fields = state.newProfile.fields;
 
+    const _handleLogout = async () => {
+        await requests.postForm(
+            `https://${state.instance}/oauth/revoke`,
+            {
+                client_id: state.appObject.client_id,
+                client_secret: state.appObject.client_secret,
+                token: state.token.access_token,
+            }
+        );
+
+        await AsyncStorage.multiRemove([
+                "@user_profile",
+                "@user_notifications",
+                "@user_instance",
+                "@user_token",
+        ]);
+
+        props.navigation.navigate("Authenticate");
+    };
+
+    useEffect(() => {
+        AsyncStorage
+            .multiGet([
+                "@user_profile",
+                "@user_instance",
+                "@user_token",
+                "@app_object",
+            ])
+            .then(([profilePair, instancePair, tokenPair, appPair]) =>
+                [
+                    JSON.parse(profilePair[1]),
+                    instancePair[1],
+                    JSON.parse(tokenPair[1]),
+                    JSON.parse(appPair[1]),
+                ]
+            )
+            .then(([profile, instance, token, appObject]) => {
+                let newProfile = profile;
+                newProfile.fields = newProfile.fields == null
+                    ? []
+                    : newProfile.fields;
+
+                setState({...state,
+                    profile: profile,
+                    newProfile: newProfile,
+                    instance: instance,
+                    appObject: appObject,
+                    token: token,
+                    loaded: true,
+                })
+            });
+    }, []);
+
     return (
-        <ScreenWithBackBarJsx navigation = { props.navigation }>
-            <View style = { styles.avatar.container }>
-                <Image
-                    source = { { uri: state.profile.avatar } }
-                    style = { styles.avatar.image }/>
-                <TouchableOpacity>
-                    <Text style = { styles.avatar.change }>
-                        Change profile photo
-                    </Text>
-                </TouchableOpacity>
-            </View>
-            <View style = { styles.input.container }>
-                <Text style = { styles.label }>Display name</Text>
-                <TextInput
-                    style = { styles.bar }
-                    placeholder = { "Display name" }
-                    value = { state.newProfile.display_name }
-                    onChangeText = {
-                        (value) => {
-                            setState({...state,
-                                newProfile: {...state.newProfile, display_name: value}
-                            });
-                        }
-                    }/>
+        <>
+            { state.loaded
+                ? <ScreenWithBackBarJsx navigation = { props.navigation }>
+                    <View style = { styles.avatar.container }>
+                        <Image
+                            source = { { uri: state.profile.avatar } }
+                            style = { styles.avatar.image }/>
+                        <TouchableOpacity>
+                            <Text style = { styles.avatar.change }>
+                                Change profile photo
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+                    <View style = { styles.input.container }>
+                        <Text style = { styles.label }>Display name</Text>
+                        <TextInput
+                            style = { styles.bar }
+                            placeholder = { "Display name" }
+                            value = { state.newProfile.display_name }
+                            onChangeText = {
+                                (value) => {
+                                    setState({...state,
+                                        newProfile: {...state.newProfile, display_name: value}
+                                    });
+                                }
+                            }/>
 
-                <Text style = { styles.label }>User name</Text>
-                <TextInput
-                    style = { styles.bar }
-                    placeholder = { "User name" }
-                    value = { state.newProfile.username }
-                    onChangeText = {
-                        (value) => {
-                            setState({...state,
-                                newProfile: {...state.newProfile, username: value}
-                            });
-                        }
-                    }/>
+                        <Text style = { styles.label }>User name</Text>
+                        <TextInput
+                            style = { styles.bar }
+                            placeholder = { "User name" }
+                            value = { state.newProfile.username }
+                            onChangeText = {
+                                (value) => {
+                                    setState({...state,
+                                        newProfile: {...state.newProfile, username: value}
+                                    });
+                                }
+                            }/>
 
-                <Text style = { styles.label }>Bio</Text>
-                <TextInput
-                    style = {
-                        [
-                            styles.bar,
-                            { height: 100 },
-                        ]
-                    }
-                    multiline = { true }
-                    placeholder = { "Bio" }
-                    value = { withoutHTML(state.newProfile.note) }
-                    onChangeText = {
-                        (value) => {
-                            setState({...state,
-                                newProfile: {...state.newProfile, note: value}
-                            });
-                        }
-                    }/>
-                {
-                    fields.map((field, i) =>
-                        <View
-                              style = { styles.fields.container }
-                              key = { i }>
-                            <TouchableOpacity
-                                  onPress = {
-                                    () => {
-                                        let newFields;
-                                        if (fields.length == 1) {
-                                            newFields = [{ name: "", value: "" }];
-                                        } else {
-                                            newFields = state.newProfile.fields;
-                                            newFields.splice(i, 1);
-                                        }
+                        <Text style = { styles.label }>Bio</Text>
+                        <TextInput
+                            style = {
+                                [
+                                    styles.bar,
+                                    { height: 100 },
+                                ]
+                            }
+                            multiline = { true }
+                            placeholder = { "Bio" }
+                            value = { withoutHTML(state.newProfile.note) }
+                            onChangeText = {
+                                (value) => {
+                                    setState({...state,
+                                        newProfile: {...state.newProfile, note: value}
+                                    });
+                                }
+                            }/>
+                        {
+                            fields.map((field, i) =>
+                                <View
+                                      style = { styles.fields.container }
+                                      key = { i }>
+                                    <TouchableOpacity
+                                          onPress = {
+                                            () => {
+                                                let newFields;
+                                                if (fields.length == 1) {
+                                                    newFields = [{ name: "", value: "" }];
+                                                } else {
+                                                    newFields = state.newProfile.fields;
+                                                    newFields.splice(i, 1);
+                                                }
 
-                                        setState({...state,
-                                            newProfile: {...state.newProfile,
-                                                fields: newFields,
-                                            },
-                                        });
-                                    }
+                                                setState({...state,
+                                                    newProfile: {...state.newProfile,
+                                                        fields: newFields,
+                                                    },
+                                                });
+                                            }
+                                          }>
+                                        <Image
+                                            style = {
+                                                [
+                                                    styles.fields.cross,
+                                                    fields.length == 1
+                                                      && fields[0].name == ""
+                                                      && fields[0].value == ""
+                                                        ? { visibility: "hidden" }
+                                                        : {}
+                                                ]
+                                            }
+                                            source = { require("assets/eva-icons/close.png") }/>
+                                    </TouchableOpacity>
+                                    <View style = { styles.fields.subContainer }>
+                                        <Text style = { styles.label }>Name</Text>
+                                        <TextInput
+                                            style = { [styles.bar, styles.fields.cell] }
+                                            placeholder = { "Name" }
+                                            value = { withoutHTML(fields[i].name) }
+                                            onChangeText = {
+                                                (text) => {
+                                                    let newFields = fields;
+                                                    newFields[i] = {...newFields[i],
+                                                        name: text,
+                                                    };
+
+                                                    setState({...state,
+                                                        newProfile: {...state.newProfile,
+                                                            fields: newFields,
+                                                        },
+                                                    });
+                                                }
+                                            } />
+                                    </View>
+                                    <View style = { styles.fields.subContainer }>
+                                        <Text style = { styles.label }>Value</Text>
+                                        <TextInput
+                                            style = { [styles.bar, styles.fields.cell] }
+                                            placeholder = { "Value" }
+                                            value = { withoutHTML(fields[i].value) }
+                                            onChangeText = {
+                                                (text) => {
+                                                    let newFields = fields;
+                                                    newFields[i] = {...newFields[i],
+                                                        value: text,
+                                                    };
+
+                                                    setState({...state,
+                                                        newProfile: {...state.newProfile,
+                                                            fields: newFields,
+                                                        },
+                                                    });
+                                                }
+                                            } />
+                                    </View>
+                                </View>
+                            )
+                        }
+                        <TouchableOpacity
+                              onPress = {
+                                () => {
+                                    setState({...state,
+                                        newProfile: {...state.newProfile,
+                                            fields: state.newProfile.fields.concat({ name: "", value: ""}),
+                                        },
+                                    });
+                                }
+                              }>
+                            <Image
+                                style = { styles.fields.plus }
+                                source = { require("assets/eva-icons/plus.png") } />
+                        </TouchableOpacity>
+                        <TouchableOpacity style = { styles.button.container }>
+                            <Text style = { styles.button.text }> Save Profile </Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                              style = { styles.button.container }
+                              onPress = { _handleLogout }>
+                            <Text style = {
+                                    [ styles.button.text, styles.button.warning ]
                                   }>
-                                <Image
-                                    style = {
-                                        [
-                                            styles.fields.cross,
-                                            fields.length == 1
-                                              && fields[0].name == ""
-                                              && fields[0].value == ""
-                                                ? { visibility: "hidden" }
-                                                : {}
-                                        ]
-                                    }
-                                    source = { require("assets/eva-icons/close.png") }/>
-                            </TouchableOpacity>
-                            <View style = { styles.fields.subContainer }>
-                                <Text style = { styles.label }>Name</Text>
-                                <TextInput
-                                    style = { [styles.bar, styles.fields.cell] }
-                                    placeholder = { "Name" }
-                                    value = { withoutHTML(fields[i].name) }
-                                    onChangeText = {
-                                        (text) => {
-                                            let newFields = fields;
-                                            newFields[i] = {...newFields[i],
-                                                name: text,
-                                            };
-
-                                            setState({...state,
-                                                newProfile: {...state.newProfile,
-                                                    fields: newFields,
-                                                },
-                                            });
-                                        }
-                                    } />
-                            </View>
-                            <View style = { styles.fields.subContainer }>
-                                <Text style = { styles.label }>Value</Text>
-                                <TextInput
-                                    style = { [styles.bar, styles.fields.cell] }
-                                    placeholder = { "Value" }
-                                    value = { withoutHTML(fields[i].value) }
-                                    onChangeText = {
-                                        (text) => {
-                                            let newFields = fields;
-                                            newFields[i] = {...newFields[i],
-                                                value: text,
-                                            };
-
-                                            setState({...state,
-                                                newProfile: {...state.newProfile,
-                                                    fields: newFields,
-                                                },
-                                            });
-                                        }
-                                    } />
-                            </View>
-                        </View>
-                    )
-                }
-                <TouchableOpacity
-                      onPress = {
-                        () => {
-                            setState({...state,
-                                newProfile: {...state.newProfile,
-                                    fields: state.newProfile.fields.concat({ name: "", value: ""}),
-                                },
-                            });
-                        }
-                      }>
-                    <Image
-                        style = { styles.fields.plus }
-                        source = { require("assets/eva-icons/plus.png") } />
-                </TouchableOpacity>
-                <TouchableOpacity style = { styles.button.container }>
-                    <Text style = { styles.button.text }> Save Profile </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                      style = { styles.button.container }
-                      onPress = {
-                        () => {
-                            AsyncStorage.multiRemove(
-                                ["@user_profile", "@user_notifications"]
-                            ).then(() => {
-                                props.navigation.navigate("Authenticate");
-                            });
-                        }
-                      }>
-                    <Text style = {
-                            [ styles.button.text, styles.button.warning ]
-                          }>
-                        Log out
-                    </Text>
-                </TouchableOpacity>
-            </View>
-        </ScreenWithBackBarJsx>
+                                Log out
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+                </ScreenWithBackBarJsx>
+                : <></>
+            }
+        </>
     );
 };
 
