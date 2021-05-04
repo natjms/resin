@@ -13,6 +13,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { activeOrNot } from "src/interface/interactions";
 import { withoutHTML } from "src/interface/rendering";
+import * as requests from "src/requests";
 
 import GridViewJsx from "src/components/posts/grid-view";
 import {
@@ -89,13 +90,15 @@ const TEST_THEIR_FOLLOWERS = [
     { id: 6 },
 ];
 
-function getMutuals(yours, theirs) {
-    // Where yours and theirs are arrays of followers, as returned by the oAPI
+function getMutuals(yourFollowing, theirFollowers) {
+    // Where yours and theirs are arrays of followers, as returned by the API
+    // Returns a list of people you are following that are following some other
+    // account
 
-    const idify = ({id}) => id;
-    const asIDs = new Set(theirs.map(idify));
+    const acctsArray = ({acct}) => acct;
+    const asIDs = new Set(theirFollowers.map(acctArray));
 
-    return yours.filter(x => asIDs.has(idify(x)));
+    return yourFollowing.filter(x => asIDs.has(idify(x)));
 }
 
 const HTMLLink = ({link}) => {
@@ -118,31 +121,127 @@ const HTMLLink = ({link}) => {
     }
 }
 
-const ProfileJsx = ({navigation}) => {
-    return (
-        <ScreenWithTrayJsx
-             active = "Profile"
-             navigation = { navigation }
-             active = "Profile">
-            <ProfileDisplayJsx navigation = { navigation }/>
-        </ScreenWithTrayJsx>
-    );
-};
-
 const ViewProfileJsx = ({navigation}) => {
+    // As rendered when opened from somewhere other than the tab bar
+    const [state, setState] = useState({
+        loaded: false,
+        profile: navigation.getParam("profile"),
+    });
+
+    useEffect(() => {
+        AsyncStorage
+            .multiGet(["@user_profile", "@user_instance", "@user_token"])
+            .then(([ownProfilePair, ownDomainPair, tokenPair]) =>
+                [
+                    JSON.parse(ownProfilePair[1]),
+                    ownDomainPair[1],
+                    JSON.parse(tokenPair[1]).access_token,
+                ]
+            )
+            .then(([ ownProfile, ownDomain, accessToken ]) => {
+                const parsedAcct = state.profile.acct.split("@");
+                const domain = parsedAcct.length == 1
+                    ? ownDomain // There's no @ in the acct, thus it's a local user
+                    : parsedAcct [1] // The part of profile.acct after the @
+
+                return Promise.all([
+                    requests.fetchFollowing(
+                        ownDomain,
+                        ownProfile.id,
+                        accessToken
+                    ),
+                    requests.fetchFollowers(
+                        domain,
+                        state.profile.id,
+                        accessToken
+                    ),
+                ]);
+            })
+            .then(([ ownFollowing, theirFollowers ]) =>
+                setState({...state,
+                    mutuals: getMutuals(ownFollowing, theirFollowers),
+                    loaded: true,
+                })
+            );
+    }, []);
     return (
-        <ScreenWithFullNavigationJsx
-            active = { navigation.getParam("originTab") }
-            navigation = { navigation }>
-            <ProfileDisplayJsx navigation = { navigation } />
-        </ScreenWithFullNavigationJsx>
+        <>
+            { state.loaded
+                ? <ScreenWithFullNavigationJsx
+                      active = { navigation.getParam("originTab") }
+                      navigation = { navigation }>
+                    <RawProfileJsx
+                        profile = { state.profile }
+                        notifs = { state.notifs }
+                        posts = { TEST_POSTS }/>
+                </ScreenWithFullNavigationJsx>
+                : <></>
+            }
+        </>
     );
 }
 
-const ProfileDisplayJsx = ({navigation}) => {
-    const accountName = navigation.getParam("acct", "");
-    let [state, setState] = useState({
+const ProfileJsx = ({ navigation }) => {
+    const [state, setState] = useState({
         loaded: false,
+    });
+
+    useEffect(() => {
+        let profile;
+        let notifs;
+        let domain;
+        let accessToken;
+
+        AsyncStorage
+            .multiGet([
+                "@user_profile",
+                "@user_notifications",
+                "@user_instance",
+            ])
+            .then(([profilePair, notifPair, domainPair]) => {
+                profile = JSON.parse(profilePair[1]);
+                notifs = JSON.parse(notifPair[1]);
+                domain = domainPair[1];
+
+                return requests.fetchProfile(domain, profile.id);
+            })
+            .then(latestProfile => {
+                if(JSON.stringify(latestProfile) != JSON.stringify(profile)) {
+                    profile = latestProfile
+                }
+
+                setState({...state,
+                    profile: profile,
+                    notifs: notifs,
+                    loaded: true,
+                });
+            });
+    }, []);
+    return (
+        <>
+            { state.loaded
+                ? <ScreenWithTrayJsx
+                      active = "Profile"
+                      navigation = { navigation }
+                      active = "Profile">
+                    <RawProfileJsx
+                        navigation = { navigation }
+                        own = { true }
+                        profile = { state.profile }
+                        posts = { TEST_POSTS }
+                        notifs = { state.notifs }/>
+                </ScreenWithTrayJsx>
+                : <></>
+            }
+        </>
+    )
+};
+
+const RawProfileJsx = (props) => {
+    let [state, setState] = useState({
+        own: props.own,
+        profile: props.profile,
+        notifs: props.notifs,
     });
 
     const notif_pack = {
@@ -150,30 +249,15 @@ const ProfileDisplayJsx = ({navigation}) => {
         inactive: require("assets/eva-icons/bell-black.png")
     }
 
-    useEffect(() => {
-        AsyncStorage.multiGet(["@user_profile", "@user_notifications"])
-            .then(values => {
-                const [profileJSON, notificationsJSON] = values;
-
-                const profile = JSON.parse(profileJSON[1]);
-                const notifications = JSON.parse(notificationsJSON[1]);
-                setState({
-                    profile: profile,
-                    unreadNotifications: notifications.unread,
-                    mutuals: getMutuals(TEST_YOUR_FOLLOWERS, TEST_THEIR_FOLLOWERS),
-                    own: true,
-                    loaded: true,
-                });
-            });
-    }, []);
+    const _handleFollow = () => {};
 
     let profileButton;
-    if (state.own) {
+    if (props.own) {
         profileButton = (
             <TouchableOpacity
                   onPress = {
                     () => {
-                        navigation.navigate("Settings");
+                        props.navigation.navigate("Settings");
                     }
                   }>
                 <View style = { styles.button }>
@@ -183,7 +267,7 @@ const ProfileDisplayJsx = ({navigation}) => {
         );
     } else {
         profileButton = (
-            <TouchableOpacity>
+            <TouchableOpacity onPress = { _handleFollow }>
                 <View style = { styles.button }>
                     <Text style = { styles.buttonText }>Follow</Text>
                 </View>
@@ -193,107 +277,101 @@ const ProfileDisplayJsx = ({navigation}) => {
 
     return (
         <View>
-            { state.loaded ?
-                <>
-                    <View style = { styles.jumbotron }>
-                        <View style = { styles.profileHeader }>
-                            <Image
-                                source = { { uri: state.profile.avatar } }
-                                style = { styles.avatar } />
-                            <View>
-                                <Text
-                                    style = { styles.displayName }>
-                                    {state.profile.display_name}
-                                </Text>
-                                <Text style={ styles.strong }>
-                                    @{state.profile.username }
-                                </Text>
-                            </View>
-                            {
-                                state.own ?
-                                    <View style = { styles.profileContextContainer }>
-                                        <TouchableOpacity
-                                              onPress = {
-                                                () => {
-                                                    navigation.navigate("Notifications");
-                                                }
-                                              }>
-                                            <Image
-                                                source = {
-                                                    activeOrNot(
-                                                        state.unreadNotifications,
-                                                        notif_pack
-                                                    )
-                                                }
-                                                style = { styles.profileHeaderIcon } />
-                                        </TouchableOpacity>
-                                    </View>
-                                : <ModerateMenuJsx
-                                    triggerStyle = { styles.profileHeaderIcon }
-                                    containerStyle = { styles.profileContextContainer } />
-                            }
-                        </View>
-                        <Text style = { styles.accountStats }>
-                            { state.profile.statuses_count } posts &#8226;&nbsp;
-                            <Text onPress = {
-                                    () => {
-                                        const context = state.own ?
-                                            "People following you"
-                                            : "Your mutual followers with " + state.profile.display_name;
-                                        navigation.navigate("UserList", {
-                                            data: [/*Some array of users*/],
-                                            context: context
-                                        });
-                                    }
-                                  }>
-                                {
-                                    state.own ?
-                                        <>View followers</>
-                                        : <>{state.mutuals.length + " mutuals"}</>
-                                }
-
-                            </Text>
+            <View style = { styles.jumbotron }>
+                <View style = { styles.profileHeader }>
+                    <Image
+                        source = { { uri: props.profile.avatar } }
+                        style = { styles.avatar } />
+                    <View>
+                        <Text
+                            style = { styles.displayName }>
+                            { props.profile.display_name}
                         </Text>
-                        <Text style = { styles.note }>
-                            {state.profile.note}
+                        <Text style={ styles.strong }>
+                            @{ props.profile.acct }
                         </Text>
-                        <View style = { styles.fields.container }>
-                            { state.profile.fields
-                                ? state.profile.fields.map((field, index) => (
-                                    <View
-                                          style = { styles.fields.row }
-                                          key = { index }>
-                                        <View style = { styles.fields.cell.name }>
-                                            <Text style = {
-                                                { textAlign: "center", }
-                                            }>
-                                                { field.name }
-                                            </Text>
-                                        </View>
-                                        <View style = { styles.fields.cell.value }>
-                                            <HTMLLink link = { field.value }/>
-                                        </View>
-                                    </View>
-                                ))
-                                : <></>
-                            }
-                        </View>
-                        {profileButton}
                     </View>
-
-                    <GridViewJsx
-                        posts = { TEST_POSTS }
-                        openPostCallback = {
-                            (id) => {
-                                navigation.navigate("ViewPost", {
-                                    id: id,
-                                    originTab: "Profile"
+                    {
+                        state.own ?
+                            <View style = { styles.profileContextContainer }>
+                                <TouchableOpacity
+                                      onPress = {
+                                        () => {
+                                            props.navigation.navigate("Notifications");
+                                        }
+                                      }>
+                                    <Image
+                                        source = {
+                                            activeOrNot(
+                                                props.notifs.unread,
+                                                notif_pack
+                                            )
+                                        }
+                                        style = { styles.profileHeaderIcon } />
+                                </TouchableOpacity>
+                            </View>
+                        : <ModerateMenuJsx
+                            triggerStyle = { styles.profileHeaderIcon }
+                            containerStyle = { styles.profileContextContainer } />
+                    }
+                </View>
+                <Text style = { styles.accountStats }>
+                    { props.profile.statuses_count } posts &#8226;&nbsp;
+                    <Text onPress = {
+                            () => {
+                                const context = props.own ?
+                                    "People following you"
+                                    : "Your mutual followers with " + props.profile.display_name;
+                                props.navigation.navigate("UserList", {
+                                    context: context,
                                 });
                             }
-                        } />
-                </>
-            : <View></View>
-            }
+                          }>
+                        {
+                            state.own ?
+                                <>View followers</>
+                                : <>{ props.mutuals + " mutuals" }</>
+                        }
+
+                    </Text>
+                </Text>
+                <Text style = { styles.note }>
+                    {props.profile.note}
+                </Text>
+                <View style = { styles.fields.container }>
+                    { props.profile.fields
+                        ? props.profile.fields.map((field, index) => (
+                            <View
+                                  style = { styles.fields.row }
+                                  key = { index }>
+                                <View style = { styles.fields.cell.name }>
+                                    <Text style = {
+                                        { textAlign: "center", }
+                                    }>
+                                    { field.name }
+                                    </Text>
+                                </View>
+                                <View style = { styles.fields.cell.value }>
+                                    <HTMLLink link = { field.value }/>
+                                </View>
+                            </View>
+                        ))
+                        : <></>
+                    }
+                </View>
+                {profileButton}
+            </View>
+
+            <GridViewJsx
+                posts = { props.posts }
+                openPostCallback = {
+                    (id) => {
+                        props.navigation.navigate("ViewPost", {
+                            id: id,
+                            originTab: "Profile"
+                        });
+                    }
+                } />
         </View>
     );
 };
@@ -371,5 +449,4 @@ const styles = {
     },
 };
 
-export { ViewProfileJsx, ProfileDisplayJsx };
-export default ProfileJsx;
+export { ViewProfileJsx, ProfileJsx as default };

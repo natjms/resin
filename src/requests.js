@@ -28,3 +28,45 @@ export async function checkUnreadNotifications() {
         return isUnread;
     }
 }
+
+export async function postForm(url, data, token = false) {
+    // Send a POST request with data formatted with FormData returning JSON
+    let form = new FormData();
+    for (let key in data) {
+        form.append(key, data[key]);
+    }
+
+    const resp = await fetch(url, {
+        method: "POST",
+        body: form,
+        headers: token
+            ? { "Authorization": `Bearer ${token}`, }
+            : {},
+    });
+
+    return resp;
+}
+
+export function get(url, token = false) {
+    return fetch(url, {
+        method: "GET",
+        headers: token
+            ? { "Authorization": `Bearer ${token}`, }
+            : {},
+    });
+}
+
+export async function fetchProfile(domain, id) {
+    const resp = await get(`https://${domain}/api/v1/accounts/${id}`);
+    return resp.json();
+}
+
+export async function fetchFollowing(domain, id, token) {
+    const resp = await get(`https://${domain}/api/v1/accounts/${id}/following`, token);
+    return resp.json();
+}
+
+export async function fetchFollowers(domain, id, token) {
+    const resp = await get(`https://${domain}/api/v1/accounts/${id}/followers`, token);
+    return resp.json();
+}

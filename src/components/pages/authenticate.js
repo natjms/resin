@@ -14,33 +14,7 @@ import * as Linking from "expo-linking";
 import * as WebBrowser from "expo-web-browser";
 import Constants from "expo-constants";
 
-async function postForm(url, data, token = false) {
-    // Send a POST request with data formatted with FormData returning JSON
-    let form = new FormData();
-    for (let key in data) {
-        form.append(key, data[key]);
-    }
-
-    const response = await fetch(url, {
-        method: "POST",
-        body: form,
-        headers: token
-            ? { "Authorization": `Bearer ${token}`, }
-            : {},
-    });
-
-    return response.json();
-}
-
-async function get(url, token = false) {
-    const response = await fetch(url, {
-        method: "GET",
-        headers: token
-            ? { "Authorization": `Bearer ${token}`, }
-            : {},
-    });
-    return response.json();
-}
+import * as requests from "src/requests";
 
 const AuthenticateJsx = ({navigation}) => {
     const REDIRECT_URI = Linking.makeUrl("authenticate");
@@ -76,15 +50,17 @@ const AuthenticateJsx = ({navigation}) => {
             scope: "read write follow push",
         };
 
-        const token = await postForm(`${api}/oauth/token`, tokenRequestBody);
+        const token = await requests
+            .postForm(`${api}/oauth/token`, tokenRequestBody)
+            .then(resp => resp.json());
 
         // Store the token
         AsyncStorage.setItem("@user_token", JSON.stringify(token));
 
-        const profile = await get(
+        const profile = await requests.get(
             `${api}/api/v1/accounts/verify_credentials`,
             token.access_token
-        );
+        ).then(resp => resp.json());
 
         await AsyncStorage.multiSet([
             [ "@user_profile", JSON.stringify(profile), ],
@@ -122,12 +98,12 @@ const AuthenticateJsx = ({navigation}) => {
         // Ensure the app has been created
         if (appJSON == null) {
             // Register app: https://docs.joinmastodon.org/methods/apps/#create-an-application
-            app = await postForm(`${url}/api/v1/apps`, {
+            app = await requests.postForm(`${url}/api/v1/apps`, {
                 client_name: "Resin",
                 redirect_uris: REDIRECT_URI,
                 scopes: "read write follow push",
                 website: "https://github.com/natjms/resin",
-            });
+            }).then(resp => resp.json());
 
             await AsyncStorage
                 .setItem("@app_object", JSON.stringify(app))
