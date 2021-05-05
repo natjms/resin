@@ -1,9 +1,13 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Dimensions, View, Image, Text } from "react-native";
 
 import TimelineViewJsx from "src/components/posts/timeline-view";
 import { ScreenWithTrayJsx } from "src/components/navigation/navigators";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
+
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+import * as requests from "src/requests";
 
 const TEST_IMAGE = "https://cache.desktopnexus.com/thumbseg/2255/2255124-bigthumbnail.jpg";
 
@@ -40,35 +44,68 @@ const TEST_POSTS = [
 
 const FeedJsx = (props) => {
     const checkmark = require("assets/eva-icons/checkmark-circle-large.png");
+    const [state, setState] = useState({
+        loaded: false,
+    });
+
+    useEffect(() => {
+        let accessToken;
+        let instance;
+
+        AsyncStorage
+            .multiGet([
+                "@user_token",
+                "@user_instance",
+            ])
+            .then(([tokenPair, instancePair]) => {
+                accessToken = JSON.parse(tokenPair[1]).access_token;
+                instance = instancePair[1];
+
+                return requests.fetchHomeTimeline(
+                    instance,
+                    accessToken
+                )
+            })
+            .then(posts =>
+                setState({...state,
+                    posts: posts,
+                    loaded: true,
+                })
+            );
+    }, []);
 
     return (
-        <ScreenWithTrayJsx
-                active = "Feed"
-                navigation = { props.navigation }>
+        <>
+            { state.loaded
+                ? <ScreenWithTrayJsx
+                        active = "Feed"
+                        navigation = { props.navigation }>
 
-            <TimelineViewJsx
-                    navigation = { props.navigation }
-                    posts = { TEST_POSTS } />
-            <View style = { styles.interruptionOuter }>
+                    <TimelineViewJsx
+                            navigation = { props.navigation }
+                            posts = { state.posts } />
+                    <View style = { styles.interruptionOuter }>
 
-                <View style = { styles.interruption }>
-                    <Image
-                        source = { checkmark }
-                        style = { styles.checkmark }/>
+                        <View style = { styles.interruption }>
+                            <Image
+                                source = { checkmark }
+                                style = { styles.checkmark }/>
 
-                    <Text style = { styles.interruptionHeader }>
-                        You're all caught up.
-                    </Text>
-                    <Text> Wow, it sure is a lovely day outside 🌳 </Text>
+                            <Text style = { styles.interruptionHeader }>
+                                You're all caught up.
+                            </Text>
+                            <Text> Wow, it sure is a lovely day outside 🌳 </Text>
 
-                    <TouchableWithoutFeedback
-                            style = { styles.buttonOlder }>
-                        <Text> See older posts </Text>
-                    </TouchableWithoutFeedback>
-                </View>
-            </View>
-        </ScreenWithTrayJsx>
-
+                            <TouchableWithoutFeedback
+                                    style = { styles.buttonOlder }>
+                                <Text> See older posts </Text>
+                            </TouchableWithoutFeedback>
+                        </View>
+                    </View>
+                </ScreenWithTrayJsx>
+                : <></>
+            }
+        </>
     );
 };
 

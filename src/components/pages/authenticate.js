@@ -55,7 +55,7 @@ const AuthenticateJsx = ({navigation}) => {
             .then(resp => resp.json());
 
         // Store the token
-        AsyncStorage.setItem("@user_token", JSON.stringify(token));
+        await AsyncStorage.setItem("@user_token", JSON.stringify(token));
 
         const profile = await requests.get(
             `${api}/api/v1/accounts/verify_credentials`,

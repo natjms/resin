@@ -76,9 +76,10 @@ export const RawPostJsx = (props) => {
             <View style = { styles.postHeader }>
                 <Image
                     style = { styles.pfp }
-                    source = { { uri: props.data.avatar } } />
-                <Text
-                    style = { styles.postHeaderName }>{ props.data.username }</Text>
+                    source = { { uri: props.data.account.avatar } } />
+                <Text style = { styles.postHeaderName }>
+                    { props.data.account.username }
+                </Text>
                 <ModerateMenuJsx
                     containerStyle = { styles.menu }
                     triggerStyle = { styles.ellipsis } />
@@ -112,7 +113,10 @@ export const RawPostJsx = (props) => {
                 reblogged = { props.data.reblogged } />
             <View style = { styles.caption }>
                 <Text>
-                    <Text style = { styles.strong }>{ props.data.username }</Text>&nbsp;{ props.data.content }
+                    <Text style = { styles.strong }>
+                        { props.data.account.username }
+                    </Text>
+                    &nbsp;{ props.data.content }
                 </Text>
                 <TouchableWithoutFeedback
                       onPress = {
@@ -127,7 +131,7 @@ export const RawPostJsx = (props) => {
                 </TouchableWithoutFeedback>
 
                 <Text style = { styles.captionDate }>
-                    { timeToAge((new Date()).getTime(), props.data.timestamp) }
+                    { timeToAge((new Date()).getTime(), props.data.created_at) }
                 </Text>
             </View>
         </View>

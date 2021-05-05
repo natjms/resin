@@ -4,6 +4,16 @@ const TEST_NOTIFICATIONS = [{ id: 1 }, { id: 2 }];
 const TEST_NEW_NOTIFICATIONS_1 = [{ id: 1 }, { id: 2 }];
 const TEST_NEW_NOTIFICATIONS_2 = [{ id: 1 }, { id: 2 }, { id: 3 }];
 
+function objectToForm(obj) {
+    let form = new FormData();
+
+    Object.keys(obj).forEach(key =>
+        form.append(key, obj[key])
+    );
+
+    return form;
+}
+
 export async function checkUnreadNotifications() {
     // If the check has already been made since the last time notifications.js
     // has been opened
@@ -31,14 +41,9 @@ export async function checkUnreadNotifications() {
 
 export async function postForm(url, data, token = false) {
     // Send a POST request with data formatted with FormData returning JSON
-    let form = new FormData();
-    for (let key in data) {
-        form.append(key, data[key]);
-    }
-
     const resp = await fetch(url, {
         method: "POST",
-        body: form,
+        body: objectToForm(data),
         headers: token
             ? { "Authorization": `Bearer ${token}`, }
             : {},
@@ -47,13 +52,23 @@ export async function postForm(url, data, token = false) {
     return resp;
 }
 
-export function get(url, token = false) {
-    return fetch(url, {
+export async function get(url, token = false, data = false) {
+    let completeURL;
+    if (data) {
+        let params = new URLSearchParams(data)
+        completeURL = `${url}?${params.toString()}`;
+    } else {
+        completeURL = url;
+    }
+
+    const resp = await fetch(completeURL, {
         method: "GET",
         headers: token
             ? { "Authorization": `Bearer ${token}`, }
             : {},
     });
+
+    return resp;
 }
 
 export async function fetchProfile(domain, id) {
@@ -68,5 +83,14 @@ export async function fetchFollowing(domain, id, token) {
 
 export async function fetchFollowers(domain, id, token) {
     const resp = await get(`https://${domain}/api/v1/accounts/${id}/followers`, token);
+    return resp.json();
+}
+
+export async function fetchHomeTimeline(domain, token, params = false) {
+    const resp = await get(
+        `https://${domain}/api/v1/timelines/home`,
+        token,
+        params
+    );
     return resp.json();
 }
