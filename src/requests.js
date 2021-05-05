@@ -76,6 +76,11 @@ export async function fetchProfile(domain, id) {
     return resp.json();
 }
 
+export async function fetchAccountStatuses(domain, id, token) {
+    const resp = await get(`https://${domain}/api/v1/accounts/${id}/statuses`, token);
+    return resp.json();
+}
+
 export async function fetchFollowing(domain, id, token) {
     const resp = await get(`https://${domain}/api/v1/accounts/${id}/following`, token);
     return resp.json();

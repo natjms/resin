@@ -197,15 +197,20 @@ const ProfileJsx = ({ navigation }) => {
                 "@user_profile",
                 "@user_notifications",
                 "@user_instance",
+                "@user_token",
             ])
-            .then(([profilePair, notifPair, domainPair]) => {
+            .then(([profilePair, notifPair, domainPair, tokenPair]) => {
                 profile = JSON.parse(profilePair[1]);
                 notifs = JSON.parse(notifPair[1]);
                 domain = domainPair[1];
+                accessToken = JSON.parse(tokenPair[1]).access_token;
 
-                return requests.fetchProfile(domain, profile.id);
+                return Promise.all([
+                    requests.fetchProfile(domain, profile.id),
+                    requests.fetchAccountStatuses(domain, profile.id, accessToken),
+                ]);
             })
-            .then(latestProfile => {
+            .then(([latestProfile, posts]) => {
                 if(JSON.stringify(latestProfile) != JSON.stringify(profile)) {
                     profile = latestProfile
                 }
@@ -213,6 +218,7 @@ const ProfileJsx = ({ navigation }) => {
                 setState({...state,
                     profile: profile,
                     notifs: notifs,
+                    posts: posts,
                     loaded: true,
                 });
             });
@@ -228,7 +234,7 @@ const ProfileJsx = ({ navigation }) => {
                         navigation = { navigation }
                         own = { true }
                         profile = { state.profile }
-                        posts = { TEST_POSTS }
+                        posts = { state.posts }
                         notifs = { state.notifs }/>
                 </ScreenWithTrayJsx>
                 : <></>
