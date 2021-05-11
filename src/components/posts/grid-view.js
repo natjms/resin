@@ -3,9 +3,8 @@ import {
     View,
     Dimensions,
     Image,
+    TouchableOpacity,
 } from "react-native";
-
-import GridPostJsx from "src/components/posts/grid-post";
 
 function partition(arr, size) {
     let newArray = [];
@@ -15,6 +14,23 @@ function partition(arr, size) {
     }
 
     return newArray
+}
+
+const GridPostJsx = (props) => {
+    return (
+        <TouchableOpacity
+            onPress={ () => {
+                props.navigation.navigate("ViewPost", {
+                    post: props.data,
+                });
+            }}>
+            <Image
+                  source = {
+                      { uri: props.data.media_attachments[0].preview_url }
+                  }
+                style = { styles.gridImage } />
+        </TouchableOpacity>
+    )
 }
 
 const GridViewJsx = (props) => {
@@ -28,19 +44,11 @@ const GridViewJsx = (props) => {
                             key = { i }>
                             {
                                 row.map((post) => {
-                                    const post_url = post
-                                        .media_attachments[0]
-                                        .preview_url;
-
                                     return (
                                         <View key = { post.id }>
                                             <GridPostJsx
-                                                id = { post.id }
-                                                previewUrl = { post_url }
-                                                openPostCallback = {
-                                                    (id) => props.openPostCallback(id)
-                                                }
-                                                />
+                                                navigation = { props.navigation }
+                                                data = { post } />
                                         </View>
                                     );
                                 })
@@ -59,7 +67,11 @@ const styles = {
         padding: 0,
         margin: 0,
         flexDirection: "row"
-    }
+    },
+    gridImage: {
+        width: screen_width / 3,
+        height: screen_width / 3
+    },
 };
 
 export default GridViewJsx;

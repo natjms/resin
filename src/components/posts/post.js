@@ -171,56 +171,6 @@ export const PostByDataJsx = (props) => {
     );
 }
 
-export const PostByIdJsx = (props) => {
-    /*
-    Renders a post given the post's ID in the properties, as is done when
-    retrieving an individual post on someone's profile.
-    */
-    let [state, setState] = useState({
-        avatar: "",
-        username: "",
-        media_attachments: [],
-        favourited: false,
-        reblogged: false,
-        content: "",
-        timestamp: 0,
-        loaded: false,
-        dimensions: []
-    });
-
-    useEffect(() => {
-        // TODO: Make API request using props.id, set it as the state
-        (() => {
-            Promise.all(getDimensionsPromises([{ url: TEST_IMAGE }]))
-                  .then(dimensions => {
-                setState({
-                    avatar: TEST_IMAGE,
-                    username: "njms",
-                    media_attachments: [{ url: TEST_IMAGE }],
-                    favourited: false,
-                    reblogged: false,
-                    content: "Also learning Claire de Lune feels a lot like reading the communist manifesto",
-                    timestamp: 1596745156000,
-                    loaded: true,
-                    dimensions: dimensions
-                });
-            });
-        })();
-    }, []);
-
-    return (
-        <View>
-            { state.loaded ?
-                <RawPostJsx
-                    data = { state }
-                    dimensions = { state.dimensions }
-                    navigation = { props.navigation }/>
-                : <View></View>
-            }
-        </View>
-    )
-}
-
 const styles = {
     postHeader: {
         display: "flex",

@@ -244,12 +244,6 @@ const ProfileJsx = ({ navigation }) => {
 };
 
 const RawProfileJsx = (props) => {
-    let [state, setState] = useState({
-        own: props.own,
-        profile: props.profile,
-        notifs: props.notifs,
-    });
-
     const notif_pack = {
         active: require("assets/eva-icons/bell-unread.png"),
         inactive: require("assets/eva-icons/bell-black.png")
@@ -298,7 +292,7 @@ const RawProfileJsx = (props) => {
                         </Text>
                     </View>
                     {
-                        state.own ?
+                        props.own ?
                             <View style = { styles.profileContextContainer }>
                                 <TouchableOpacity
                                       onPress = {
@@ -334,7 +328,7 @@ const RawProfileJsx = (props) => {
                             }
                           }>
                         {
-                            state.own ?
+                            props.own ?
                                 <>View followers</>
                                 : <>{ props.mutuals + " mutuals" }</>
                         }
@@ -370,14 +364,7 @@ const RawProfileJsx = (props) => {
 
             <GridViewJsx
                 posts = { props.posts }
-                openPostCallback = {
-                    (id) => {
-                        props.navigation.navigate("ViewPost", {
-                            id: id,
-                            originTab: "Profile"
-                        });
-                    }
-                } />
+                navigation = { props.navigation }/>
         </View>
     );
 };
