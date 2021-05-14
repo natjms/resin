@@ -9,39 +9,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import * as requests from "src/requests";
 
-const TEST_IMAGE = "https://cache.desktopnexus.com/thumbseg/2255/2255124-bigthumbnail.jpg";
-
-const TEST_POSTS = [
-    {
-        id: 1,
-        avatar: TEST_IMAGE,
-        username: "njms",
-        replies_count: 3,
-        favourited: false,
-        reblogged: false,
-        content: "Also learning Claire de Lune feels a lot like reading the communist manifesto",
-        timestamp: 1596745156000,
-        media_attachments: [
-            {url: TEST_IMAGE}
-        ]
-    },
-    {
-        id: 2,
-        avatar: TEST_IMAGE,
-        username: "njms",
-        favourited: false,
-        reblogged: false,
-        replies_count: 0,
-        content: "Also learning Claire de Lune feels a lot like reading the communist manifesto",
-        timestamp: 1596745156000,
-        media_attachments: [
-            { url: "https://college.mayo.edu/media/mccms/content-assets/campus-amp-community/arizona/mayo-clinic-phoenix-arizona-is453080663-hero-mobile.jpg" },
-            { url: TEST_IMAGE },
-            { url: TEST_IMAGE }
-        ]
-    }
-];
-
 const FeedJsx = (props) => {
     const checkmark = require("assets/eva-icons/checkmark-circle-large.png");
     const [state, setState] = useState({
@@ -49,24 +16,45 @@ const FeedJsx = (props) => {
     });
 
     useEffect(() => {
-        let accessToken;
-        let instance;
+        let accessToken, instance, posts;
 
         AsyncStorage
             .multiGet([
                 "@user_token",
                 "@user_instance",
+                "@user_latestPostId",
             ])
-            .then(([tokenPair, instancePair]) => {
+            .then(([tokenPair, instancePair, latestPair]) => {
                 accessToken = JSON.parse(tokenPair[1]).access_token;
                 instance = instancePair[1];
+                // NOTE: This is just a number, but the Pixelfed API will not
+                // accept query params like ?min_id="123" so it must be parsed
+                const latest = JSON.parse(latestPair[1]);
+                const params = { limit: 20 };
+
+                if (latest) {
+                    // @user_latestPostId will be null the first time the feed
+                    // is opened, so there's no need to specify it here.
+                    params["min_id"] = latest;
+                }
 
                 return requests.fetchHomeTimeline(
                     instance,
-                    accessToken
+                    accessToken,
+                    params
                 )
             })
-            .then(posts =>
+            .then(retrievedPosts => {
+                posts = retrievedPosts;
+                if(posts.length > 0) {
+                    const latestId = posts[0].id;
+                    return AsyncStorage.setItem(
+                        "@user_latestPostId",
+                        JSON.stringify(latestId)
+                    );
+                }
+            })
+            .then(() =>
                 setState({...state,
                     posts: posts,
                     loaded: true,
