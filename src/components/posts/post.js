@@ -131,7 +131,7 @@ export const RawPostJsx = (props) => {
                 </TouchableWithoutFeedback>
 
                 <Text style = { styles.captionDate }>
-                    { timeToAge((new Date()).getTime(), props.data.created_at) }
+                    { timeToAge(Date.now(), (new Date(props.data.created_at)).getTime()) }
                 </Text>
             </View>
         </View>
@@ -220,7 +220,7 @@ const styles = {
         color: "#666",
     },
     captionDate: {
-        fontSize: 0.8,
+        fontSize: 12,
         color: "#666",
         paddingTop: 10
     },
