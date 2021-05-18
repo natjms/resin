@@ -32,25 +32,11 @@ const TEST_POSTS = [
 ];
 
 const PagedGridJSX = (props) => {
-    let [state, setState] = useState({
-        posts: [],
-        loaded: false
-    });
-
-    useEffect(() => {
-        if (!state.loaded) {
-            // TODO: actually get posts :)
-            setState({
-                posts: TEST_POSTS,
-                loaded: true
-            });
-        }
-    });
-
     return (
         <View>
             <GridViewJsx
-                    posts = { state.posts }
+                    posts = { props.posts }
+                    navigation = { props.navigation }
                     openPostCallback = {
                         (id) => {
                             props.navigation.navigate("ViewPost", {
@@ -61,11 +47,7 @@ const PagedGridJSX = (props) => {
                     } />
             <View style = { styles.buttonContainer }>
                 <TouchableOpacity
-                        onPress = { () => {
-                            // TODO: actually get more posts :)
-                            let morePosts = state.posts.concat(TEST_POSTS);
-                            setState({...state, posts: morePosts});
-                        } }>
+                        onPress = { props.onShowMore }>
                     <View style = { styles.buttonMore }>
                         <Text>Show more?</Text>
                     </View>

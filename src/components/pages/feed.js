@@ -27,8 +27,9 @@ const FeedJsx = (props) => {
             .then(([tokenPair, instancePair, latestPair]) => {
                 accessToken = JSON.parse(tokenPair[1]).access_token;
                 instance = instancePair[1];
-                // NOTE: This is just a number, but the Pixelfed API will not
-                // accept query params like ?min_id="123" so it must be parsed
+                // NOTE: `latest` is just a number, but the Pixelfed API will
+                // not accept query params like ?min_id="123" so it must be
+                // parsed
                 const latest = JSON.parse(latestPair[1]);
                 const params = { limit: 20 };
 
@@ -85,7 +86,10 @@ const FeedJsx = (props) => {
                             <Text> Wow, it sure is a lovely day outside 🌳 </Text>
 
                             <TouchableWithoutFeedback
-                                    style = { styles.buttonOlder }>
+                                    style = { styles.buttonOlder }
+                                    onPress = {
+                                        () => props.navigation.navigate("OlderPosts")
+                                    }>
                                 <Text> See older posts </Text>
                             </TouchableWithoutFeedback>
                         </View>
