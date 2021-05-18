@@ -78,7 +78,7 @@ export const RawPostJsx = (props) => {
                     style = { styles.pfp }
                     source = { { uri: props.data.account.avatar } } />
                 <Text style = { styles.postHeaderName }>
-                    { props.data.account.username }
+                    { props.data.account.acct }
                 </Text>
                 <ModerateMenuJsx
                     containerStyle = { styles.menu }

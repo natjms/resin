@@ -99,3 +99,12 @@ export async function fetchHomeTimeline(domain, token, params = false) {
     );
     return resp.json();
 }
+
+export async function fetchPublicTimeline(domain, token, params = false) {
+    const resp = await get(
+        `https://${domain}/api/v1/timelines/public`,
+        token,
+        params
+    );
+    return resp.json();
+}
