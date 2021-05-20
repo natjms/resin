@@ -17,6 +17,8 @@ import TimelineViewJsx from "src/components/posts/timeline-view";
 import BackBarJsx from "src/components/navigation/back-bar";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 
+import * as requests from "src/requests";
+
 const TEST_IMAGE = "https://cache.desktopnexus.com/thumbseg/2255/2255124-bigthumbnail.jpg";
 
 const TEST_CONTEXT = {
@@ -115,7 +117,7 @@ function chunkWhile(arr, fun) {
     return parts;
 }
 
-function threadify(descendants, parentID) {
+function threadify(descendants) {
     /*
      * Take a list of descendants and sort them into a 2D matrix.
      * The first item is the direct descendant of parentID post and the rest
@@ -123,8 +125,7 @@ function threadify(descendants, parentID) {
      * way Instagram displays conversations in comments.
      * i.e. [[first level comment, ...descendants]]
      */
-
-    if (descendants == []) {
+    if (descendants.length == 0) {
         return [];
     }
 
@@ -149,24 +150,24 @@ function threadify(descendants, parentID) {
     // sorted)
     while (sub.length > 0) {
         sorted.forEach((thread, threadIndex) => {
-        for (let i = 0; i < thread.length; i++) {
-            const id = thread[i].id;
+            for (let i = 0; i < thread.length; i++) {
+                const id = thread[i].id;
 
-            // Search for comment groups with that id
-            for(let subIndex = 0; subIndex < sub.length; subIndex++) {
-                // All items in each partition should have the same reply id
-                if(id == sub[subIndex][0].in_reply_to_id) {
-                    // Move the newly found thread contents to thread in
-                    // sorted
-                    sorted[threadIndex] = sorted[threadIndex].concat(sub[subIndex]);
-                    sub.splice(subIndex, 1);
+                // Search for comment groups with that id
+                for(let subIndex = 0; subIndex < sub.length; subIndex++) {
+                    // All items in each partition should have the same reply id
+                    if(id == sub[subIndex][0].in_reply_to_id) {
+                        // Move the newly found thread contents to thread in
+                        // sorted
+                        sorted[threadIndex] = sorted[threadIndex].concat(sub[subIndex]);
+                        sub.splice(subIndex, 1);
+                    }
                 }
             }
-        }
-    });
-}
+        });
+    }
 
-return sorted;
+    return sorted;
 }
 
 const CommentJsx = (props) => {
@@ -180,17 +181,22 @@ const CommentJsx = (props) => {
     return (
         <View style = { styles.container }>
             <Image
-                source = { { uri: props.data.avatar } }
+                source = { { uri: props.data.account.avatar } }
                 style = { styles.avatar } />
             <View style = { styles.contentContainer }>
                 <Text style = { styles.content }>
-                    <Text style = { styles.bold }>{ props.data.username }</Text>&nbsp;
+                    <Text style = { styles.bold }>{ props.data.account.acct }</Text>&nbsp;
                     { props.data.content }
                 </Text>
                 <View style = { styles.commentActions }>
                     <View>
                         <Text style = { styles.actionText }>
-                            { timeToAge((new Date()).getTime(), props.data.created_at) }
+                            {
+                                timeToAge(
+                                    Date.now(),
+                                    (new Date(props.data.created_at)).getTime()
+                                )
+                            }
                         </Text>
                     </View>
                     <TouchableWithoutFeedback>
@@ -213,20 +219,35 @@ const CommentJsx = (props) => {
 
 const ViewCommentsJsx = (props) => {
     let [state, setState] = useState({
-        postData: undefined,
+        postData: props.navigation.getParam("postData", null),
         loaded: false,
         reply: ""
     });
 
     useEffect(() => {
-        AsyncStorage.getItem("@user_profile").then((profileJSON) => {
-            setState({ ...state,
-                descendants: threadify(TEST_CONTEXT.descendants),
-                postData: props.navigation.getParam("postData"),
-                profile: JSON.parse(profileJSON),
-                loaded: true,
+        let profile, instance, accessToken;
+        AsyncStorage
+            .multiGet([
+                "@user_profile",
+                "@user_instance",
+                "@user_token",
+            ]).then(([profilePair, instancePair, tokenPair]) => {
+                profile = JSON.parse(profilePair[1]);
+                instance = instancePair[1];
+                accessToken = JSON.parse(tokenPair[1]).access_token;
+
+                return requests
+                    .fetchStatusContext(instance, state.postData.id, accessToken)
+            })
+            .then(context => {
+                setState({...state,
+                    descendants: threadify(context.descendants),
+                    profile,
+                    instance,
+                    accessToken,
+                    loaded: true,
+                });
             });
-        });
     }, []);
 
     return (
@@ -243,8 +264,8 @@ const ViewCommentsJsx = (props) => {
                                         data = { state.postData } />
                                 </View>
                                 <View>
-                                    {
-                                        state.descendants.map((thread, i) => {
+                                    { state.descendants.length != 0
+                                        ? state.descendants.map((thread, i) => {
                                             const comment = thread[0];
                                             const subs = thread.slice(1);
                                             return (
@@ -265,6 +286,11 @@ const ViewCommentsJsx = (props) => {
                                                 </View>
                                             );
                                         })
+                                        : <View style = { styles.emptyMessage.container }>
+                                            <Text style = { styles.emptyMessage.text }>
+                                                No comments
+                                            </Text>
+                                        </View>
                                     }
                                 </View>
                             </View>
@@ -364,7 +390,17 @@ const styles = {
     commentSubmit: {
         width: 30,
         height: 30,
-    }
+    },
+    emptyMessage: {
+        container: {
+            paddingTop: 30,
+            paddingBottom: 30,
+        },
+        text: {
+            textAlign: "center",
+            color: "#666",
+        },
+    },
 };
 
 export default ViewCommentsJsx;
