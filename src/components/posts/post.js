@@ -4,8 +4,8 @@ import {
     View,
     Text,
     Dimensions,
-    TouchableWithoutFeedback,
-    ScrollView
+    TouchableOpacity,
+    ScrollView,
 } from "react-native";
 
 import { pluralize, timeToAge} from "src/interface/rendering"
@@ -71,15 +71,25 @@ export const RawPostJsx = (props) => {
             + pluralize(repliesCount, " comment", " comments");
     }
 
+    const _handleProfileButton = () => {
+        props.navigation.navigate("ViewProfile", {
+            profile: props.data.account,
+        });
+    };
+
     return (
         <View>
             <View style = { styles.postHeader }>
+                <TouchableOpacity onPress = { _handleProfileButton }>
                 <Image
                     style = { styles.pfp }
                     source = { { uri: props.data.account.avatar } } />
+                </TouchableOpacity>
+                <TouchableOpacity onPress = { _handleProfileButton }>
                 <Text style = { styles.postHeaderName }>
                     { props.data.account.acct }
                 </Text>
+                </TouchableOpacity>
                 <ModerateMenuJsx
                     containerStyle = { styles.menu }
                     triggerStyle = { styles.ellipsis } />
@@ -118,7 +128,7 @@ export const RawPostJsx = (props) => {
                     </Text>
                     &nbsp;{ props.data.content }
                 </Text>
-                <TouchableWithoutFeedback
+                <TouchableOpacity
                       onPress = {
                         () => props.navigation.navigate("ViewComments", {
                             originTab: props.navigation.getParam("originTab"),
@@ -128,7 +138,7 @@ export const RawPostJsx = (props) => {
                     <View>
                         <Text style = { styles.comments }>{ commentsText }</Text>
                     </View>
-                </TouchableWithoutFeedback>
+                </TouchableOpacity>
 
                 <Text style = { styles.captionDate }>
                     { timeToAge(Date.now(), (new Date(props.data.created_at)).getTime()) }

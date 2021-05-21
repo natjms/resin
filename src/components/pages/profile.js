@@ -12,93 +12,30 @@ import * as Linking from "expo-linking";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { activeOrNot } from "src/interface/interactions";
-import { withoutHTML } from "src/interface/rendering";
+import { withoutHTML, pluralize } from "src/interface/rendering";
 import * as requests from "src/requests";
 
 import GridViewJsx from "src/components/posts/grid-view";
 import {
     ScreenWithTrayJsx,
-    ScreenWithFullNavigationJsx
+    ScreenWithBackBarJsx,
 } from "src/components/navigation/navigators";
 
 import ModerateMenuJsx from "src/components/moderate-menu.js";
-
-const TEST_IMAGE = "https://cache.desktopnexus.com/thumbseg/2255/2255124-bigthumbnail.jpg";
-const TEST_POSTS = [
-    {
-        id: 1,
-        media_attachments: [
-            {preview_url: TEST_IMAGE}
-        ]
-    },
-    {
-        id: 2,
-        media_attachments: [
-            {preview_url: TEST_IMAGE}
-        ]
-    },
-    {
-        id: 3,
-        media_attachments: [
-            {preview_url: TEST_IMAGE}
-        ]
-    },
-    {
-        id: 4,
-        media_attachments: [
-            {preview_url: TEST_IMAGE}
-        ]
-    }
-];
-
-const TEST_PROFILE = {
-    username: "njms",
-    acct: "njms",
-    display_name: "Nat🔆",
-    locked: false,
-    bot: false,
-    note: "Yeah heart emoji.",
-    avatar: TEST_IMAGE,
-    followers_count: "1 jillion",
-    statuses_count: 334,
-    fields: [
-        {
-            name: "Blog",
-            value: "<a href=\"https://njms.ca\">https://njms.ca</a>",
-            verified_at: "some time"
-        },
-        {
-            name: "Github",
-            value: "<a href=\"https://github.com/natjms\">https://github.com/natjms</a>",
-            verified_at: null
-        }
-    ]
-};
-
-const TEST_YOUR_FOLLOWERS = [
-    { id: 1 },
-    { id: 2 },
-    { id: 3 },
-    { id: 4 },
-    { id: 5 },
-];
-
-const TEST_THEIR_FOLLOWERS = [
-    { id: 2 },
-    { id: 3 },
-    { id: 4 },
-    { id: 6 },
-];
 
 function getMutuals(yourFollowing, theirFollowers) {
     // Where yours and theirs are arrays of followers, as returned by the API
     // Returns a list of people you are following that are following some other
     // account
 
-    const acctsArray = ({acct}) => acct;
-    const asIDs = new Set(theirFollowers.map(acctArray));
+    const getAcct = ({acct}) => acct;
+    const theirsAsAccts = new Set(
+        theirFollowers.map(({acct}) => acct)
+    );
 
-    return yourFollowing.filter(x => asIDs.has(idify(x)));
+    return yourFollowing.filter(x =>
+        theirsAsAccts.has(x.acct)
+    );
 }
 
 const HTMLLink = ({link}) => {
@@ -129,18 +66,16 @@ const ViewProfileJsx = ({navigation}) => {
     });
 
     useEffect(() => {
+        let ownProfile, ownDomain, accessToken, domain;
         AsyncStorage
             .multiGet(["@user_profile", "@user_instance", "@user_token"])
-            .then(([ownProfilePair, ownDomainPair, tokenPair]) =>
-                [
-                    JSON.parse(ownProfilePair[1]),
-                    ownDomainPair[1],
-                    JSON.parse(tokenPair[1]).access_token,
-                ]
-            )
-            .then(([ ownProfile, ownDomain, accessToken ]) => {
+            .then(([ ownProfilePair, ownDomainPair, tokenPair ]) => {
+                ownProfile = JSON.parse(ownProfilePair[1]);
+                ownDomain = ownDomainPair[1];
+                accessToken = JSON.parse(tokenPair[1]).access_token;
+
                 const parsedAcct = state.profile.acct.split("@");
-                const domain = parsedAcct.length == 1
+                domain = parsedAcct.length == 1
                     ? ownDomain // There's no @ in the acct, thus it's a local user
                     : parsedAcct [1] // The part of profile.acct after the @
 
@@ -155,26 +90,35 @@ const ViewProfileJsx = ({navigation}) => {
                         state.profile.id,
                         accessToken
                     ),
+                    requests.fetchAccountStatuses(
+                        // NOTE: Should be fetched from remote instance if
+                        // necessary Thus, we use domain and not ownDomain
+                        domain,
+                        state.profile.id,
+                        accessToken
+                    )
                 ]);
             })
-            .then(([ ownFollowing, theirFollowers ]) =>
+            .then(([ ownFollowing, theirFollowers, posts ]) => {
                 setState({...state,
                     mutuals: getMutuals(ownFollowing, theirFollowers),
+                    posts: posts,
                     loaded: true,
-                })
-            );
+                });
+            });
     }, []);
     return (
         <>
             { state.loaded
-                ? <ScreenWithFullNavigationJsx
+                ? <ScreenWithBackBarJsx
                       active = { navigation.getParam("originTab") }
                       navigation = { navigation }>
                     <RawProfileJsx
                         profile = { state.profile }
+                        mutuals = { state.mutuals }
                         notifs = { state.notifs }
-                        posts = { TEST_POSTS }/>
-                </ScreenWithFullNavigationJsx>
+                        posts = { state.posts }/>
+                </ScreenWithBackBarJsx>
                 : <></>
             }
         </>
@@ -330,7 +274,16 @@ const RawProfileJsx = (props) => {
                         {
                             props.own ?
                                 <>View followers</>
-                                : <>{ props.mutuals + " mutuals" }</>
+                                : <>
+                                    {
+                                        props.mutuals.length
+                                            + pluralize(
+                                                props.mutuals.length,
+                                                " mutual",
+                                                " mutuals"
+                                            )
+                                    }
+                                </>
                         }
 
                     </Text>
