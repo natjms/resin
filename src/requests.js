@@ -114,6 +114,15 @@ export async function fetchPublicTimeline(domain, token, params = false) {
     return resp.json();
 }
 
+export async function fetchConversations(domain, token, params = false) {
+    const resp = await get(
+        `https://${domain}/api/v1/conversations`,
+        token,
+        params
+    );
+    return resp.json();
+}
+
 export async function fetchSearchResults(domain, token, params) {
     const resp = await get(
         `https://${domain}/api/v2/search`,

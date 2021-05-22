@@ -9,6 +9,9 @@ import {
     Dimensions,
 } from "react-native";
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as requests from "src/requests";
+
 import { Ionicons } from "@expo/vector-icons";
 
 import { ScreenWithTrayJsx } from "src/components/navigation/navigators";
@@ -35,30 +38,57 @@ function filterConversations(convs, query) {
 }
 
 const DirectJsx = ({ navigation }) => {
+    const FETCH_LIMIT = 1;
+
     const [state, setState] = useState({
         loaded: false,
-        query: ""
+        query: "",
+        fetchOffset: 0,
     });
 
     useEffect(() => {
-        setState({...state,
-            loaded: true,
-            conversations: [
-                {
-                    id: 1,
-                    unread: true,
-                    accounts: [TEST_ACCOUNT_1],
-                    last_status: TEST_STATUS,
-                },
-                {
-                    id: 2,
-                    unread: false,
-                    accounts: [TEST_ACCOUNT_1, TEST_ACCOUNT_2],
-                    last_status: TEST_STATUS,
-                }
-            ],
-        });
+        let instance, accessToken;
+        AsyncStorage
+            .multiGet([
+                "@user_instance",
+                "@user_token",
+            ])
+            .then(([instancePair, tokenPair]) => {
+                instance = instancePair[1];
+                accessToken = JSON.parse(tokenPair[1]).access_token;
+
+                return requests.fetchConversations(
+                    instance,
+                    accessToken,
+                    { limit: FETCH_LIMIT, }
+                );
+            })
+            .then(conversations => {
+                setState({...state,
+                    loaded: true,
+                    conversations,
+                    fetchOffset: FETCH_LIMIT,
+                    instance,
+                    accessToken,
+                });
+            });
     }, []);
+
+    const _handleShowMore = async () => {
+        const results = await requests.fetchConversations(
+            state.instance,
+            state.accessToken,
+            {
+                max_id: state.conversations[state.conversations.length - 1],
+                limit: FETCH_LIMIT,
+            }
+        );
+
+        setState({...state,
+            conversations: state.conversations.concat(results),
+            fetchOffset: state.fetchOffset + FETCH_LIMIT,
+        });
+    };
 
     const onPressConversationFactory = (conv) => {
         return () => {
@@ -114,29 +144,48 @@ const DirectJsx = ({ navigation }) => {
         <ScreenWithTrayJsx
               navigation = { navigation }
               originTab = "Direct">
-            <View style = { [ styles.row, styles.form.container ] }>
-                <TextInput
-                    placeholder = "Search..."
-                    value = { state.query }
-                    style = { styles.form.searchBar }
-                    onChangeText = {
-                        (value) => {
-                            setState({...state,
-                                query: value,
-                            });
+            { state.loaded
+                ? <>
+                    <View style = { [ styles.row, styles.form.container ] }>
+                        <TextInput
+                            placeholder = "Search..."
+                            value = { state.query }
+                            style = { styles.form.searchBar }
+                            onChangeText = {
+                                (value) => {
+                                    setState({...state,
+                                        query: value,
+                                    });
+                                }
+                            }/>
+                        <TouchableOpacity
+                              style = { styles.form.compose }
+                              onPress = { () => { navigation.navigate("Compose") } }>
+                            <Ionicons name = "md-create" size = { 24 } color = "black"/>
+                        </TouchableOpacity>
+                    </View>
+                    <>
+                        {
+                            filterConversations(
+                                state.conversations,
+                                state.query
+                            ).map(renderConversation)
                         }
-                    }/>
-                <TouchableOpacity
-                      style = { styles.form.compose }
-                      onPress = { () => { navigation.navigate("Compose") } }>
-                    <Ionicons name = "md-create" size = { 24 } color = "black"/>
-                </TouchableOpacity>
-            </View>
-            { state.loaded ?
-                filterConversations(
-                    state.conversations,
-                    state.query
-                ).map(renderConversation)
+                    </>
+                    <>
+                        { state.conversations.length == state.fetchOffset
+                            ? <View style = { styles.showMore.container }>
+                                <TouchableOpacity
+                                        onPress = { props.onShowMore }>
+                                    <View style = { styles.showMore.button }>
+                                        <Text>Show more?</Text>
+                                    </View>
+                                </TouchableOpacity>
+                            </View>
+                            : <></>
+                        }
+                    </>
+                </>
                 : <></>
             }
         </ScreenWithTrayJsx>
@@ -192,6 +241,19 @@ const styles = {
         trigger: {
             width: 20,
             height: 20,
+        },
+    },
+    showMore: {
+        container: {
+            justifyContent: "center",
+            alignItems: "center"
+        },
+        button: {
+            borderWidth: 1,
+            borderColor: "#888",
+            borderRadius: 5,
+            padding: 10,
+            margin: 20
         },
     },
     bold: { fontWeight: "bold" },
