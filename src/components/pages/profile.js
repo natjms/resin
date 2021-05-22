@@ -132,6 +132,7 @@ const ViewProfileJsx = ({navigation}) => {
                       active = { navigation.getParam("originTab") }
                       navigation = { navigation }>
                     <RawProfileJsx
+                        navigation = { navigation }
                         onFollow = { _handleFollow }
                         profile = { state.profile }
                         mutuals = { state.mutuals }

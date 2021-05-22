@@ -92,6 +92,11 @@ export async function fetchAccountStatuses(domain, id, token) {
     return resp.json();
 }
 
+export async function publishStatus(domain, token, params) {
+    const resp = await postForm(`https://${domain}/api/v1/statuses`, params, token);
+    return resp.json();
+}
+
 export async function fetchStatusContext(domain, id, token) {
     const resp = await get(`https://${domain}/api/v1/statuses/${id}/context`, token);
     return resp.json();

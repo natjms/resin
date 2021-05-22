@@ -7,6 +7,7 @@ import {
     TextInput,
     Text
 } from "react-native";
+import { FontAwesome } from '@expo/vector-icons';
 import { ScrollView } from "react-native-gesture-handler";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -15,7 +16,7 @@ import { activeOrNot } from "src/interface/interactions";
 
 import TimelineViewJsx from "src/components/posts/timeline-view";
 import BackBarJsx from "src/components/navigation/back-bar";
-import { TouchableWithoutFeedback } from "react-native-gesture-handler";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 import * as requests from "src/requests";
 
@@ -199,18 +200,24 @@ const CommentJsx = (props) => {
                             }
                         </Text>
                     </View>
-                    <TouchableWithoutFeedback>
+                    <TouchableOpacity
+                          onPress = {
+                              props.onReply(
+                                  props.data.account.acct,
+                                  props.data.id
+                              )
+                          }>
                         <View>
                             <Text style = { [styles.actionText] }>
                                 Reply
                             </Text>
                         </View>
-                    </TouchableWithoutFeedback>
-                    <TouchableWithoutFeedback>
+                    </TouchableOpacity>
+                    <TouchableOpacity>
                         <Image
                             style = { [styles.heart, styles.action] }
                             source = { activeOrNot(props.data.favourited, packs.favourited) } />
-                    </TouchableWithoutFeedback>
+                    </TouchableOpacity>
                 </View>
             </View>
         </View>
@@ -221,7 +228,7 @@ const ViewCommentsJsx = (props) => {
     let [state, setState] = useState({
         postData: props.navigation.getParam("postData", null),
         loaded: false,
-        reply: ""
+        reply: "",
     });
 
     useEffect(() => {
@@ -245,10 +252,65 @@ const ViewCommentsJsx = (props) => {
                     profile,
                     instance,
                     accessToken,
+                    inReplyTo: {
+                        acct: state.postData.account.acct,
+                        id: state.postData.id,
+                    },
                     loaded: true,
                 });
             });
     }, []);
+
+    const _onReplyFactory = (acct, id) => {
+        return () => {
+            setState({...state,
+                inReplyTo: {
+                    acct,
+                    id,
+                },
+            });
+        }
+    };
+
+    const _handleCancelSubReply = () => {
+        setState({...state,
+            inReplyTo: {
+                acct: state.postData.account.acct,
+                id: state.postData.id,
+            },
+        });
+    };
+
+    const _handleSubmitReply = async () => {
+        if(state.reply.length > 0) {
+            await requests.publishStatus(
+                state.instance,
+                state.accessToken,
+                {
+                    status: state.reply,
+                    in_reply_to_id: state.inReplyTo.id,
+                }
+            );
+
+            // Fetch the updated context to rerender the page
+            const newContext = await requests.fetchStatusContext(
+                state.instance,
+                state.postData.id,
+                state.accessToken,
+            );
+
+            setState({...state,
+                descendants: threadify(newContext.descendants),
+
+                //Reset the comment form
+                inReplyTo: {
+                    acct: state.postData.account.acct,
+                    id: state.postData.id,
+                },
+                reply: "",
+            });
+        }
+    };
 
     return (
         <>
@@ -261,6 +323,7 @@ const ViewCommentsJsx = (props) => {
                             ? <View>
                                 <View style = { styles.parentPost }>
                                     <CommentJsx
+                                        onReply = { _onReplyFactory }
                                         data = { state.postData } />
                                 </View>
                                 <View>
@@ -270,7 +333,9 @@ const ViewCommentsJsx = (props) => {
                                             const subs = thread.slice(1);
                                             return (
                                                 <View key = { i }>
-                                                    <CommentJsx data = { comment }/>
+                                                    <CommentJsx
+                                                        onReply = { _onReplyFactory }
+                                                        data = { comment }/>
                                                     {
                                                         subs.map((sub, j) => {
                                                             return (
@@ -278,6 +343,7 @@ const ViewCommentsJsx = (props) => {
                                                                       key = { j }
                                                                       style = { styles.sub }>
                                                                     <CommentJsx
+                                                                        onReply = { _onReplyFactory }
                                                                         data = { sub }/>
                                                                 </View>
                                                             )
@@ -297,21 +363,39 @@ const ViewCommentsJsx = (props) => {
                             : <></>
                         }
                     </ScrollView>
-                    <View style = { styles.commentForm }>
-                        <Image
-                            style = { styles.avatar }
-                            source = { { uri: state.profile.avatar } }/>
-                        <TextInput
-                            style = { styles.commentInput }
-                            placeholder = "Say something..."
-                            multiline = { true }
-                            onChangeText = { c => setState({...state, reply: c }) }/>
-                        <View style = { styles.submitContainer }>
-                            <TouchableWithoutFeedback>
-                                <Image
-                                    style = { styles.commentSubmit }
-                                    source = { require("assets/eva-icons/paper-plane.png") }/>
-                            </TouchableWithoutFeedback>
+                    <View style = { styles.form.container }>
+                        <>
+                            { state.inReplyTo.id != state.postData.id
+                                ? <TouchableOpacity onPress = { _handleCancelSubReply }>
+                                    <View style = { styles.form.inReplyTo.container }>
+                                        <FontAwesome name="close" size={24} color="#666" />
+                                        <Text style = { styles.form.inReplyTo.message }>
+                                            &nbsp;Replying to&nbsp;
+                                            <Text style = { styles.bold }>
+                                                { state.inReplyTo.acct }
+                                            </Text>...
+                                        </Text>
+                                    </View>
+                                </TouchableOpacity>
+                                : <></>
+                            }
+                        </>
+                        <View style = { styles.commentForm }>
+                            <Image
+                                style = { styles.avatar }
+                                source = { { uri: state.profile.avatar } }/>
+                            <TextInput
+                                style = { styles.commentInput }
+                                placeholder = "Say something..."
+                                multiline = { true }
+                                onChangeText = { c => setState({...state, reply: c }) }/>
+                            <View style = { styles.submitContainer }>
+                                <TouchableOpacity onPress = { _handleSubmitReply }>
+                                    <Image
+                                        style = { styles.commentSubmit }
+                                        source = { require("assets/eva-icons/paper-plane.png") }/>
+                                </TouchableOpacity>
+                            </View>
                         </View>
                     </View>
                 </SafeAreaView>
@@ -366,13 +450,28 @@ const styles = {
         height: 15,
     },
 
+    form: {
+        container: {
+            backgroundColor: "white",
+
+            borderTopWidth: 1,
+            borderTopColor: "#CCC",
+        },
+        inReplyTo: {
+            container: {
+                padding: 10,
+                flexDirection: "row",
+                alignItems: "center",
+            },
+            message: {
+                color: "#666",
+            },
+        },
+    },
+
     commentForm: {
         flexDirection: "row",
         alignItems: "center",
-        backgroundColor: "white",
-
-        borderTopWidth: 1,
-        borderTopColor: "#CCC",
 
         paddingTop: 10,
         paddingBottom: 10,
