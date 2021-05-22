@@ -15,7 +15,8 @@ import * as requests from "src/requests";
 
 import PostActionBarJsx from "src/components/posts/post-action-bar";
 
-import ModerateMenuJsx from "src/components/moderate-menu.js";
+import { MenuOption } from "react-native-popup-menu";
+import ContextMenuJsx from "src/components/context-menu.js";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const TEST_IMAGE = "https://cache.desktopnexus.com/thumbseg/2255/2255124-bigthumbnail.jpg";
@@ -106,9 +107,27 @@ export const RawPostJsx = (props) => {
                     { props.data.account.acct }
                 </Text>
                 </TouchableOpacity>
-                <ModerateMenuJsx
-                    containerStyle = { styles.menu }
-                    triggerStyle = { styles.ellipsis } />
+                <ContextMenuJsx
+                      containerStyle = { styles.menu }
+                      colour = "#666">
+                    { props.own
+                        ? <>
+                            <MenuOption
+                                text = "Delete"
+                                onSelect = { props.onDelete } />
+                        </>
+                        : <>
+                            <MenuOption
+                                text = "Don't show me their posts"/>
+                            <MenuOption
+                                text = "Mute" />
+                            <MenuOption
+                                text = "Block" />
+                            <MenuOption
+                                text = "Report" />
+                        </>
+                    }
+                </ContextMenuJsx>
             </View>
             {
                 props.data.media_attachments.length > 1 ?
@@ -176,20 +195,23 @@ export const PostByDataJsx = (props) => {
 
     let [state, setState] = useState({
         loaded: false,
+        deleted: false,
         data: props.data,
         dimensions: []
     });
 
     useEffect(() => {
-        let instance, accessToken;
+        let instance, accessToken, own;
         AsyncStorage
             .multiGet([
                 "@user_instance",
+                "@user_profile",
                 "@user_token",
             ])
-            .then(([instancePair, tokenPair]) => {
+            .then(([instancePair, profilePair, tokenPair]) => {
                 instance = instancePair[1];
                 accessToken = JSON.parse(tokenPair[1]).access_token;
+                own = state.data.account.id == JSON.parse(profilePair[1]).id;
             })
             .then(() =>
                 Promise.all(
@@ -201,6 +223,7 @@ export const PostByDataJsx = (props) => {
                     dimensions: dimensions,
                     instance,
                     accessToken,
+                    own,
                     loaded: true
                 });
             });
@@ -273,15 +296,34 @@ export const PostByDataJsx = (props) => {
         });
     };
 
+    const _handleDelete = async () => {
+        await requests.deleteStatus(
+            state.instance,
+            state.data.id,
+            state.accessToken
+        );
+
+        if (props.afterDelete) {
+            // Useful for when we need to navigate away from ViewPost
+            props.afterDelete();
+        } else {
+            setState({...state,
+                deleted: true,
+            });
+        }
+    }
+
     return (
         <View>
-            { state.loaded ?
+            { state.loaded && !state.deleted ?
                 <RawPostJsx
                     data = { state.data }
                     dimensions = { state.dimensions }
                     onFavourite = { _handleFavourite }
                     onReblog = { _handleReblog }
-                    onBookmark = { _handleBookmark }
+                    onBookmark = { _handleDelete }
+                    onDelete = { _handleDelete }
+                    own = { state.own }
                     navigation = { props.navigation }/>
                 : <View></View> }
         </View>
@@ -313,10 +355,6 @@ const styles = {
         height: SCREEN_WIDTH / 10,
         marginRight: SCREEN_WIDTH / 28,
         borderRadius: 50
-    },
-    ellipsis: {
-        width: SCREEN_WIDTH / 15,
-        height: SCREEN_WIDTH / 15
     },
     photo: {
         flex: 1,

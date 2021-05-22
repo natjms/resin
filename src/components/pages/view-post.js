@@ -18,6 +18,9 @@ const ViewPostJsx = ({navigation}) => {
               navigation = { navigation }>
             <PostByDataJsx
                 navigation = { navigation }
+                afterDelete = {
+                    () => navigation.goBack()
+                }
                 data = { state.post } />
         </ScreenWithBackBarJsx>
     );
