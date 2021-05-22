@@ -4,17 +4,17 @@ import {
     Text,
     View,
     Dimensions,
-    TouchableWithoutFeedback
+    TouchableOpacity
 } from "react-native";
 import { activeOrNot } from "src/interface/interactions";
 
 const PostActionJsx = (props) => {
     return (
-        <TouchableWithoutFeedback
-            onPress = { props.callback }>
+        <TouchableOpacity
+            onPress = { props.onPress }>
             <Image
                 source = {
-                    activeOrNot(props.state[props.field], props.pack)
+                    activeOrNot(props.active, props.pack)
                 }
                 style = {
                     [
@@ -22,18 +22,11 @@ const PostActionJsx = (props) => {
                         props.last ? styles.lastIcon : {}
                     ]
                 } />
-        </TouchableWithoutFeedback>
+        </TouchableOpacity>
     )
 }
 
 const PostActionBarJsx = (props) => {
-    let [state, setState] = useState({
-        favourited: props.favourited,
-        commenting: false,
-        reblogged: props.reblogged,
-        bookmarked: false
-    });
-
     const icons = {
         heart: {
             active: require("assets/eva-icons/post-actions/heart-active.png"),
@@ -53,33 +46,21 @@ const PostActionBarJsx = (props) => {
             <PostActionJsx
                 field = "favourited"
                 pack = { icons.heart }
-                state = { state }
-                callback = {
-                    () => {
-                        setState({ ...state, favourited: !state.favourited });
-                    }
-                } />
+                active = { props.favourited }
+                onPress = { props.onFavourite } />
 
             <PostActionJsx
                 field = "reblogged"
                 pack = { icons.reblog }
-                state = { state }
-                callback = {
-                    () => {
-                        setState({ ...state, reblogged: !state.reblogged });
-                    }
-                } />
+                reblogged = { props.reblogged }
+                onPress = { props.onReblog }/>
 
             <PostActionJsx
                 field = "bookmarked"
                 pack = { icons.bookmark }
                 last = { true }
-                state = { state }
-                callback = {
-                    () => {
-                        setState({ ...state, bookmarked: !state.bookmarked });
-                    }
-                } />
+                bookmarked = { props.bookmarked }
+                onPress = { props.onBookmark } />
         </View>
     )
 }

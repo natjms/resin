@@ -8,7 +8,10 @@ import {
     ScrollView,
 } from "react-native";
 
-import { pluralize, timeToAge} from "src/interface/rendering"
+import { pluralize, timeToAge } from "src/interface/rendering"
+
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as requests from "src/requests";
 
 import PostActionBarJsx from "src/components/posts/post-action-bar";
 
@@ -46,6 +49,20 @@ function getDimensionsPromises(uris) {
     }));
 }
 
+function handleFavouriteFactory(state, setState) {
+    return async () => {
+        const newStatus = await requests.favouriteStatus(
+            state.instance,
+            state.data.id,
+            state.accessToken
+        );
+
+        setState({...state,
+            data: newStatus,
+        });
+    };
+}
+
 const PostImageJsx = (props) => {
     return <Image
         source = { { uri: props.uri } }
@@ -54,7 +71,6 @@ const PostImageJsx = (props) => {
                 flex: 1,
                 width: SCREEN_WIDTH,
                 height: getAutoHeight(props.width, props.height, SCREEN_WIDTH),
-                // objectFit: "cover"
             }
         } />
 };
@@ -120,7 +136,10 @@ export const RawPostJsx = (props) => {
             }
             <PostActionBarJsx
                 favourited = { props.data.favourited }
-                reblogged = { props.data.reblogged } />
+                reblogged = { props.data.reblogged }
+                bookmarked = { false }
+                onFavourite = { props.onFavourite }
+                onBookmark = { props.onBookmark } />
             <View style = { styles.caption }>
                 <Text>
                     <Text style = { styles.strong }>
@@ -156,25 +175,65 @@ export const PostByDataJsx = (props) => {
 
     let [state, setState] = useState({
         loaded: false,
+        data: props.data,
         dimensions: []
     });
 
     useEffect(() => {
-        Promise.all(getDimensionsPromises(props.data.media_attachments))
-              .then(dimensions => {
-            setState({
-                dimensions: dimensions,
-                loaded: true
+        let instance, accessToken;
+        AsyncStorage
+            .multiGet([
+                "@user_instance",
+                "@user_token",
+            ])
+            .then(([instancePair, tokenPair]) => {
+                instance = instancePair[1];
+                accessToken = JSON.parse(tokenPair[1]).access_token;
+            })
+            .then(() =>
+                Promise.all(
+                    getDimensionsPromises(props.data.media_attachments)
+                )
+            )
+            .then(dimensions => {
+                setState({...state,
+                    dimensions: dimensions,
+                    instance,
+                    accessToken,
+                    loaded: true
+                });
             });
-        });
     }, []);
+
+    const _handleFavourite = async () => {
+        let newStatus;
+
+        if (!state.data.favourited) {
+            newStatus = await requests.favouriteStatus(
+                state.instance,
+                state.data.id,
+                state.accessToken
+            );
+        } else {
+            newStatus = await requests.unfavouriteStatus(
+                state.instance,
+                state.data.id,
+                state.accessToken
+            );
+        }
+
+        setState({...state,
+            data: newStatus,
+        });
+    };
 
     return (
         <View>
             { state.loaded ?
                 <RawPostJsx
-                    data = { props.data }
+                    data = { state.data }
                     dimensions = { state.dimensions }
+                    onFavourite = { _handleFavourite }
                     navigation = { props.navigation }/>
                 : <View></View> }
         </View>

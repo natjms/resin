@@ -52,6 +52,17 @@ export async function postForm(url, data, token = false) {
     return resp;
 }
 
+export async function post(url, token = false) {
+    const resp = await fetch(url, {
+        method: "POST",
+        headers: token
+            ? { "Authorization": `Bearer ${token}`, }
+            : {},
+    });
+
+    return resp;
+}
+
 export async function get(url, token = false, data = false) {
     let completeURL;
     if (data) {
@@ -83,6 +94,16 @@ export async function fetchAccountStatuses(domain, id, token) {
 
 export async function fetchStatusContext(domain, id, token) {
     const resp = await get(`https://${domain}/api/v1/statuses/${id}/context`, token);
+    return resp.json();
+}
+
+export async function favouriteStatus(domain, id, token) {
+    const resp = await post(`https://${domain}/api/v1/statuses/${id}/favourite`, token);
+    return resp.json();
+}
+
+export async function unfavouriteStatus(domain, id, token) {
+    const resp = await post(`https://${domain}/api/v1/statuses/${id}/unfavourite`, token);
     return resp.json();
 }
 
