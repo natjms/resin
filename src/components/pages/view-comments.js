@@ -213,7 +213,8 @@ const CommentJsx = (props) => {
                             </Text>
                         </View>
                     </TouchableOpacity>
-                    <TouchableOpacity>
+                    <TouchableOpacity
+                          onPress = { props.onFavourite(props.data) }>
                         <Image
                             style = { [styles.heart, styles.action] }
                             source = { activeOrNot(props.data.favourited, packs.favourited) } />
@@ -272,6 +273,35 @@ const ViewCommentsJsx = (props) => {
         }
     };
 
+    const _onFavouriteFactory = (data) => {
+        return async () => {
+            if(!data.favourited) {
+                await requests.favouriteStatus(
+                    state.instance,
+                    data.id,
+                    state.accessToken
+                )
+            } else {
+                await requests.unfavouriteStatus(
+                    state.instance,
+                    data.id,
+                    state.accessToken
+                )
+            }
+
+            // Fetch the updated context to rerender the page
+            const newContext = await requests.fetchStatusContext(
+                state.instance,
+                state.postData.id,
+                state.accessToken,
+            );
+
+            setState({...state,
+                descendants: threadify(newContext.descendants),
+            });
+        }
+    }
+
     const _handleCancelSubReply = () => {
         setState({...state,
             inReplyTo: {
@@ -323,6 +353,7 @@ const ViewCommentsJsx = (props) => {
                             ? <View>
                                 <View style = { styles.parentPost }>
                                     <CommentJsx
+                                        onFavourite = { _onFavouriteFactory }
                                         onReply = { _onReplyFactory }
                                         data = { state.postData } />
                                 </View>
@@ -334,6 +365,7 @@ const ViewCommentsJsx = (props) => {
                                             return (
                                                 <View key = { i }>
                                                     <CommentJsx
+                                                        onFavourite = { _onFavouriteFactory }
                                                         onReply = { _onReplyFactory }
                                                         data = { comment }/>
                                                     {
@@ -343,6 +375,7 @@ const ViewCommentsJsx = (props) => {
                                                                       key = { j }
                                                                       style = { styles.sub }>
                                                                     <CommentJsx
+                                                                        onFavourite = { _onFavouriteFactory }
                                                                         onReply = { _onReplyFactory }
                                                                         data = { sub }/>
                                                                 </View>
