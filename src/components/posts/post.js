@@ -137,7 +137,7 @@ export const RawPostJsx = (props) => {
             <PostActionBarJsx
                 favourited = { props.data.favourited }
                 reblogged = { props.data.reblogged }
-                bookmarked = { false }
+                bookmarked = { props.data.bookmarked }
                 onFavourite = { props.onFavourite }
                 onReblog = { props.onReblog }
                 onBookmark = { props.onBookmark } />
@@ -250,6 +250,29 @@ export const PostByDataJsx = (props) => {
         });
     };
 
+    const _handleBookmark = async () => {
+        let newStatus;
+
+        if (!state.data.bookmarked) {
+            newStatus = await requests.bookmarkStatus(
+                state.instance,
+                state.data.id,
+                state.accessToken
+            );
+        } else {
+            newStatus = await requests.unbookmarkStatus(
+                state.instance,
+                state.data.id,
+                state.accessToken
+            );
+        }
+        console.warn(newStatus.bookmarked);
+
+        setState({...state,
+            data: newStatus,
+        });
+    };
+
     return (
         <View>
             { state.loaded ?
@@ -258,6 +281,7 @@ export const PostByDataJsx = (props) => {
                     dimensions = { state.dimensions }
                     onFavourite = { _handleFavourite }
                     onReblog = { _handleReblog }
+                    onBookmark = { _handleBookmark }
                     navigation = { props.navigation }/>
                 : <View></View> }
         </View>

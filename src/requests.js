@@ -116,6 +116,17 @@ export async function unreblogStatus(domain, id, token) {
     const resp = await post(`https://${domain}/api/v1/statuses/${id}/unreblog`, token);
     return resp.json();
 }
+
+export async function bookmarkStatus(domain, id, token) {
+    const resp = await post(`https://${domain}/api/v1/statuses/${id}/bookmark`, token);
+    return resp.json();
+}
+
+export async function unbookmarkStatus(domain, id, token) {
+    const resp = await post(`https://${domain}/api/v1/statuses/${id}/unbookmark`, token);
+    return resp.json();
+}
+
 export async function fetchFollowing(domain, id, token) {
     const resp = await get(`https://${domain}/api/v1/accounts/${id}/following`, token);
     return resp.json();

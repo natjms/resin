@@ -44,19 +44,16 @@ const PostActionBarJsx = (props) => {
     return (
         <View style = { styles.flexContainer }>
             <PostActionJsx
-                field = "favourited"
                 pack = { icons.heart }
                 active = { props.favourited }
                 onPress = { props.onFavourite } />
 
             <PostActionJsx
-                field = "reblogged"
                 pack = { icons.reblog }
                 active = { props.reblogged }
                 onPress = { props.onReblog }/>
 
             <PostActionJsx
-                field = "bookmarked"
                 pack = { icons.bookmark }
                 last = { true }
                 active = { props.bookmarked }
