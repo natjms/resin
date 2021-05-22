@@ -52,14 +52,14 @@ const PostActionBarJsx = (props) => {
             <PostActionJsx
                 field = "reblogged"
                 pack = { icons.reblog }
-                reblogged = { props.reblogged }
+                active = { props.reblogged }
                 onPress = { props.onReblog }/>
 
             <PostActionJsx
                 field = "bookmarked"
                 pack = { icons.bookmark }
                 last = { true }
-                bookmarked = { props.bookmarked }
+                active = { props.bookmarked }
                 onPress = { props.onBookmark } />
         </View>
     )

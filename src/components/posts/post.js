@@ -139,6 +139,7 @@ export const RawPostJsx = (props) => {
                 reblogged = { props.data.reblogged }
                 bookmarked = { false }
                 onFavourite = { props.onFavourite }
+                onReblog = { props.onReblog }
                 onBookmark = { props.onBookmark } />
             <View style = { styles.caption }>
                 <Text>
@@ -227,6 +228,28 @@ export const PostByDataJsx = (props) => {
         });
     };
 
+    const _handleReblog = async () => {
+        let newStatus;
+
+        if (!state.data.reblogged) {
+            newStatus = await requests.reblogStatus(
+                state.instance,
+                state.data.id,
+                state.accessToken
+            );
+        } else {
+            newStatus = await requests.unreblogStatus(
+                state.instance,
+                state.data.id,
+                state.accessToken
+            );
+        }
+
+        setState({...state,
+            data: newStatus,
+        });
+    };
+
     return (
         <View>
             { state.loaded ?
@@ -234,6 +257,7 @@ export const PostByDataJsx = (props) => {
                     data = { state.data }
                     dimensions = { state.dimensions }
                     onFavourite = { _handleFavourite }
+                    onReblog = { _handleReblog }
                     navigation = { props.navigation }/>
                 : <View></View> }
         </View>

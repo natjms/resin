@@ -107,6 +107,15 @@ export async function unfavouriteStatus(domain, id, token) {
     return resp.json();
 }
 
+export async function reblogStatus(domain, id, token) {
+    const resp = await post(`https://${domain}/api/v1/statuses/${id}/reblog`, token);
+    return resp.json();
+}
+
+export async function unreblogStatus(domain, id, token) {
+    const resp = await post(`https://${domain}/api/v1/statuses/${id}/unreblog`, token);
+    return resp.json();
+}
 export async function fetchFollowing(domain, id, token) {
     const resp = await get(`https://${domain}/api/v1/accounts/${id}/following`, token);
     return resp.json();
