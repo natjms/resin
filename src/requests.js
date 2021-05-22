@@ -82,6 +82,17 @@ export async function get(url, token = false, data = false) {
     return resp;
 }
 
+export async function _delete(url, token = false) {
+    const resp = await fetch(url, {
+        method: "DELETE",
+        headers: token
+            ? { "Authorization": `Bearer ${token}`, }
+            : {},
+    });
+
+    return resp;
+}
+
 export async function fetchProfile(domain, id) {
     const resp = await get(`https://${domain}/api/v1/accounts/${id}`);
     return resp.json();
@@ -94,6 +105,11 @@ export async function fetchAccountStatuses(domain, id, token) {
 
 export async function publishStatus(domain, token, params) {
     const resp = await postForm(`https://${domain}/api/v1/statuses`, params, token);
+    return resp.json();
+}
+
+export async function deleteStatus(domain, id, token) {
+    const resp = await _delete(`https://${domain}/api/v1/statuses/${id}`, token);
     return resp.json();
 }
 

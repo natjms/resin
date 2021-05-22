@@ -20,67 +20,15 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 
 import * as requests from "src/requests";
 
-const TEST_IMAGE = "https://cache.desktopnexus.com/thumbseg/2255/2255124-bigthumbnail.jpg";
+import {
+    Menu,
+    MenuOptions,
+    MenuOption,
+    MenuTrigger,
+    renderers
+} from "react-native-popup-menu";
 
-const TEST_CONTEXT = {
-    ancestors: [],
-    descendants: [
-        {
-            id: "1",
-            in_reply_to_id: "0",
-            username: "respondant1",
-            avatar: TEST_IMAGE,
-            content: "This is a comment",
-            favourited: false,
-            created_at: 1596745156000
-        },
-        {
-            id: "2",
-            in_reply_to_id: "0",
-            username: "respondant2",
-            avatar: TEST_IMAGE,
-            content: "This is a comment",
-            favourited: true,
-            created_at: 1596745156000
-        },
-        {
-            id: "3",
-            in_reply_to_id: "2",
-            username: "respondant3",
-            avatar: TEST_IMAGE,
-            content: "This is a comment",
-            favourited: false,
-            created_at: 1596745156000
-        },
-        {
-            id: "4",
-            in_reply_to_id: "2",
-            username: "respondant2",
-            avatar: TEST_IMAGE,
-            content: "This is a comment",
-            favourited: false,
-            created_at: 1596745156000
-        },
-        {
-            id: "5",
-            in_reply_to_id: "1",
-            username: "respondant4",
-            avatar: TEST_IMAGE,
-            content: "This is a comment",
-            favourited: false,
-            created_at: 1596745156000
-        },
-        {
-            id: "6",
-            in_reply_to_id: "4",
-            username: "respondant5",
-            avatar: TEST_IMAGE,
-            content: "This is a comment",
-            favourited: false,
-            created_at: 1596745156000
-        },
-    ]
-}
+const { SlideInMenu } = renderers;
 
 function chunkWhile(arr, fun) {
     /*
@@ -172,6 +120,22 @@ function threadify(descendants) {
 }
 
 const CommentJsx = (props) => {
+    const menuOptionsStyles = {
+        optionWrapper: { // The wrapper around a single option
+            paddingLeft: SCREEN_WIDTH / 15,
+            paddingTop: SCREEN_WIDTH / 30,
+            paddingBottom: SCREEN_WIDTH / 30
+        },
+        optionsWrapper: { // The wrapper around all options
+            marginTop: SCREEN_WIDTH / 20,
+            marginBottom: SCREEN_WIDTH / 20,
+        },
+        optionsContainer: { // The Animated.View
+            borderTopLeftRadius: 10,
+            borderTopRightRadius: 10
+        }
+    };
+
     const packs = {
         favourited: {
             active: require("assets/eva-icons/post-actions/heart-active.png"),
@@ -219,6 +183,27 @@ const CommentJsx = (props) => {
                             style = { [styles.heart, styles.action] }
                             source = { activeOrNot(props.data.favourited, packs.favourited) } />
                     </TouchableOpacity>
+                    <View style = { { paddingLeft: 10, } }>
+                        <Menu renderer = { SlideInMenu }>
+                            <MenuTrigger>
+                                <FontAwesome name="ellipsis-h" size={18} color="#666" />
+                            </MenuTrigger>
+                            <MenuOptions customStyles = { menuOptionsStyles }>
+                                { props.profile.acct == props.data.account.acct
+                                    ? <>
+                                        <MenuOption
+                                            onSelect = { props.onDelete(props.data) }
+                                            text = "Delete" />
+                                    </>
+                                    : <>
+                                        <MenuOption text = "Report" />
+                                        <MenuOption text = "Mute" />
+                                        <MenuOption text = "Block" />
+                                    </>
+                                }
+                            </MenuOptions>
+                        </Menu>
+                    </View>
                 </View>
             </View>
         </View>
@@ -262,6 +247,17 @@ const ViewCommentsJsx = (props) => {
             });
     }, []);
 
+    const _fetchNewThreads = async () => {
+        // Fetch an updated context to rerender the page
+        const { descendants } = await requests.fetchStatusContext(
+            state.instance,
+            state.postData.id,
+            state.accessToken,
+        );
+
+        return threadify(descendants);
+    }
+
     const _onReplyFactory = (acct, id) => {
         return () => {
             setState({...state,
@@ -289,18 +285,33 @@ const ViewCommentsJsx = (props) => {
                 )
             }
 
-            // Fetch the updated context to rerender the page
-            const newContext = await requests.fetchStatusContext(
-                state.instance,
-                state.postData.id,
-                state.accessToken,
-            );
-
             setState({...state,
-                descendants: threadify(newContext.descendants),
+                descendants: await _fetchNewThreads(),
             });
         }
     }
+
+    const _onDeleteFactory = data => {
+        return async () => {
+            await requests.deleteStatus(
+                state.instance,
+                data.id,
+                state.accessToken,
+            );
+
+            // NOTE: It appears that it takes a moment for the Context of a
+            // post to register that a comment has been deleted, so instead
+            // of waiting for it, it's more efficient to just drop the comment
+            // on the client side.
+            const newThreads = state.descendants.map(thread =>
+                thread.filter(comment => comment.id != data.id)
+            ).filter(thread => thread.length > 0);
+
+            setState({...state,
+                descendants: newThreads,
+            });
+        };
+    };
 
     const _handleCancelSubReply = () => {
         setState({...state,
@@ -322,25 +333,28 @@ const ViewCommentsJsx = (props) => {
                 }
             );
 
-            // Fetch the updated context to rerender the page
-            const newContext = await requests.fetchStatusContext(
-                state.instance,
-                state.postData.id,
-                state.accessToken,
-            );
-
             setState({...state,
-                descendants: threadify(newContext.descendants),
-
-                //Reset the comment form
+                // Reset the comment form
                 inReplyTo: {
                     acct: state.postData.account.acct,
                     id: state.postData.id,
                 },
                 reply: "",
+
+                // Retrieve updated context
+                descendants: await _fetchNewThreads(),
             });
         }
     };
+
+    const PartialComment = (props) => (
+        <CommentJsx
+            { ...props }
+            profile = { state.profile }
+            onFavourite = { _onFavouriteFactory }
+            onReply = { _onReplyFactory }
+            onDelete = { _onDeleteFactory } />
+    );
 
     return (
         <>
@@ -352,9 +366,7 @@ const ViewCommentsJsx = (props) => {
                         { state.loaded
                             ? <View>
                                 <View style = { styles.parentPost }>
-                                    <CommentJsx
-                                        onFavourite = { _onFavouriteFactory }
-                                        onReply = { _onReplyFactory }
+                                    <PartialComment
                                         data = { state.postData } />
                                 </View>
                                 <View>
@@ -364,9 +376,7 @@ const ViewCommentsJsx = (props) => {
                                             const subs = thread.slice(1);
                                             return (
                                                 <View key = { i }>
-                                                    <CommentJsx
-                                                        onFavourite = { _onFavouriteFactory }
-                                                        onReply = { _onReplyFactory }
+                                                    <PartialComment
                                                         data = { comment }/>
                                                     {
                                                         subs.map((sub, j) => {
@@ -374,9 +384,7 @@ const ViewCommentsJsx = (props) => {
                                                                 <View
                                                                       key = { j }
                                                                       style = { styles.sub }>
-                                                                    <CommentJsx
-                                                                        onFavourite = { _onFavouriteFactory }
-                                                                        onReply = { _onReplyFactory }
+                                                                    <PartialComment
                                                                         data = { sub }/>
                                                                 </View>
                                                             )
@@ -421,6 +429,7 @@ const ViewCommentsJsx = (props) => {
                                 style = { styles.commentInput }
                                 placeholder = "Say something..."
                                 multiline = { true }
+                                value = { state.reply }
                                 onChangeText = { c => setState({...state, reply: c }) }/>
                             <View style = { styles.submitContainer }>
                                 <TouchableOpacity onPress = { _handleSubmitReply }>
