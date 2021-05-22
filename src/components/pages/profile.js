@@ -71,29 +71,22 @@ const ViewProfileJsx = ({navigation}) => {
             .multiGet(["@user_profile", "@user_instance", "@user_token"])
             .then(([ ownProfilePair, ownDomainPair, tokenPair ]) => {
                 ownProfile = JSON.parse(ownProfilePair[1]);
-                ownDomain = ownDomainPair[1];
+                instance = ownDomainPair[1];
                 accessToken = JSON.parse(tokenPair[1]).access_token;
-
-                const parsedAcct = state.profile.acct.split("@");
-                domain = parsedAcct.length == 1
-                    ? ownDomain // There's no @ in the acct, thus it's a local user
-                    : parsedAcct [1] // The part of profile.acct after the @
 
                 return Promise.all([
                     requests.fetchFollowing(
-                        ownDomain,
+                        instance,
                         ownProfile.id,
                         accessToken
                     ),
                     requests.fetchFollowers(
-                        domain,
+                        instance,
                         state.profile.id,
                         accessToken
                     ),
                     requests.fetchAccountStatuses(
-                        // NOTE: Should be fetched from remote instance if
-                        // necessary Thus, we use domain and not ownDomain
-                        domain,
+                        instance,
                         state.profile.id,
                         accessToken
                     )

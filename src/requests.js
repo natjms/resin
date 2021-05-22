@@ -55,7 +55,7 @@ export async function postForm(url, data, token = false) {
 export async function get(url, token = false, data = false) {
     let completeURL;
     if (data) {
-        let params = new URLSearchParams(data)
+        let params = new URLSearchParams(data);
         completeURL = `${url}?${params.toString()}`;
     } else {
         completeURL = url;
@@ -108,6 +108,15 @@ export async function fetchHomeTimeline(domain, token, params = false) {
 export async function fetchPublicTimeline(domain, token, params = false) {
     const resp = await get(
         `https://${domain}/api/v1/timelines/public`,
+        token,
+        params
+    );
+    return resp.json();
+}
+
+export async function fetchSearchResults(domain, token, params) {
+    const resp = await get(
+        `https://${domain}/api/v2/search`,
         token,
         params
     );
