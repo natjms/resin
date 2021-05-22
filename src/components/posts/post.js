@@ -118,13 +118,14 @@ export const RawPostJsx = (props) => {
                         </>
                         : <>
                             <MenuOption
+                                onSelect = { props.onHide }
                                 text = "Don't show me their posts"/>
                             <MenuOption
+                                onSelect = { props.onMute }
                                 text = "Mute" />
                             <MenuOption
+                                onSelect = { props.onBlock }
                                 text = "Block" />
-                            <MenuOption
-                                text = "Report" />
                         </>
                     }
                 </ContextMenuJsx>
@@ -311,7 +312,46 @@ export const PostByDataJsx = (props) => {
                 deleted: true,
             });
         }
-    }
+    };
+
+    const _handleHide = async () => {
+        await requests.muteAccount(
+            state.instance,
+            state.data.account.id,
+            state.accessToken,
+
+            // Thus, only "mute" statuses
+            { notifications: false, }
+        );
+
+        if (props.afterModerate) {
+            props.afterModerate();
+        }
+    };
+
+    const _handleMute = async () => {
+        await requests.muteAccount(
+            state.instance,
+            state.data.account.id,
+            state.accessToken,
+        );
+
+        if (props.afterModerate) {
+            props.afterModerate();
+        }
+    };
+
+    const _handleBlock = async () => {
+        await requests.blockAccount(
+            state.instance,
+            state.data.account.id,
+            state.accessToken,
+        );
+
+        if (props.afterModerate) {
+            props.afterModerate();
+        }
+    };
 
     return (
         <View>
@@ -323,6 +363,9 @@ export const PostByDataJsx = (props) => {
                     onReblog = { _handleReblog }
                     onBookmark = { _handleDelete }
                     onDelete = { _handleDelete }
+                    onHide = { _handleHide }
+                    onMute = { _handleMute }
+                    onBlock = { _handleBlock }
                     own = { state.own }
                     navigation = { props.navigation }/>
                 : <View></View> }

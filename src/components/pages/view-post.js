@@ -21,6 +21,9 @@ const ViewPostJsx = ({navigation}) => {
                 afterDelete = {
                     () => navigation.goBack()
                 }
+                afterModerate = {
+                    () => navigation.goBack()
+                }
                 data = { state.post } />
         </ScreenWithBackBarJsx>
     );

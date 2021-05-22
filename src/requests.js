@@ -39,11 +39,11 @@ export async function checkUnreadNotifications() {
     }
 }
 
-export async function postForm(url, data, token = false) {
+export async function postForm(url, data = false, token = false) {
     // Send a POST request with data formatted with FormData returning JSON
     const resp = await fetch(url, {
         method: "POST",
-        body: objectToForm(data),
+        body: data ? objectToForm(data): {},
         headers: token
             ? { "Authorization": `Bearer ${token}`, }
             : {},
@@ -100,6 +100,26 @@ export async function fetchProfile(domain, id) {
 
 export async function fetchAccountStatuses(domain, id, token) {
     const resp = await get(`https://${domain}/api/v1/accounts/${id}/statuses`, token);
+    return resp.json();
+}
+
+export async function muteAccount(domain, id, token, params = false) {
+    const resp = await postForm(`https://${domain}/api/v1/accounts/${id}/mute`, params, token);
+    return resp.json();
+}
+
+export async function unmuteAccount(domain, id, token) {
+    const resp = await post(`https://${domain}/api/v1/accounts/${id}/unmute`, token);
+    return resp.json();
+}
+
+export async function blockAccount(domain, id, token) {
+    const resp = await post(`https://${domain}/api/v1/accounts/${id}/block`, token);
+    return resp.json();
+}
+
+export async function unblockAccount(domain, id, token) {
+    const resp = await post(`https://${domain}/api/v1/accounts/${id}/unblock`, token);
     return resp.json();
 }
 
