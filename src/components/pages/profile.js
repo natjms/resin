@@ -66,7 +66,7 @@ const ViewProfileJsx = ({navigation}) => {
     });
 
     useEffect(() => {
-        let ownProfile, ownDomain, accessToken, domain;
+        let ownProfile, instance, accessToken, domain;
         AsyncStorage
             .multiGet(["@user_profile", "@user_instance", "@user_token"])
             .then(([ ownProfilePair, ownDomainPair, tokenPair ]) => {
@@ -96,10 +96,35 @@ const ViewProfileJsx = ({navigation}) => {
                 setState({...state,
                     mutuals: getMutuals(ownFollowing, theirFollowers),
                     posts: posts,
+                    instance,
+                    ownProfile,
+                    accessToken,
+                    followed: ownFollowing.some(x => x.id == state.profile.id),
                     loaded: true,
                 });
             });
     }, []);
+
+    const _handleFollow = async () => {
+        if (!state.followed) {
+            await requests.followAccount(
+                state.instance,
+                state.profile.id,
+                state.accessToken
+            );
+        } else {
+            await requests.unfollowAccount(
+                state.instance,
+                state.profile.id,
+                state.accessToken
+            );
+        }
+
+        setState({...state,
+            followed: !state.followed,
+        });
+    };
+
     return (
         <>
             { state.loaded
@@ -107,9 +132,10 @@ const ViewProfileJsx = ({navigation}) => {
                       active = { navigation.getParam("originTab") }
                       navigation = { navigation }>
                     <RawProfileJsx
+                        onFollow = { _handleFollow }
                         profile = { state.profile }
                         mutuals = { state.mutuals }
-                        notifs = { state.notifs }
+                        followed = { state.followed }
                         posts = { state.posts }/>
                 </ScreenWithBackBarJsx>
                 : <></>
@@ -197,16 +223,27 @@ const RawProfileJsx = (props) => {
                         props.navigation.navigate("Settings");
                     }
                   }>
-                <View style = { styles.button }>
-                    <Text style = { styles.buttonText }>Settings</Text>
+                <View style = { styles.button.container }>
+                    <Text style = { styles.button.text }>Settings</Text>
                 </View>
             </TouchableOpacity>
         );
     } else {
         profileButton = (
-            <TouchableOpacity onPress = { _handleFollow }>
-                <View style = { styles.button }>
-                    <Text style = { styles.buttonText }>Follow</Text>
+            <TouchableOpacity onPress = { props.onFollow }>
+                <View style = { [
+                        styles.button.container,
+                        props.followed ? styles.button.dark : {},
+                      ] }>
+                    <Text style = {[
+                            styles.button.text,
+                            props.followed ? styles.button.darkText : {},
+                          ]}>
+                        { props.followed
+                            ? "Unfollow"
+                            : "Follow"
+                        }
+                    </Text>
                 </View>
             </TouchableOpacity>
         )
@@ -373,15 +410,17 @@ const styles = {
         textDecorationLine: "underline"
     },
     button: {
-        borderWidth: 1,
-        borderColor: "#888",
-        borderRadius: 5,
+        container: {
+            borderWidth: 1,
+            borderColor: "#888",
+            borderRadius: 5,
 
-        padding: 10,
-        marginTop: 10
-    },
-    buttonText: {
-        textAlign: "center"
+            padding: 10,
+            marginTop: 10
+        },
+        dark: { backgroundColor: "black", },
+        text: { textAlign: "center" },
+        darkText: { color: "white", },
     },
     strong: {
         fontWeight: "bold",

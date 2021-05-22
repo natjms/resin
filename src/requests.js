@@ -137,6 +137,16 @@ export async function fetchFollowers(domain, id, token) {
     return resp.json();
 }
 
+export async function followAccount(domain, id, token) {
+    const resp = await post(`https://${domain}/api/v1/accounts/${id}/follow`, token);
+    return resp.json();
+}
+
+export async function unfollowAccount(domain, id, token) {
+    const resp = await post(`https://${domain}/api/v1/accounts/${id}/unfollow`, token);
+    return resp.json();
+}
+
 export async function fetchHomeTimeline(domain, token, params = false) {
     const resp = await get(
         `https://${domain}/api/v1/timelines/home`,
