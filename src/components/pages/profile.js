@@ -21,7 +21,8 @@ import {
     ScreenWithBackBarJsx,
 } from "src/components/navigation/navigators";
 
-import ModerateMenuJsx from "src/components/moderate-menu.js";
+import { MenuOption } from "react-native-popup-menu";
+import ContextMenuJsx from "src/components/context-menu.js";
 
 function getMutuals(yourFollowing, theirFollowers) {
     // Where yours and theirs are arrays of followers, as returned by the API
@@ -125,6 +126,39 @@ const ViewProfileJsx = ({navigation}) => {
         });
     };
 
+    const _handleHide = async () => {
+        await requests.muteAccount(
+            state.instance,
+            state.profile.id,
+            state.accessToken,
+
+            // Thus, only "mute" statuses
+            { notifications: false, }
+        );
+
+        navigation.goBack();
+    };
+
+    const _handleMute = async () => {
+        await requests.muteAccount(
+            state.instance,
+            state.profile.id,
+            state.accessToken,
+        );
+
+        navigation.goBack();
+    };
+
+    const _handleBlock = async () => {
+        await requests.blockAccount(
+            state.instance,
+            state.profile.id,
+            state.accessToken,
+        );
+
+        navigation.goBack();
+    };
+
     return (
         <>
             { state.loaded
@@ -134,6 +168,9 @@ const ViewProfileJsx = ({navigation}) => {
                     <RawProfileJsx
                         navigation = { navigation }
                         onFollow = { _handleFollow }
+                        onHide = { _handleHide }
+                        onMute = { _handleMute }
+                        onBlock = { _handleBlock }
                         profile = { state.profile }
                         mutuals = { state.mutuals }
                         followed = { state.followed }
@@ -285,9 +322,20 @@ const RawProfileJsx = (props) => {
                                         style = { styles.profileHeaderIcon } />
                                 </TouchableOpacity>
                             </View>
-                        : <ModerateMenuJsx
-                            triggerStyle = { styles.profileHeaderIcon }
-                            containerStyle = { styles.profileContextContainer } />
+                        : <ContextMenuJsx
+                              containerStyle = {
+                                  styles.profileContextContainer
+                              }>
+                            <MenuOption
+                                onSelect = { props.onHide }
+                                text = "Don't show me their posts" />
+                            <MenuOption
+                                onSelect = { props.onMute }
+                                text = "Mute" />
+                            <MenuOption
+                                onSelect = { props.onBlock }
+                                text = "Block" />
+                        </ContextMenuJsx>
                     }
                 </View>
                 <Text style = { styles.accountStats }>

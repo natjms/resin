@@ -37,7 +37,7 @@ const ContextMenuJsx = (props) => {
                     <FontAwesome
                         name = "ellipsis-h"
                         size = { props.size ? props.size : 24 }
-                        color = { props.colour ? props.colour : "black" } />
+                        color = { props.colour ? props.colour : "#666" } />
                 </MenuTrigger>
                 <MenuOptions customStyles = { optionsStyles }>
                     { props.children }
