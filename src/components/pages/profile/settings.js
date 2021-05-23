@@ -9,48 +9,21 @@ import {
     TouchableOpacity,
     Dimensions,
 } from "react-native";
+import { FontAwesome } from '@expo/vector-icons';
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as requests from "src/requests";
+
+import * as ImagePicker from 'expo-image-picker';
 
 import { withoutHTML } from "src/interface/rendering";
-import * as requests from "src/requests";
 
 import { ScreenWithBackBarJsx } from "src/components/navigation/navigators";
 
-const TEST_IMAGE = "https://cache.desktopnexus.com/thumbseg/2255/2255124-bigthumbnail.jpg";
-const TEST_PROFILE = {
-    username: "njms",
-    acct: "njms",
-    display_name: "Nat🔆",
-    locked: false,
-    bot: false,
-    note: "Yeah heart emoji.",
-    avatar: TEST_IMAGE,
-    followers_count: "1 jillion",
-    statuses_count: 334,
-    fields: [
-        {
-            name: "Blog",
-            value: "<a href=\"https://njms.ca\">https://njms.ca</a>",
-            verified_at: "some time"
-        },
-        {
-            name: "Github",
-            value: "<a href=\"https://github.com/natjms\">https://github.com/natjms</a>",
-            verified_at: null
-        }
-    ]
-};
-
 const SettingsJsx = (props) => {
     const [state, setState] = useState({
-        // Use Context to get this stuff eventually
-        profile: TEST_PROFILE,
-        newProfile: TEST_PROFILE,
         loaded: false,
     });
-
-    const fields = state.newProfile.fields;
 
     const _handleLogout = async () => {
         await requests.postForm(
@@ -96,14 +69,66 @@ const SettingsJsx = (props) => {
 
                 setState({...state,
                     profile: profile,
-                    newProfile: newProfile,
                     instance: instance,
                     appObject: appObject,
-                    token: token,
+                    accessToken: token.access_token,
+
+                    // Malleable props that will actually go towards updating
+                    // the profile credentials
+                    locked: profile.locked,
+                    newAvatar: {
+                        uri: profile.avatar,
+                    },
+                    display_name: profile.display_name,
+                    note: profile.note,
+
                     loaded: true,
                 })
             });
     }, []);
+
+    const _handleChangeProfilePhoto = async () => {
+        await ImagePicker.getCameraRollPermissionsAsync()
+
+        const { base64, uri } = await ImagePicker.launchImageLibraryAsync({
+            allowsEditing: true,
+            aspect: [1, 1],
+        });
+
+        setState({...state,
+            newAvatar: {
+                base64,
+                uri,
+            },
+        });
+    };
+
+    const _handleSaveProfile = async () => {
+        let params = {
+            display_name: state.display_name,
+            note: state.note,
+            locked: state.locked,
+        };
+        if (state.newAvatar.base64) {
+            let blob = fetch(state.newAvatar.base64).then(res => res.blob());
+            let filename = uri.split("/")[uri.split("/").length - 1];
+
+            params.avatar = new File([blob], filename);
+        }
+
+        const newProfile = await fetch(
+            `https://${state.instance}/api/v1/accounts/update_credentials`,
+            {
+                method: "PATCH",
+                body: requests.objectToForm(params),
+                headers: { "Authorization": `Bearer ${state.accessToken}`, }
+            }
+        ).then(resp => resp.json());
+
+        await AsyncStorage.setItem("@user_profile", JSON.stringify(newProfile));
+
+        props.navigation.navigate("Profile");
+    };
 
     return (
         <>
@@ -111,9 +136,9 @@ const SettingsJsx = (props) => {
                 ? <ScreenWithBackBarJsx navigation = { props.navigation }>
                     <View style = { styles.avatar.container }>
                         <Image
-                            source = { { uri: state.profile.avatar } }
+                            source = { { uri: state.newAvatar.uri } }
                             style = { styles.avatar.image }/>
-                        <TouchableOpacity>
+                        <TouchableOpacity onPress = { _handleChangeProfilePhoto }>
                             <Text style = { styles.avatar.change }>
                                 Change profile photo
                             </Text>
@@ -124,24 +149,11 @@ const SettingsJsx = (props) => {
                         <TextInput
                             style = { styles.bar }
                             placeholder = { "Display name" }
-                            value = { state.newProfile.display_name }
+                            value = { state.display_name }
                             onChangeText = {
                                 (value) => {
                                     setState({...state,
-                                        newProfile: {...state.newProfile, display_name: value}
-                                    });
-                                }
-                            }/>
-
-                        <Text style = { styles.label }>User name</Text>
-                        <TextInput
-                            style = { styles.bar }
-                            placeholder = { "User name" }
-                            value = { state.newProfile.username }
-                            onChangeText = {
-                                (value) => {
-                                    setState({...state,
-                                        newProfile: {...state.newProfile, username: value}
+                                        display_name: value,
                                     });
                                 }
                             }/>
@@ -156,110 +168,40 @@ const SettingsJsx = (props) => {
                             }
                             multiline = { true }
                             placeholder = { "Bio" }
-                            value = { withoutHTML(state.newProfile.note) }
+                            // HACK: Using withoutHTML here is dangerous
+                            value = { withoutHTML(state.note) }
                             onChangeText = {
                                 (value) => {
                                     setState({...state,
-                                        newProfile: {...state.newProfile, note: value}
+                                        note: value
                                     });
                                 }
                             }/>
-                        {
-                            fields.map((field, i) =>
-                                <View
-                                      style = { styles.fields.container }
-                                      key = { i }>
-                                    <TouchableOpacity
-                                          onPress = {
-                                            () => {
-                                                let newFields;
-                                                if (fields.length == 1) {
-                                                    newFields = [{ name: "", value: "" }];
-                                                } else {
-                                                    newFields = state.newProfile.fields;
-                                                    newFields.splice(i, 1);
-                                                }
 
-                                                setState({...state,
-                                                    newProfile: {...state.newProfile,
-                                                        fields: newFields,
-                                                    },
-                                                });
-                                            }
-                                          }>
-                                        <Image
-                                            style = {
-                                                [
-                                                    styles.fields.cross,
-                                                    fields.length == 1
-                                                      && fields[0].name == ""
-                                                      && fields[0].value == ""
-                                                        ? { visibility: "hidden" }
-                                                        : {}
-                                                ]
-                                            }
-                                            source = { require("assets/eva-icons/close.png") }/>
-                                    </TouchableOpacity>
-                                    <View style = { styles.fields.subContainer }>
-                                        <Text style = { styles.label }>Name</Text>
-                                        <TextInput
-                                            style = { [styles.bar, styles.fields.cell] }
-                                            placeholder = { "Name" }
-                                            value = { withoutHTML(fields[i].name) }
-                                            onChangeText = {
-                                                (text) => {
-                                                    let newFields = fields;
-                                                    newFields[i] = {...newFields[i],
-                                                        name: text,
-                                                    };
-
-                                                    setState({...state,
-                                                        newProfile: {...state.newProfile,
-                                                            fields: newFields,
-                                                        },
-                                                    });
-                                                }
-                                            } />
-                                    </View>
-                                    <View style = { styles.fields.subContainer }>
-                                        <Text style = { styles.label }>Value</Text>
-                                        <TextInput
-                                            style = { [styles.bar, styles.fields.cell] }
-                                            placeholder = { "Value" }
-                                            value = { withoutHTML(fields[i].value) }
-                                            onChangeText = {
-                                                (text) => {
-                                                    let newFields = fields;
-                                                    newFields[i] = {...newFields[i],
-                                                        value: text,
-                                                    };
-
-                                                    setState({...state,
-                                                        newProfile: {...state.newProfile,
-                                                            fields: newFields,
-                                                        },
-                                                    });
-                                                }
-                                            } />
-                                    </View>
-                                </View>
-                            )
-                        }
                         <TouchableOpacity
                               onPress = {
-                                () => {
+                                () => (
                                     setState({...state,
-                                        newProfile: {...state.newProfile,
-                                            fields: state.newProfile.fields.concat({ name: "", value: ""}),
-                                        },
-                                    });
-                                }
+                                        locked: !state.locked
+                                    })
+                                )
                               }>
-                            <Image
-                                style = { styles.fields.plus }
-                                source = { require("assets/eva-icons/plus.png") } />
+                            <View style = { styles.check.container }>
+                                <>
+                                    { !state.locked
+                                        ? <FontAwesome name="square-o" size={24} color="black" />
+                                        : <FontAwesome name="check-square-o" size={24} color="black" />
+                                    }
+                                </>
+                                <Text style = { styles.check.label }>
+                                    Manually approve follow requests?
+                                </Text>
+                            </View>
                         </TouchableOpacity>
-                        <TouchableOpacity style = { styles.button.container }>
+
+                        <TouchableOpacity
+                              onPress = { _handleSaveProfile }
+                              style = { styles.button.container }>
                             <Text style = { styles.button.text }> Save Profile </Text>
                         </TouchableOpacity>
                         <TouchableOpacity
@@ -314,30 +256,14 @@ const styles = {
             padding: 10,
         },
     },
-    fields: {
+    check: {
         container: {
-            flex: 1,
             flexDirection: "row",
-            alignItems: "flex-end",
+            alignItems: "center",
+            padding: 10,
         },
-        cross: {
-            width: 30,
-            height: 30,
-            marginRight: 10,
-            marginBottom: 10,
-        },
-        plus: {
-            width: 30,
-            height: 30,
-            marginLeft: "auto",
-            marginRight: "auto",
-            marginTop: 10,
-        },
-        subContainer: {
-            flexGrow: 0.5,
-        },
-        cell: {
-            width: SCREEN_WIDTH / 2.5,
+        label: {
+            paddingLeft: 10,
         },
     },
     button: {

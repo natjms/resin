@@ -4,7 +4,7 @@ const TEST_NOTIFICATIONS = [{ id: 1 }, { id: 2 }];
 const TEST_NEW_NOTIFICATIONS_1 = [{ id: 1 }, { id: 2 }];
 const TEST_NEW_NOTIFICATIONS_2 = [{ id: 1 }, { id: 2 }, { id: 3 }];
 
-function objectToForm(obj) {
+export function objectToForm(obj) {
     let form = new FormData();
 
     Object.keys(obj).forEach(key =>
