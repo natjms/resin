@@ -271,7 +271,7 @@ const HashtagListJsx = (props) => {
                                  key = { i }
                                  thumbnail = { require("assets/hashtag.png") }
                                  callback = { props.callback }
-                                 navParams = { { hashtag: item } }>
+                                 navParams = { { tag: item } }>
                                 <Text style = { styles.username }>
                                     #{ item.name }
                                 </Text>

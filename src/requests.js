@@ -206,6 +206,15 @@ export async function fetchPublicTimeline(domain, token, params = false) {
     return resp.json();
 }
 
+export async function fetchHashtagTimeline(domain, hashtag, token, params = false) {
+    const resp = await get(
+        `https://${domain}/api/v1/timelines/tag/${hashtag}`,
+        token,
+        params
+    );
+    return resp.json();
+}
+
 export async function fetchConversations(domain, token, params = false) {
     const resp = await get(
         `https://${domain}/api/v1/conversations`,
