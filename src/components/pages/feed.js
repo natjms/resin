@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Dimensions, View, Image, Text } from "react-native";
+import { Ionicons } from '@expo/vector-icons';
 
 import TimelineViewJsx from "src/components/posts/timeline-view";
 import { ScreenWithTrayJsx } from "src/components/navigation/navigators";
@@ -57,7 +58,7 @@ const FeedJsx = (props) => {
             })
             .then(() =>
                 setState({...state,
-                    posts: posts,
+                    posts,
                     loaded: true,
                 })
             );
@@ -68,25 +69,35 @@ const FeedJsx = (props) => {
             { state.loaded
                 ? <ScreenWithTrayJsx
                         active = "Feed"
+                        contentContainerStyle = {
+                            state.posts.length == 0
+                                ? styles.ifCaughtUp
+                                : {}
+                        }
                         navigation = { props.navigation }>
 
                     <TimelineViewJsx
                             navigation = { props.navigation }
                             posts = { state.posts } />
-                    <View style = { styles.interruptionOuter }>
+                    <View style = {
+                            state.posts.length == 0
+                                ? {}
+                                : styles.interruption.topBorder
+                          }>
 
-                        <View style = { styles.interruption }>
-                            <Image
-                                source = { checkmark }
-                                style = { styles.checkmark }/>
+                        <View style = { styles.interruption.inner }>
+                            <Ionicons
+                                name="ios-checkmark-circle-outline"
+                                size= { 150 }
+                                color="black" />
 
-                            <Text style = { styles.interruptionHeader }>
+                            <Text style = { styles.interruption.header }>
                                 You're all caught up.
                             </Text>
                             <Text> Wow, it sure is a lovely day outside 🌳 </Text>
 
                             <TouchableWithoutFeedback
-                                    style = { styles.buttonOlder }
+                                    style = { styles.interruption.button }
                                     onPress = {
                                         () => props.navigation.navigate("OlderPosts")
                                     }>
@@ -107,32 +118,34 @@ const styles = {
     timeline: {
         height: screen_height - (screen_height / 12)
     },
-    interruptionOuter: {
-        borderTopWidth: 1,
-        borderTopColor: "#CCC",
+    ifCaughtUp: {
+        flexGrow: 1,
+        justifyContent: "center",
     },
     interruption: {
-        marginTop: 10,
-        marginBottom: 10,
+        topBorder: {
+            borderTopWidth: 1,
+            borderTopColor: "#CCC",
+        },
+        inner: {
+            marginTop: 10,
+            marginBottom: 10,
 
-        justifyContent: "center",
-        alignItems: "center",
-    },
-    interruptionHeader: {
-        fontSize: 21
-    },
-    checkmark: {
-        width: screen_width * 0.3,
-        height: screen_width * 0.3
-    },
-    buttonOlder: {
-        borderWidth: 1,
-        borderColor: "#888",
-        borderRadius: 5,
+            justifyContent: "center",
+            alignItems: "center",
+        },
+        header: {
+            fontSize: 21
+        },
+        button: {
+            borderWidth: 1,
+            borderColor: "#888",
+            borderRadius: 5,
 
-        margin: 30,
-        padding: 5
-    }
+            margin: 30,
+            padding: 5
+        },
+    },
 };
 
 export default FeedJsx;

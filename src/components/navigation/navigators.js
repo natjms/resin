@@ -9,7 +9,7 @@ import TrayJsx from "src/components/navigation/tray";
 export const ScreenWithTrayJsx = (props) => {
     return (
         <SafeAreaView style = { { flex: 1 } }>
-            <ScrollView>
+            <ScrollView contentContainerStyle = { props.contentContainerStyle }>
                 <StatusBarSpace
                     color = {
                         props.statusBarColor
