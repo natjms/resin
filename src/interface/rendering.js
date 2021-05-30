@@ -22,6 +22,25 @@ export function pluralize(n, singular, plural) {
     }
 }
 
+export function getAutoHeight(w1, h1, w2) {
+    /*
+    Given the original dimensions and the new width, calculate what would
+    otherwise be the "auto" height of the image.
+
+    Just so that nobody has to ever work out this algebra again:
+
+    Let {w1, h1} = the width and height of the static image,
+        w2 = the new width,
+        h2 = the "auto" height of the scaled image of width w2:
+
+        w1/h1 = w2/h2
+        h2 * w1/h1 = w2
+        h2 = w2 / w1/h1
+        h2 = w2 * h1/w1
+    */
+    return w2 * (h1 / w1)
+}
+
 export function timeToAge(time1, time2) {
     /*
     Output a friendly string to describe the age of a post, where `time1` and

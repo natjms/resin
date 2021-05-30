@@ -13,6 +13,7 @@ import ViewCommentsJsx from "src/components/pages/view-comments.js";
 
 import AuthenticateJsx from "src/components/pages/authenticate";
 import FeedJsx from "src/components/pages/feed";
+import PublishJsx from "src/components/pages/publish";
 import OlderPostsJsx from "src/components/pages/feed/older-posts";
 import ProfileJsx, { ViewProfileJsx } from "src/components/pages/profile";
 import DiscoverJsx from 'src/components/pages/discover';
@@ -32,6 +33,7 @@ const Stack = createStackNavigator({
     Feed: { screen: FeedJsx, },
     OlderPosts: { screen: OlderPostsJsx },
     Discover: { screen: DiscoverJsx },
+    Publish: { screen: PublishJsx },
     Direct: { screen: DirectJsx },
     Compose: { screen: ComposeJsx },
     Conversation: { screen: ConversationJsx },

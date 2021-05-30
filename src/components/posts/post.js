@@ -8,7 +8,11 @@ import {
     ScrollView,
 } from "react-native";
 
-import { pluralize, timeToAge } from "src/interface/rendering"
+import {
+    pluralize,
+    timeToAge,
+    getAutoHeight,
+} from "src/interface/rendering";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as requests from "src/requests";
@@ -20,25 +24,6 @@ import ContextMenuJsx from "src/components/context-menu.js";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const TEST_IMAGE = "https://cache.desktopnexus.com/thumbseg/2255/2255124-bigthumbnail.jpg";
-
-function getAutoHeight(w1, h1, w2) {
-    /*
-    Given the original dimensions and the new width, calculate what would
-    otherwise be the "auto" height of the image.
-
-    Just so that nobody has to ever work out this algebra again:
-
-    Let {w1, h1} = the width and height of the static image,
-        w2 = the new width,
-        h2 = the "auto" height of the scaled image of width w2:
-
-        w1/h1 = w2/h2
-        h2 * w1/h1 = w2
-        h2 = w2 / w1/h1
-        h2 = w2 * h1/w1
-    */
-    return w2 * (h1 / w1)
-}
 
 function getDimensionsPromises(uris) {
     return uris.map(attachment => new Promise(resolve => {

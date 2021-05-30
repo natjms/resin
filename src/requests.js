@@ -39,14 +39,17 @@ export async function checkUnreadNotifications() {
     }
 }
 
-export async function postForm(url, data = false, token = false) {
+export async function postForm(url, data = false, token = false, contentType = false) {
     // Send a POST request with data formatted with FormData returning JSON
+    let headers = {};
+
+    if (token) headers["Authorization"] = `Bearer ${token}`;
+    if (contentType) headers["Content-Type"] = contentType;
+
     const resp = await fetch(url, {
         method: "POST",
-        body: data ? objectToForm(data): {},
-        headers: token
-            ? { "Authorization": `Bearer ${token}`, }
-            : {},
+        body: data ? objectToForm(data) : undefined,
+        headers,
     });
 
     return resp;
@@ -120,6 +123,11 @@ export async function blockAccount(domain, id, token) {
 
 export async function unblockAccount(domain, id, token) {
     const resp = await post(`https://${domain}/api/v1/accounts/${id}/unblock`, token);
+    return resp.json();
+}
+
+export async function publishMediaAttachment(domain, token, params) {
+    const resp = await postForm(`https://${domain}/api/v1/media`, params, token, "multipart/form-data");
     return resp.json();
 }
 

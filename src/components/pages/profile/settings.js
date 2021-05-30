@@ -90,15 +90,18 @@ const SettingsJsx = (props) => {
     const _handleChangeProfilePhoto = async () => {
         await ImagePicker.getCameraRollPermissionsAsync()
 
-        const { base64, uri } = await ImagePicker.launchImageLibraryAsync({
+        const { uri, type } = await ImagePicker.launchImageLibraryAsync({
             allowsEditing: true,
             aspect: [1, 1],
         });
 
+        const name = uri.split("/").slice(-1)[0];
+
         setState({...state,
             newAvatar: {
-                base64,
                 uri,
+                type,
+                name,
             },
         });
     };
@@ -109,11 +112,10 @@ const SettingsJsx = (props) => {
             note: state.note,
             locked: state.locked,
         };
-        if (state.newAvatar.base64) {
-            let blob = fetch(state.newAvatar.base64).then(res => res.blob());
-            let filename = uri.split("/")[uri.split("/").length - 1];
 
-            params.avatar = new File([blob], filename);
+        // In other words, if a picture has been selected...
+        if (state.newAvatar.name) {
+            params.avatar = state.newAvatar;
         }
 
         const newProfile = await fetch(
