@@ -15,7 +15,7 @@ export function withoutHTML(string) {
 }
 
 export function pluralize(n, singular, plural) {
-    if (n < 2) {
+    if (n == 1) {
         return singular;
     } else {
         return plural;
