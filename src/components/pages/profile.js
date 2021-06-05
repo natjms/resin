@@ -95,7 +95,7 @@ const ViewProfileJsx = ({navigation}) => {
             })
             .then(([ ownFollowing, theirFollowers, posts ]) => {
                 setState({...state,
-                    mutuals: getMutuals(ownFollowing, theirFollowers),
+                    listedUsers: getMutuals(ownFollowing, theirFollowers),
                     posts: posts,
                     instance,
                     ownProfile,
@@ -172,7 +172,7 @@ const ViewProfileJsx = ({navigation}) => {
                         onMute = { _handleMute }
                         onBlock = { _handleBlock }
                         profile = { state.profile }
-                        mutuals = { state.mutuals }
+                        listedUsers = { state.listedUsers }
                         followed = { state.followed }
                         posts = { state.posts }/>
                 </ScreenWithBackBarJsx>
@@ -209,9 +209,10 @@ const ProfileJsx = ({ navigation }) => {
                 return Promise.all([
                     requests.fetchProfile(domain, profile.id),
                     requests.fetchAccountStatuses(domain, profile.id, accessToken),
+		    requests.fetchFollowers(domain, profile.id, accessToken),
                 ]);
             })
-            .then(([latestProfile, posts]) => {
+            .then(([latestProfile, posts, followers]) => {
                 if(JSON.stringify(latestProfile) != JSON.stringify(profile)) {
                     profile = latestProfile
                 }
@@ -220,6 +221,7 @@ const ProfileJsx = ({ navigation }) => {
                     profile: profile,
                     notifs: notifs,
                     posts: posts,
+		    listedUsers: followers,
                     loaded: true,
                 });
             });
@@ -236,6 +238,7 @@ const ProfileJsx = ({ navigation }) => {
                         own = { true }
                         profile = { state.profile }
                         posts = { state.posts }
+		    	listedUsers = { state.listedUsers }
                         notifs = { state.notifs }/>
                 </ScreenWithTrayJsx>
                 : <></>
@@ -347,6 +350,7 @@ const RawProfileJsx = (props) => {
                                     : "Your mutual followers with " + props.profile.display_name;
                                 props.navigation.navigate("UserList", {
                                     context: context,
+				    data: props.listedUsers,
                                 });
                             }
                           }>
@@ -355,9 +359,9 @@ const RawProfileJsx = (props) => {
                                 <>View followers</>
                                 : <>
                                     {
-                                        props.mutuals.length
+                                        props.listedUsers.length
                                             + pluralize(
-                                                props.mutuals.length,
+                                                props.listedUsers.length,
                                                 " mutual",
                                                 " mutuals"
                                             )

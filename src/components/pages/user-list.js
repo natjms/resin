@@ -11,42 +11,8 @@ import {
 import { ScreenWithBackBarJsx } from "src/components/navigation/navigators.js";
 import ModerateMenuJsx from "src/components/moderate-menu.js";
 
-const TEST_PROFILE = {
-    username: "njms",
-    acct: "njms",
-    display_name: "Nat🔆",
-    locked: false,
-    bot: false,
-    note: "Yeah heart emoji.",
-    avatar: "https://cache.desktopnexus.com/thumbseg/2255/2255124-bigthumbnail.jpg",
-    followers_count: "1 jillion",
-    statuses_count: 334,
-    fields: [
-        {
-            name: "Blog",
-            value: "<a href=\"https://njms.ca\">https://njms.ca</a>",
-            verified_at: "some time"
-        },
-        {
-            name: "Github",
-            value: "<a href=\"https://github.com/natjms\">https://github.com/natjms</a>",
-            verified_at: null
-        }
-    ]
-};
-
-const TEST_DATA = [
-    {...TEST_PROFILE, id: 1},
-    {...TEST_PROFILE, id: 2},
-    {...TEST_PROFILE, id: 3},
-    {...TEST_PROFILE, id: 4},
-    {...TEST_PROFILE, id: 5},
-    {...TEST_PROFILE, id: 6},
-]
-
 const UserListJsx = ({navigation}) => {
-    // const data = navigation.getParam("data", [])
-    const data = TEST_DATA;
+    const data = navigation.getParam("data", [])
     const context = navigation.getParam("context", "");
 
     return (
@@ -67,7 +33,7 @@ const UserListJsx = ({navigation}) => {
                           style = { styles.accountButton }
                           onPress = {
                             () => {
-                                navigation.navigate("Profile", { acct: item.acct });
+                                navigation.push("ViewProfile", { profile: item });
                             }
                           }>
                             <View style = { styles.flexContainer }>
