@@ -12,6 +12,7 @@ import { getAutoHeight } from "src/interface/rendering";
 import { ScreenWithTrayJsx } from "src/components/navigation/navigators";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
+import mime from "mime";
 import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from "expo-permissions";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -64,7 +65,7 @@ const PublishJsx = ({ navigation }) => {
                     image: {
                         data: {
                             uri,
-                            type,
+                            type: mime.getType(uri),
                             name,
                         },
                         width: newWidth,
@@ -86,7 +87,7 @@ const PublishJsx = ({ navigation }) => {
 
         const params = {
             status: state.caption,
-            media_ids: [mediaAttachment.id],
+            "media_ids[]": mediaAttachment.id,
             visibility: state.visibility,
         };
 
