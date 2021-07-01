@@ -10,6 +10,7 @@ import {
     Dimensions,
 } from "react-native";
 import { FontAwesome } from '@expo/vector-icons';
+import mime from "mime";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as requests from "src/requests";
@@ -90,7 +91,7 @@ const SettingsJsx = (props) => {
     const _handleChangeProfilePhoto = async () => {
         await ImagePicker.getCameraRollPermissionsAsync()
 
-        const { uri, type } = await ImagePicker.launchImageLibraryAsync({
+        const { uri } = await ImagePicker.launchImageLibraryAsync({
             allowsEditing: true,
             aspect: [1, 1],
         });
@@ -100,7 +101,7 @@ const SettingsJsx = (props) => {
         setState({...state,
             newAvatar: {
                 uri,
-                type,
+                type: mime.getType(uri),
                 name,
             },
         });
