@@ -55,7 +55,6 @@ const PublishJsx = ({ navigation }) => {
             })
             .then(({ uri, type, width, height }) => {
                 const name = uri.split("/").slice(-1)[0];
-                const newWidth = SCREEN_WIDTH * (3/4);
 
                 setState({...state,
                     loaded: true,
@@ -68,8 +67,8 @@ const PublishJsx = ({ navigation }) => {
                             type: mime.getType(uri),
                             name,
                         },
-                        width: newWidth,
-                        height: getAutoHeight(width, height, newWidth),
+                        width: SCREEN_WIDTH,
+                        height: getAutoHeight(width, height, SCREEN_WIDTH),
                     },
                 });
             });
@@ -143,9 +142,10 @@ const PublishJsx = ({ navigation }) => {
                     </View>
                     <View style = { styles.form.container }>
                         <TextInput
-                            placeholder = "Caption this post"
+                            placeholder = "Caption this post..."
                             value = { state.caption }
                             multiline
+                            autoFocus
                             onChangeText = {
                                 caption => setState({ ...state, caption })
                             }
@@ -155,17 +155,17 @@ const PublishJsx = ({ navigation }) => {
                         <Selector
                             visibility = "public"
                             active = { state.visibility }
-                            icon = "md-planet"
+                            icon = "globe-outline"
                             message = "Anyone can see this post" />
                         <Selector
                             visibility = "unlisted"
                             active = { state.visibility }
-                            icon = "md-unlock"
+                            icon = "lock-open-outline"
                             message = "Keep this post off public timelines" />
                         <Selector
                             visibility = "private"
                             active = { state.visibility }
-                            icon = "md-lock"
+                            icon = "lock-closed-outline"
                             message = "Only share this with my followers" />
 
                         <TouchableOpacity
@@ -184,6 +184,7 @@ const PublishJsx = ({ navigation }) => {
 };
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
+const SCREEN_HEIGHT = Dimensions.get("window").height;
 const styles = {
     preview: {
         container: {
@@ -192,6 +193,7 @@ const styles = {
         image: {
             marginLeft: "auto",
             marginRight: "auto",
+            height: SCREEN_HEIGHT / 3,
         },
     },
 
