@@ -89,7 +89,7 @@ const SettingsJsx = (props) => {
     }, []);
 
     const _handleChangeProfilePhoto = async () => {
-        await ImagePicker.getCameraRollPermissionsAsync()
+        await ImagePicker.getMediaLibraryPermissionsAsync()
 
         const { uri } = await ImagePicker.launchImageLibraryAsync({
             allowsEditing: true,

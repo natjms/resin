@@ -35,7 +35,7 @@ const PublishJsx = ({ navigation }) => {
                 instance = instancePair[1];
                 accessToken = JSON.parse(tokenPair[1]).access_token;
 
-                return Permissions.askAsync(Permissions.CAMERA_ROLL);
+                return ImagePicker.getMediaLibraryPermissionsAsync();
             })
             .then(({ granted }) => {
                 if (granted) {
