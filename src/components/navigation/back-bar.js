@@ -1,18 +1,19 @@
 import React from "react";
 import { Image } from "react-native";
 import { TouchableOpacity, View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
 const BackBarJsx = (props) => {
-    const backIcon = require("assets/eva-icons/back.png");
 
     return (
         <View style = { styles.nav }>
             <TouchableOpacity
                   onPress = { () => props.navigation.goBack() }
                   style = { styles.button }>
-                <Image
-                    style = { styles.chevron }
-                    source = { backIcon }/>
+                <Ionicons
+                    name = "chevron-back"
+                    color = "#000"
+                    size = { 30 }/>
             </TouchableOpacity>
             <View style = { styles.rest }>
                 { props.children }

@@ -7,6 +7,7 @@ import {
     Image,
     Text,
 } from "react-native";
+import { FontAwesome } from "@expo/vector-icons";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -303,9 +304,11 @@ const ReblogJsx = (props) => {
               thumbnailPressCallback = {
                 navigatePostFactory(props.navigation, props.data.status.id)
               }>
-            <Image
-                style = { styles.notif.inlineIcon }
-                source = { require("assets/eva-icons/post-actions/boost-full.png") } />
+            <FontAwesome
+                name = "retweet"
+                color = "#000"
+                size = { 20 }
+                style = { styles.notif.inlineIcon }/>
             <Text style = { styles.notif.content }>
                 <UserTextJsx acct = { props.data.account.acct } />
                 shared your post.
@@ -321,9 +324,11 @@ const FavouriteJsx = (props) => {
               thumbnailPressCallback = {
                 navigatePostFactory(props.navigation, props.data.status.id)
               }>
-            <Image
-                style = { styles.notif.inlineIcon }
-                source = { require("assets/eva-icons/post-actions/heart-active.png") } />
+            <FontAwesome
+                name = "heart"
+                size = { 20 }
+                color = "black"
+                style = { styles.notif.inlineIcon }/>
             <Text style = { styles.notif.content }>
                 <UserTextJsx acct = { props.data.account.acct } />
                 liked your post.
@@ -416,8 +421,6 @@ const styles = {
             alignItems: "center",
         },
         inlineIcon: {
-            width: 20,
-            height: 20,
             marginRight: 10,
         },
         status: { fontStyle: "italic" },

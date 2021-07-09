@@ -7,7 +7,7 @@ import {
     TextInput,
     Text
 } from "react-native";
-import { FontAwesome } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { ScrollView } from "react-native-gesture-handler";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -138,8 +138,8 @@ const CommentJsx = (props) => {
 
     const packs = {
         favourited: {
-            active: require("assets/eva-icons/post-actions/heart-active.png"),
-            inactive: require("assets/eva-icons/post-actions/heart-inactive.png")
+            active: "heart",
+            inactive: "heart-outline",
         }
     };
 
@@ -179,14 +179,18 @@ const CommentJsx = (props) => {
                     </TouchableOpacity>
                     <TouchableOpacity
                           onPress = { props.onFavourite(props.data) }>
-                        <Image
-                            style = { [styles.heart, styles.action] }
-                            source = { activeOrNot(props.data.favourited, packs.favourited) } />
+                        <Ionicons
+                            name = { activeOrNot(props.data.favourited, packs.favourited) }
+                            size = { 15 }
+                            style = { styles.action }/>
                     </TouchableOpacity>
                     <View style = { { paddingLeft: 10, } }>
                         <Menu renderer = { SlideInMenu }>
                             <MenuTrigger>
-                                <FontAwesome name="ellipsis-h" size={18} color="#666" />
+                                <Ionicons
+                                    name="ellipsis-horizontal"
+                                    size={18}
+                                    color="#666" />
                             </MenuTrigger>
                             <MenuOptions customStyles = { menuOptionsStyles }>
                                 { props.profile.acct == props.data.account.acct
@@ -409,7 +413,7 @@ const ViewCommentsJsx = (props) => {
                             { state.inReplyTo.id != state.postData.id
                                 ? <TouchableOpacity onPress = { _handleCancelSubReply }>
                                     <View style = { styles.form.inReplyTo.container }>
-                                        <FontAwesome name="close" size={24} color="#666" />
+                                        <Ionicons name="close" size={24} color="#666" />
                                         <Text style = { styles.form.inReplyTo.message }>
                                             &nbsp;Replying to&nbsp;
                                             <Text style = { styles.bold }>
@@ -433,9 +437,10 @@ const ViewCommentsJsx = (props) => {
                                 onChangeText = { c => setState({...state, reply: c }) }/>
                             <View style = { styles.submitContainer }>
                                 <TouchableOpacity onPress = { _handleSubmitReply }>
-                                    <Image
-                                        style = { styles.commentSubmit }
-                                        source = { require("assets/eva-icons/paper-plane.png") }/>
+                                    <Ionicons
+                                        name = "paper-plane-outline"
+                                        color = "black"
+                                        size = { 30 }/>
                                 </TouchableOpacity>
                             </View>
                         </View>

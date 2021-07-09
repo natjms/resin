@@ -6,22 +6,24 @@ import {
     Dimensions,
     TouchableOpacity
 } from "react-native";
+import { FontAwesome } from "@expo/vector-icons";
 import { activeOrNot } from "src/interface/interactions";
 
 const PostActionJsx = (props) => {
     return (
         <TouchableOpacity
-            onPress = { props.onPress }>
-            <Image
-                source = {
-                    activeOrNot(props.active, props.pack)
-                }
-                style = {
-                    [
-                        styles.icon,
-                        props.last ? styles.lastIcon : {}
-                    ]
-                } />
+              onPress = { props.onPress }>
+            <View style = { { marginLeft: SCREEN_WIDTH / 20 } }>
+                <FontAwesome
+                    name = { activeOrNot(props.active, props.pack) }
+                    size = { 24 }
+                    color = {
+                        activeOrNot(props.active, {
+                            active: "#000",
+                            inactive: "#888",
+                        })
+                    }/>
+            </View>
         </TouchableOpacity>
     )
 }
@@ -29,16 +31,16 @@ const PostActionJsx = (props) => {
 const PostActionBarJsx = (props) => {
     const icons = {
         heart: {
-            active: require("assets/eva-icons/post-actions/heart-active.png"),
-            inactive: require("assets/eva-icons/post-actions/heart-inactive.png")
+            active: "heart",
+            inactive: "heart-o",
         },
         reblog: {
-            active: require("assets/eva-icons/post-actions/reblog-active.png"),
-            inactive: require("assets/eva-icons/post-actions/reblog-inactive.png")
+            active: "retweet",
+            inactive: "retweet",
         },
         bookmark: {
-            active: require("assets/eva-icons/post-actions/bookmark-active.png"),
-            inactive: require("assets/eva-icons/post-actions/bookmark-inactive.png")
+            active: "bookmark",
+            inactive: "bookmark-o",
         }
     }
     return (
@@ -55,7 +57,6 @@ const PostActionBarJsx = (props) => {
 
             <PostActionJsx
                 pack = { icons.bookmark }
-                last = { true }
                 active = { props.bookmarked }
                 onPress = { props.onBookmark } />
         </View>
@@ -68,14 +69,6 @@ const styles = {
         flexDirection: "row",
         padding: SCREEN_WIDTH / 40
     },
-    icon: {
-        width: 30,
-        height: 30,
-        marginRight: SCREEN_WIDTH / 20
-    },
-    lastIcon: {
-        marginLeft: "auto"
-    }
 }
 
 export default PostActionBarJsx;

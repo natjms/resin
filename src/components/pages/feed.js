@@ -11,7 +11,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as requests from "src/requests";
 
 const FeedJsx = (props) => {
-    const checkmark = require("assets/eva-icons/checkmark-circle-large.png");
     const [state, setState] = useState({
         loaded: false,
     });

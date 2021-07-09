@@ -248,13 +248,6 @@ const ProfileJsx = ({ navigation }) => {
 };
 
 const RawProfileJsx = (props) => {
-    const notif_pack = {
-        active: require("assets/eva-icons/bell-unread.png"),
-        inactive: require("assets/eva-icons/bell-black.png")
-    }
-
-    const _handleFollow = () => {};
-
     let profileButton;
     if (props.own) {
         profileButton = (
@@ -307,25 +300,8 @@ const RawProfileJsx = (props) => {
                         </Text>
                     </View>
                     {
-                        props.own ?
-                            <View style = { styles.profileContextContainer }>
-                                <TouchableOpacity
-                                      onPress = {
-                                        () => {
-                                            props.navigation.navigate("Notifications");
-                                        }
-                                      }>
-                                    <Image
-                                        source = {
-                                            activeOrNot(
-                                                props.notifs.unread,
-                                                notif_pack
-                                            )
-                                        }
-                                        style = { styles.profileHeaderIcon } />
-                                </TouchableOpacity>
-                            </View>
-                        : <ContextMenuJsx
+                        !props.own
+                        ? <ContextMenuJsx
                               containerStyle = {
                                   styles.profileContextContainer
                               }>
@@ -339,6 +315,7 @@ const RawProfileJsx = (props) => {
                                 onSelect = { props.onBlock }
                                 text = "Block" />
                         </ContextMenuJsx>
+                        : <></>
                     }
                 </View>
                 <Text style = { styles.accountStats }>

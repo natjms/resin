@@ -72,7 +72,7 @@ const ConversationContainerJsx = (props) => (
                   style = { styles.send.button }
                   onPress = { props.onSubmit }>
                 <Ionicons
-                    name = "ios-send"
+                    name = "paper-plane-outline"
                     size = { 24 }
                     color = "black" />
             </TouchableOpacity>

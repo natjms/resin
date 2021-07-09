@@ -7,6 +7,7 @@ import {
     MenuTrigger,
     renderers
 } from "react-native-popup-menu";
+import { Ionicons } from "@expo/vector-icons";
 
 const { SlideInMenu } = renderers;
 
@@ -33,8 +34,9 @@ const ModerateMenuJsx = (props) => {
         <View style = { props.containerStyle }>
             <Menu renderer = { SlideInMenu }>
                 <MenuTrigger>
-                    <Image
-                        source = { require("assets/eva-icons/ellipsis.png") }
+                    <Ionicons
+                        name = "ellipsis-horizontal"
+                        color = "#000"
                         style = { props.triggerStyle }/>
                 </MenuTrigger>
                 <MenuOptions customStyles = { optionsStyles }>

@@ -3,6 +3,7 @@ import {
     Image,
     Dimensions,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
 import { checkUnreadNotifications } from "src/requests";
 
@@ -13,11 +14,14 @@ const TrayButtonJsx = (props) => {
     return (
         <TouchableWithoutFeedback
             onPress={ () => props.nav.navigate(props.where, {}) }>
-            <Image
-                source = {
-                    activeOrNot(props.active == props.where, props.pack)
+            <Ionicons
+                name = { props.icon }
+                color = { activeOrNot(props.active == props.where, {
+                        active: "#000",
+                        inactive: "#888",
+                    })
                 }
-                style = { styles.icon } />
+                size = { 30 } />
         </TouchableWithoutFeedback>
     );
 }
@@ -37,64 +41,32 @@ const TrayJsx = (props) => {
             });
     }, []);
 
-
-    const icons = {
-        feed: {
-            active: require("assets/eva-icons/home-black.png"),
-            inactive: require("assets/eva-icons/home-grey.png")
-        },
-        discover: {
-            active: require("assets/eva-icons/search-black.png"),
-            inactive: require("assets/eva-icons/search-grey.png")
-        },
-        publish: {
-            active: require("assets/eva-icons/camera-black.png"),
-            inactive: require("assets/eva-icons/camera-grey.png")
-        },
-        direct: {
-            active: require("assets/eva-icons/email-black.png"),
-            inactive: require("assets/eva-icons/email-grey.png")
-        },
-        profile: {
-            active: require("assets/eva-icons/person-black.png"),
-            inactive: require("assets/eva-icons/person-grey.png")
-        },
-        profileNotif: {
-            active: require("assets/eva-icons/person-black-notif.png"),
-            inactive: require("assets/eva-icons/person-grey-notif.png")
-        },
-    }
-
     return (
         <View style = { styles.tray }>
             <View style = { styles.iconList }>
                     <TrayButtonJsx
                         where = "Feed"
-                        pack = { icons.feed }
+                        icon = { "home-outline" }
                         active = { props.active }
                         nav = { nav } />
                     <TrayButtonJsx
                         where = "Discover"
-                        pack = { icons.discover }
+                        icon = { "search-outline" }
                         active = { props.active }
                         nav = { nav } />
                     <TrayButtonJsx
                         where = "Publish"
-                        pack = { icons.publish }
+                        icon = { "camera-outline" }
                         active = { props.active }
                         nav = { nav } />
                     <TrayButtonJsx
                         where = "Direct"
-                        pack = { icons.direct }
+                        icon = { "mail-outline" }
                         active = { props.active }
                         nav = { nav } />
                     <TrayButtonJsx
                         where = "Profile"
-                        pack = {
-                            state.unreadNotifications ?
-                                icons.profileNotif
-                                : icons.profile
-                        }
+                        icon = { "person-outline" }
                         active = { props.active }
                         nav = { nav } />
             </View>
@@ -102,14 +74,12 @@ const TrayJsx = (props) => {
     );
 };
 
-const iconSize = 30;
-
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const styles = {
     tray: {
         width: SCREEN_WIDTH,
-        paddingTop: iconSize / 2,
-        paddingBottom: iconSize / 2,
+        paddingTop: 15,
+        paddingBottom: 15,
 
         borderTopWidth: 2,
         borderTopColor: "#CCC",
@@ -123,10 +93,6 @@ const styles = {
         margin: 0,
         paddingLeft: 0,
     },
-    icon: {
-        width: iconSize,
-        height: iconSize
-    }
 };
 
 export default TrayJsx;

@@ -1,6 +1,6 @@
 import React from "react";
 import { Dimensions, View, Image } from "react-native";
-import { FontAwesome } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import {
     Menu,
     MenuOptions,
@@ -34,8 +34,8 @@ const ContextMenuJsx = (props) => {
         <View style = { props.containerStyle }>
             <Menu renderer = { SlideInMenu }>
                 <MenuTrigger>
-                    <FontAwesome
-                        name = "ellipsis-h"
+                    <Ionicons
+                        name = "ellipsis-horizontal"
                         size = { props.size ? props.size : 24 }
                         color = { props.colour ? props.colour : "#666" } />
                 </MenuTrigger>
