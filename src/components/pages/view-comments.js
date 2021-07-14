@@ -11,7 +11,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { ScrollView } from "react-native-gesture-handler";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import { timeToAge, StatusBarSpace } from "src/interface/rendering";
+import HTML from "react-native-render-html";
+import {
+    withLeadingAcct,
+    timeToAge,
+    StatusBarSpace
+} from "src/interface/rendering";
 import { activeOrNot } from "src/interface/interactions";
 
 import TimelineViewJsx from "src/components/posts/timeline-view";
@@ -95,7 +100,7 @@ function threadify(descendants) {
 
     let sub = byReply.slice(1); // All sub-comments
 
-    // Repeate the procedure until sub is empty (i.e all comments have been
+    // Repeat the procedure until sub is empty (i.e all comments have been
     // sorted)
     while (sub.length > 0) {
         sorted.forEach((thread, threadIndex) => {
@@ -150,8 +155,14 @@ const CommentJsx = (props) => {
                 style = { styles.avatar } />
             <View style = { styles.contentContainer }>
                 <Text style = { styles.content }>
-                    <Text style = { styles.bold }>{ props.data.account.acct }</Text>&nbsp;
-                    { props.data.content }
+                    <HTML
+                        source = {{
+                            html: withLeadingAcct(
+                                props.data.account.acct,
+                                props.data.content
+                            )
+                        }}
+                        contentWidth = { SCREEN_WIDTH }/>
                 </Text>
                 <View style = { styles.commentActions }>
                     <View>
@@ -303,7 +314,7 @@ const ViewCommentsJsx = (props) => {
                 state.accessToken,
             );
 
-            // NOTE: It appears that it takes a moment for the Context of a
+            // It appears that it takes a moment for the Context of a
             // post to register that a comment has been deleted, so instead
             // of waiting for it, it's more efficient to just drop the comment
             // on the client side.

@@ -14,6 +14,12 @@ export function withoutHTML(string) {
     return string.replace(/<[^>]*>/ig, "");
 }
 
+export function withLeadingAcct(acct, html) {
+    // Insert a bolded acct at the beginning of an HTML string so that it can
+    // be rendered the way Instagram renders post captions
+    return `<strong>${acct}</strong>&nbsp;` + html;
+}
+
 export function pluralize(n, singular, plural) {
     if (n == 1) {
         return singular;

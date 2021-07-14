@@ -14,8 +14,11 @@ import {
     getAutoHeight,
 } from "src/interface/rendering";
 
+import HTML from "react-native-render-html";
+
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as requests from "src/requests";
+import { withLeadingAcct } from "src/interface/rendering";
 
 import PostActionBarJsx from "src/components/posts/post-action-bar";
 
@@ -147,12 +150,14 @@ export const RawPostJsx = (props) => {
                 onReblog = { props.onReblog }
                 onBookmark = { props.onBookmark } />
             <View style = { styles.caption }>
-                <Text>
-                    <Text style = { styles.strong }>
-                        { props.data.account.username }
-                    </Text>
-                    &nbsp;{ props.data.content }
-                </Text>
+                <HTML
+                    source = {{
+                        html: withLeadingAcct(
+                            props.data.account.acct,
+                            props.data.content
+                        )
+                    }}
+                    contentWidth = { SCREEN_WIDTH }/>
                 <TouchableOpacity
                       onPress = {
                         () => props.navigation.navigate("ViewComments", {

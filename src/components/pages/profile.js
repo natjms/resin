@@ -12,7 +12,8 @@ import * as Linking from "expo-linking";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { activeOrNot } from "src/interface/interactions";
-import { withoutHTML, pluralize } from "src/interface/rendering";
+import HTML from "react-native-render-html";
+import { withLeadingAcct, withoutHTML, pluralize } from "src/interface/rendering";
 import * as requests from "src/requests";
 
 import GridViewJsx from "src/components/posts/grid-view";
@@ -348,9 +349,9 @@ const RawProfileJsx = (props) => {
 
                     </Text>
                 </Text>
-                <Text style = { styles.note }>
-                    {props.profile.note}
-                </Text>
+                <HTML
+                    source = { { html: props.profile.note } }
+                    contentWidth = { SCREEN_WIDTH } />
                 <View style = { styles.fields.container }>
                     { props.profile.fields
                         ? props.profile.fields.map((field, index) => (
@@ -382,35 +383,34 @@ const RawProfileJsx = (props) => {
     );
 };
 
-const screen_width = Dimensions.get("screen").width;
-const screen_height = Dimensions.get("screen").height;
+const SCREEN_WIDTH = Dimensions.get("window").width;
 
 const styles = {
     jumbotron: {
-        padding: screen_width / 20,
+        padding: SCREEN_WIDTH / 20,
     },
     profileHeader: {
         flexDirection: "row",
         alignItems: "center",
-        marginBottom: screen_width / 20,
+        marginBottom: SCREEN_WIDTH / 20,
     },
     displayName: {
         fontSize: 24
     },
     avatar: {
-        width: screen_width / 5,
-        height: screen_width / 5,
+        width: SCREEN_WIDTH / 5,
+        height: SCREEN_WIDTH / 5,
 
-        borderRadius: screen_width / 10,
-        marginRight: screen_width / 20,
+        borderRadius: SCREEN_WIDTH / 10,
+        marginRight: SCREEN_WIDTH / 20,
     },
     profileHeaderIcon: {
-        width: screen_width / 12,
-        height: screen_width / 12,
+        width: SCREEN_WIDTH / 12,
+        height: SCREEN_WIDTH / 12,
     },
     profileContextContainer: {
         marginLeft: "auto",
-        marginRight: screen_width / 15,
+        marginRight: SCREEN_WIDTH / 15,
     },
     accountStats: {
         fontSize: 14,
@@ -428,10 +428,10 @@ const styles = {
         },
         cell: {
             name: {
-                width: screen_width / 3,
+                width: SCREEN_WIDTH / 3,
             },
             value: {
-                width: (screen_width / 3) * 2,
+                width: (SCREEN_WIDTH / 3) * 2,
             },
         }
     },
