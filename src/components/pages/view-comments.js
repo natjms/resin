@@ -177,7 +177,7 @@ const CommentJsx = (props) => {
                     </View>
                     <TouchableOpacity
                           onPress = {
-                              props.onReply(
+                              props.onReplyFactory(
                                   props.data.account.acct,
                                   props.data.id
                               )
@@ -189,7 +189,7 @@ const CommentJsx = (props) => {
                         </View>
                     </TouchableOpacity>
                     <TouchableOpacity
-                          onPress = { props.onFavourite(props.data) }>
+                          onPress = { props.onFavouriteFactory(props.data) }>
                         <Ionicons
                             name = { activeOrNot(props.data.favourited, packs.favourited) }
                             size = { 15 }
@@ -207,13 +207,22 @@ const CommentJsx = (props) => {
                                 { props.profile.acct == props.data.account.acct
                                     ? <>
                                         <MenuOption
-                                            onSelect = { props.onDelete(props.data) }
-                                            text = "Delete" />
+                                            text = "Delete"
+                                            onSelect = {
+                                                props.onDeleteFactory(props.data.id)
+                                            } />
                                     </>
                                     : <>
-                                        <MenuOption text = "Report" />
-                                        <MenuOption text = "Mute" />
-                                        <MenuOption text = "Block" />
+                                        <MenuOption
+                                            text = "Mute"
+                                            onSelect = {
+                                                props.onMuteFactory(props.data.account.id)
+                                            } />
+                                        <MenuOption
+                                            text = "Block"
+                                            onSelect = {
+                                                props.onBlockFactory(props.data)
+                                            } />
                                     </>
                                 }
                             </MenuOptions>
@@ -273,7 +282,22 @@ const ViewCommentsJsx = (props) => {
         return threadify(descendants);
     }
 
-    const _onReplyFactory = (acct, id) => {
+    const _hideStatus = id => {
+        /*
+         * Instead of waiting for the server to register that a status
+         * shouldn't be retrieved next time the context is fetched, it's more
+         * efficient to just remove it on the client side.
+         *
+         * Returns a new collection of threads without the comment with the
+         * given id
+         */
+        
+        return state.descendants.map(thread =>
+            thread.filter(comment => comment.id != id)
+        ).filter(thread => thread.length > 0);
+    };
+
+    const onReplyFactory = (acct, id) => {
         return () => {
             setState({...state,
                 inReplyTo: {
@@ -284,7 +308,7 @@ const ViewCommentsJsx = (props) => {
         }
     };
 
-    const _onFavouriteFactory = (data) => {
+    const onFavouriteFactory = (data) => {
         return async () => {
             if(!data.favourited) {
                 await requests.favouriteStatus(
@@ -306,27 +330,23 @@ const ViewCommentsJsx = (props) => {
         }
     }
 
-    const _onDeleteFactory = data => {
-        return async () => {
-            await requests.deleteStatus(
-                state.instance,
-                data.id,
-                state.accessToken,
-            );
+    // Returns a function that returns a callback for a context menu option
+    // It's not every day you get to use third order functions
+    const _onModerateFactory = request => id => async () => {
+        await request(
+            state.instance,
+            id,
+            state.accessToken,
+        );
 
-            // It appears that it takes a moment for the Context of a
-            // post to register that a comment has been deleted, so instead
-            // of waiting for it, it's more efficient to just drop the comment
-            // on the client side.
-            const newThreads = state.descendants.map(thread =>
-                thread.filter(comment => comment.id != data.id)
-            ).filter(thread => thread.length > 0);
-
-            setState({...state,
-                descendants: newThreads,
-            });
-        };
+        setState({...state,
+            descendants: _hideStatus(id),
+        });
     };
+
+    const onDeleteFactory = _onModerateFactory(requests.deleteStatus);
+    const onMuteFactory = _onModerateFactory(requests.muteAccount);
+    const onBlockFactory = _onModerateFactory(requests.blockAccount);
 
     const _handleCancelSubReply = () => {
         setState({...state,
@@ -366,9 +386,11 @@ const ViewCommentsJsx = (props) => {
         <CommentJsx
             { ...props }
             profile = { state.profile }
-            onFavourite = { _onFavouriteFactory }
-            onReply = { _onReplyFactory }
-            onDelete = { _onDeleteFactory } />
+            onFavouriteFactory = { onFavouriteFactory }
+            onReplyFactory = { onReplyFactory }
+            onMuteFactory = { onMuteFactory }
+            onBlockFactory = { onBlockFactory }
+            onDeleteFactory = { onDeleteFactory } />
     );
 
     return (
