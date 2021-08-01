@@ -35,22 +35,23 @@ const PublishJsx = ({ navigation }) => {
                 instance = instancePair[1];
                 accessToken = JSON.parse(tokenPair[1]).access_token;
 
-                return ImagePicker.getMediaLibraryPermissionsAsync();
+                return ImagePicker.requestMediaLibraryPermissionsAsync();
             })
-            .then(({ granted }) => {
-                if (granted) {
+            .then(permissionResult => {
+                console.warn(permissionResult);
+                if (permissionResult.granted) {
                     return ImagePicker.launchImageLibraryAsync({
                         allowsEditing: true,
                     });
                 } else {
-                    navigation.goBack();
+                    throw "Permission not granted";
                 }
             })
             .then((imageData) => {
                 if (!imageData.cancelled) {
                     return imageData;
                 } else {
-                    navigation.goBack();
+                    throw "Image picker closed";
                 }
             })
             .then(({ uri, type, width, height }) => {
@@ -71,6 +72,10 @@ const PublishJsx = ({ navigation }) => {
                         height: getAutoHeight(width, height, SCREEN_WIDTH),
                     },
                 });
+            })
+            .catch(e => {
+                console.warn(e);
+                navigation.goBack();
             });
     }, []);
 
