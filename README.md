@@ -3,12 +3,14 @@
     alt="A screenshot of the timeline"
     width="400" />
 
-Resin is a Pixelfed client designed to minimize the chance the user will use it
-unhealthily. In other words, this app practices
+Resin is the Pixelfed client you won't get addicted to. The primary goal of this
+project is to create a social-media interface that has no dark patterns and
+otherwise goes out of its way to prevent the user from getting addicted to it.
+In other words, this app practices
 [ethical anti-design](https://njms.ca/posts/ethical-anti-design.html). The way
-it does this is by avoiding dark patterns like infinite scrolling and
-putting obstacles in place to minimize the risk of the user taking unhealthy
-actions that are otherwise unavoidable.
+it does this is by excluding dark patterns like infinite scrolling and
+putting obstacles in place to minimize the amount of time the person spends
+taking unhealthy actions that are otherwise unavoidable.
 
 ## Goal
 
@@ -20,13 +22,14 @@ developed by companies that do. While these dark patterns may seem like industry
 standards, we have no need to follow them. This project seeks to demonstrate
 the different ways to go about doing that.
 
+## Current Objectives
+ * ~~Beta release~~
+ * Full 1.0 release
+ * [Sabbaticals](https://github.com/natjms/resin/issues/19)
+ * Support for Mastodon instances
+ * Support for multiple accounts
+
 ## Screenshots
-
-The Resin UI is fully implemented but incomplete; there are some components, like
-the interface for posting new content, that'll be implemented along side the API
-integration. Besides much needed polishing and some consistency improvements, the
-UI likely won't change too drastically from this point forward.
-
 <img
     src="assets/screenshots/login.png"
     alt="A screenshot of the login interface"
@@ -75,11 +78,11 @@ UI likely won't change too drastically from this point forward.
 
 ## Building
 
-This project is written in React Native and built using Expo.
-
-Here are the steps to build it yourself:
+This project is written in React Native and built using Expo. Here are the
+steps to build and run it locally:
 
 ```
+$ npm install -g expo-cli # You'll need this to work with Expo projects
 $ git clone https://github.com/natjms/resin # Clone the repository
 $ npm install # Install the dependencies
 $ expo start # start the development server
@@ -87,8 +90,60 @@ $ expo start # start the development server
 
 ## Contributing
 
-This project is still extremely early in development; however, contributions
-are still more than welcome. If you're interested in helping out, the easiest
-way to get started would be to contact
+### Bug testing
+As Resin enters it's beta phase, we're looking for help from bug testers! You
+can test it out without running a development server by downloading the
+[Expo Go](https://expo.dev/client) app and scanning the following QR code on
+your phone:
+
+<div style = "text-align: center">
+    <img
+        src="assets/build-qr-code.png"
+        alt="The QR code of the link to the v1.0-beta build of Resin"
+        width="400" />
+</div>
+
+Or, you can open the app by clicking [this link](exp://exp.host/@njms/Resin) on
+your phone.
+
+When you run into a bug, hop on over to the [issues page](https://github.com/natjms/resin/issues) and create a new issue. Make sure you fill out as much of the template as possible to help us determine how to best approach fixing the problem. If you're not comfortable with GitHub, you're welcome to [contact the project maintainer](https://social.njms.ca/nat), however bug tracking through GitHub Issues is greatly preferred and there's no guarantee we'll see your message if you try to send it through another channel.
+
+#### A note on current limitations
+Note that there are a number of issues with this app related to Pixelfed API endpoints that haven't been exposed yet. These are problems that cannot be fixed on our end, but are currently being worked on by the Pixelfed team. Until these endpoints are exposed, a number of features, including the likes of bookmarks, direct messages and updating your profile won't work and using these interfaces may have some unintended side effects. For more information and for a full list of these limitations, check [this list of issues labeled wontfix](https://github.com/natjms/resin/issues?q=is%3Aopen+is%3Aissue+label%3Awontfix).
+
+#### A note for iOS folks
+One of Resin's original goals was to create a Pixelfed client that could be
+used on both Android and iOS--something that's somewhat lacking among
+Fediverse clients. Unfortunately, due to our lacking access to Apple products,
+Resin hasn't formally been tested on iOS.
+
+It's very possible that, should you open it on your iPhone, it'll literally do
+nothing. If that doesn't happen, then there's a good chance that there may be
+some major issues preventing it from being used. In this case, if you're an iOS
+user, have some familiarity with React Native and/or JavaScript and have some
+free time to spare, we'd love to have your help in making Resin on iOS a
+reality. Otherwise, there's a good chance it'll be a while before Resin is
+available on the App Store.
+
+### Contributing code
+
+We're always welcoming new contributors! To start contributing code, feel free
+to check out the issues tab. Easy issues are labeled
+[good first issue](https://github.com/natjms/resin/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22),
+but don't let that limit you if you feel confident with React Native and
+JavaScript. If you see an issue hasn't been assigned to anyone, that means no
+one's working on it. Drop a reply saying you'd be interested in helping out and
+it's all yours.
+
+### Other ways to help out
+
+Resin isn't officially set up to handle translations yet, but that'll be coming
+in the near future. There are many ways to help out with a project like this
+besides contributing code, from bug testing, to writing and more. Even then, a
+lot of the work is more on the philosophical side, in deconstructing the
+interfaces of apps like Instagram to best determine how to make Resin as
+nonaddictive as possible without making it painful to use.
+
+If you're not sure where to get started, feel free to contact
 [the project maintainer](https://social.njms.ca/nat) who would be more than
-happy to talk to you about it.
+happy to hear from you.
