@@ -101,9 +101,6 @@ your phone:
     alt="The QR code of the link to the v1.0-beta build of Resin"
     style="margin-left: auto; margin-right: auto; width: 150px"/>
 
-Or, you can open the app by clicking [this link](exp://exp.host/@njms/Resin) on
-your phone.
-
 When you run into a bug, hop on over to the [issues page](https://github.com/natjms/resin/issues) and create a new issue. Make sure you fill out as much of the template as possible to help us determine how to best approach fixing the problem. If you're not comfortable with GitHub, you're welcome to [contact the project maintainer](https://social.njms.ca/nat), however bug tracking through GitHub Issues is greatly preferred and there's no guarantee we'll see your message if you try to send it through another channel.
 
 #### A note on current limitations
