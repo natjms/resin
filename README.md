@@ -1,4 +1,4 @@
-<img 
+<img
     src="assets/logo/logo-wordmark.png"
     alt="A screenshot of the timeline"
     width="400" />
@@ -96,12 +96,10 @@ can test it out without running a development server by downloading the
 [Expo Go](https://expo.dev/client) app and scanning the following QR code on
 your phone:
 
-<div style = "text-align: center">
-    <img
-        src="assets/build-qr-code.png"
-        alt="The QR code of the link to the v1.0-beta build of Resin"
-        width="400" />
-</div>
+<img
+    src="assets/build-qr-code.png"
+    alt="The QR code of the link to the v1.0-beta build of Resin"
+    style="margin-left: auto; margin-right: auto; width: 150px"/>
 
 Or, you can open the app by clicking [this link](exp://exp.host/@njms/Resin) on
 your phone.
