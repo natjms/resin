@@ -91,10 +91,11 @@ $ expo start # start the development server
 ## Contributing
 
 ### Bug testing
-As Resin enters it's beta phase, we're looking for help from bug testers! You
-can test it out without running a development server by downloading the
-[Expo Go](https://expo.dev/client) app and scanning the following QR code on
-your phone:
+As Resin enters it's beta phase, we're looking for help from bug testers!
+Android folks can test it out without running a development server by
+downloading the
+[Expo Go](https://play.google.com/store/apps/details?id=host.exp.exponent)
+app and scanning the following QR code on your phone:
 
 <img
     src="assets/build-qr-code.png"
@@ -110,15 +111,15 @@ Note that there are a number of issues with this app related to Pixelfed API end
 One of Resin's original goals was to create a Pixelfed client that could be
 used on both Android and iOS--something that's somewhat lacking among
 Fediverse clients. Unfortunately, due to our lacking access to Apple products,
-Resin hasn't formally been tested on iOS.
+Resin hasn't formally been tested on iOS. Further, the Expo Go client no longer
+allows for iOS users to open projects via QR code in response to Apple's new
+security guidelines, thus complicating our beta distribution strategy. So,
+Resin's iOS support has been temporarily delayed until we can solve testing and
+distribution issues.
 
-It's very possible that, should you open it on your iPhone, it'll literally do
-nothing. If that doesn't happen, then there's a good chance that there may be
-some major issues preventing it from being used. In this case, if you're an iOS
-user, have some familiarity with React Native and/or JavaScript and have some
-free time to spare, we'd love to have your help in making Resin on iOS a
-reality. Otherwise, there's a good chance it'll be a while before Resin is
-available on the App Store.
+If you're savvy with Apple's developer tools, you can probably still build it
+yourself if you were hoping to get an early look. If you manage to do so, we'd
+love to hear from you.
 
 ### Contributing code
 
