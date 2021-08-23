@@ -32,7 +32,7 @@ const SettingsJsx = (props) => {
             {
                 client_id: state.appObject.client_id,
                 client_secret: state.appObject.client_secret,
-                token: state.token.access_token,
+                token: state.accessToken,
             }
         );
 
