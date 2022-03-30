@@ -34,6 +34,12 @@ const GridPostJsx = (props) => {
 }
 
 const GridViewJsx = (props) => {
+    // Ensure only posts with media get into the grid
+    const postsWithMedia = props.posts.filter(
+        p => p.media_attachments != null
+          && p.media_attachments.length > 0
+    );
+
     let rows = partition(props.posts, 3);
     return (
         <View>
