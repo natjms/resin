@@ -68,7 +68,7 @@ export const RawPostJsx = (props) => {
     const repliesCount = props.data.replies_count;
 
     let commentsText;
-    if (repliesCount == 0) {
+    if (repliesCount == 0 || repliesCount == undefined) {
         commentsText = "View comments";
     } else {
         commentsText = "View "
