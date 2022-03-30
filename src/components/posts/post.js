@@ -180,8 +180,8 @@ export const RawPostJsx = (props) => {
 
 export const PostByDataJsx = (props) => {
     /*
-    Renders a post where the data is supplied directly to the element through
-    its properties, as it is in a timeline.
+     * Renders a post where the data is supplied directly to the element through
+     * its properties, as it is in a timeline.
     */
 
     let [state, setState] = useState({
@@ -217,6 +217,10 @@ export const PostByDataJsx = (props) => {
                     own,
                     loaded: true
                 });
+
+                if (props.onPostLoaded != null) {
+                    props.onPostLoaded();
+                }
             });
     }, []);
 
@@ -416,13 +420,6 @@ const styles = {
         fontWeight: 'bold',
     }
 };
-
-// customStyles for react-native-popup-menu should be defined in particular
-// objects to be interpreted correctly.
-
-//const menuStyles = {
-//    menuProviderWrapper
-//}
 
 const optionsStyles = {
     optionWrapper: { // The wrapper around a single option

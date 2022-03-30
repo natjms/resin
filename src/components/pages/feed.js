@@ -13,6 +13,7 @@ import * as requests from "src/requests";
 const FeedJsx = (props) => {
     const [state, setState] = useState({
         loaded: false,
+        postsRendered: false,
     });
 
     useEffect(() => {
@@ -63,6 +64,43 @@ const FeedJsx = (props) => {
             );
     }, []);
 
+    const _handleTimelineLoaded = () => setState({...state,
+        postsRendered: true,
+    });
+
+    let endOfTimelineMessage = <></>;
+    if (state.postsRendered) {
+        // Only render the timeline interruption if all of the posts have been
+        // rendered in the feed.
+        endOfTimelineMessage = <>
+            <View style = {
+                state.posts.length == 0
+                    ? {}
+                    : styles.interruption.topBorder
+              }>
+                <View style = { styles.interruption.inner }>
+                    <Ionicons
+                        name="ios-checkmark-circle-outline"
+                        size= { 150 }
+                        color="black" />
+
+                    <Text style = { styles.interruption.header }>
+                        You're all caught up.
+                    </Text>
+                    <Text> Wow, it sure is a lovely day outside 🌳 </Text>
+    
+                    <TouchableWithoutFeedback
+                            style = { styles.interruption.button }
+                            onPress = {
+                                () => props.navigation.navigate("OlderPosts")
+                            }>
+                        <Text> See older posts </Text>
+                    </TouchableWithoutFeedback>
+                </View>
+            </View>
+        </>;
+    }
+
     return (
         <>
             { state.loaded
@@ -77,33 +115,9 @@ const FeedJsx = (props) => {
 
                     <TimelineViewJsx
                             navigation = { props.navigation }
-                            posts = { state.posts } />
-                    <View style = {
-                            state.posts.length == 0
-                                ? {}
-                                : styles.interruption.topBorder
-                          }>
-
-                        <View style = { styles.interruption.inner }>
-                            <Ionicons
-                                name="ios-checkmark-circle-outline"
-                                size= { 150 }
-                                color="black" />
-
-                            <Text style = { styles.interruption.header }>
-                                You're all caught up.
-                            </Text>
-                            <Text> Wow, it sure is a lovely day outside 🌳 </Text>
-
-                            <TouchableWithoutFeedback
-                                    style = { styles.interruption.button }
-                                    onPress = {
-                                        () => props.navigation.navigate("OlderPosts")
-                                    }>
-                                <Text> See older posts </Text>
-                            </TouchableWithoutFeedback>
-                        </View>
-                    </View>
+                            posts = { state.posts }
+                            onTimelineLoaded = { _handleTimelineLoaded }/>
+                    { endOfTimelineMessage }
                 </ScreenWithTrayJsx>
                 : <></>
             }
