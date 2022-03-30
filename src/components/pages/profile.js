@@ -250,6 +250,21 @@ const ProfileJsx = ({ navigation }) => {
 
 const RawProfileJsx = (props) => {
     let profileButton;
+
+    /* Some profiles won't have a note, and react-native-render-html will
+     * issue a warning if it isn't passed any content. So, if there's no
+     * note with the account (or if it's an empty string, possibly), the
+     * element shouldn't be rendered at all.
+     */
+    let noteIfPresent = <></>;
+    if (props.profile.note != null && props.profile.note.length != "") {
+        noteIfPresent = (
+            <HTML
+                source = { { html: props.profile.note } }
+                contentWidth = { SCREEN_WIDTH } />
+        );
+    }
+
     if (props.own) {
         profileButton = (
             <TouchableOpacity
@@ -349,9 +364,7 @@ const RawProfileJsx = (props) => {
 
                     </Text>
                 </Text>
-                <HTML
-                    source = { { html: props.profile.note } }
-                    contentWidth = { SCREEN_WIDTH } />
+                { noteIfPresent }
                 <View style = { styles.fields.container }>
                     { props.profile.fields
                         ? props.profile.fields.map((field, index) => (
