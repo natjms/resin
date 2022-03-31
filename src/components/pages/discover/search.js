@@ -171,6 +171,7 @@ const SearchJsx = ({navigation}) => {
                             style = { styles.form.input }
                             placeholder = "Search..."
                             autoFocus
+                            onSubmitEditing = { _handleSearch }
                             onChangeText = {
                                 q => setState({ ...state, query: q })
                             }
