@@ -125,7 +125,7 @@ const SearchJsx = ({navigation}) => {
         <AccountListJsx
             callback = { navCallbackFactory(navigation, "ViewProfile") }
             onShowMore = { _handleShowMoreAccounts }
-            data = { state.results.accounts }
+            results = { state.results.accounts }
             offset = { state.accountOffset } />
     );
 
@@ -133,7 +133,7 @@ const SearchJsx = ({navigation}) => {
         <HashtagListJsx
             callback = { navCallbackFactory(navigation, "ViewHashtag") }
             onShowMore = { _handleShowMoreHashtags }
-            data = { state.results.hashtags }
+            results = { state.results.hashtags }
             offset = { state.hashtagOffset } />
     );
 
@@ -220,84 +220,97 @@ const SearchItemJsx = (props) => {
     );
 };
 
+// Display message noting when no results turned up. This component wraps
+// AccountListJsx and HashtagListJsx.
+const SearchListContainerJsx = ({ results, children }) => results.length == 0
+    ? <View style = { styles.noResultsContainer }>
+        <Text>No results!</Text>
+    </View>
+    : children;
+
 const AccountListJsx = (props) => {
     return (
-        <View style = { styles.searchList }>
-            <>
-                {
-                    props.data.map(item => {
-                        return (
-                            <SearchItemJsx
-                                 key = { item.id }
-                                 thumbnail = { { uri: item.avatar } }
-                                 callback = { props.callback }
-                                 navParams = { { profile: item } }>
-                                <Text style = { styles.username }>
-                                    { item.acct }
-                                </Text>
-                                <Text style = { styles.displayName }>
-                                    { item.display_name }
-                                </Text>
-                            </SearchItemJsx>
-                        );
-                    })
-                }
-            </>
-            <>
-                { props.data.length == props.offset
-                    ? <View style = { styles.showMore.container }>
-                        <TouchableOpacity
-                                onPress = { props.onShowMore }>
-                            <View style = { styles.showMore.button }>
-                                <Text>Show more?</Text>
-                            </View>
-                        </TouchableOpacity>
-                    </View>
-                    : <></>
-                }
-            </>
-        </View>
+        <SearchListContainerJsx results = { props.results }>
+            <View style = { styles.searchList }>
+                <>
+                    {
+                        props.results.map(item => {
+                            return (
+                                <SearchItemJsx
+                                     key = { item.id }
+                                     thumbnail = { { uri: item.avatar } }
+                                     callback = { props.callback }
+                                     navParams = { { profile: item } }>
+                                    <Text style = { styles.username }>
+                                        { item.acct }
+                                    </Text>
+                                    <Text style = { styles.displayName }>
+                                        { item.display_name }
+                                    </Text>
+                                </SearchItemJsx>
+                            );
+                        })
+                    }
+                </>
+                <>
+                    { props.results.length == props.offset
+                        ? <View style = { styles.showMore.container }>
+                            <TouchableOpacity
+                                    onPress = { props.onShowMore }>
+                                <View style = { styles.showMore.button }>
+                                    <Text>Show more?</Text>
+                                </View>
+                            </TouchableOpacity>
+                        </View>
+                        : <></>
+                    }
+                </>
+            </View>
+        </SearchListContainerJsx>
     );
 };
 
 const HashtagListJsx = (props) => {
     return (
-        <View style = { styles.searchList }>
-            <>
-                {
-                    props.data.map((item, i) => {
-                        return (
-                            <SearchItemJsx
-                                 key = { i }
-                                 thumbnail = { require("assets/hashtag.png") }
-                                 callback = { props.callback }
-                                 navParams = { { tag: item } }>
-                                <Text style = { styles.username }>
-                                    #{ item.name }
-                                </Text>
-                            </SearchItemJsx>
-                        );
-                    })
-                }
-            </>
-            <>
-                { props.data.length == props.offset
-                    ? <View style = { styles.showMore.container }>
-                        <TouchableOpacity
-                                onPress = { props.onShowMore }>
-                            <View style = { styles.showMore.button }>
-                                <Text>Show more?</Text>
-                            </View>
-                        </TouchableOpacity>
-                    </View>
-                    :<></>
-                }
-            </>
-        </View>
+        <SearchListContainerJsx results = { props.results }>
+            <View style = { styles.searchList }>
+                <>
+                    {
+                        props.results.map((item, i) => {
+                            return (
+                                <SearchItemJsx
+                                     key = { i }
+                                     thumbnail = { require("assets/hashtag.png") }
+                                     callback = { props.callback }
+                                     navParams = { { tag: item } }>
+                                    <Text style = { styles.username }>
+                                        #{ item.name }
+                                    </Text>
+                                </SearchItemJsx>
+                            );
+                        })
+                    }
+                </>
+                <>
+                    { props.results.length == props.offset
+                        ? <View style = { styles.showMore.container }>
+                            <TouchableOpacity
+                                    onPress = { props.onShowMore }>
+                                <View style = { styles.showMore.button }>
+                                    <Text>Show more?</Text>
+                                </View>
+                            </TouchableOpacity>
+                        </View>
+                        :<></>
+                    }
+                </>
+            </View>
+        </SearchListContainerJsx>
     );
 }
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
+const SCREEN_HEIGHT = Dimensions.get("window").height;
 const styles = {
     form: {
         container: {
@@ -306,44 +319,59 @@ const styles = {
             backgroundColor: "white",
             padding: 20,
         },
+
         input: {
             flexGrow: 1,
             padding: 10,
             fontSize: 17,
             color: "#888"
         },
+
         submit: {
             padding: 20,
         }
     },
+
     label: {
         padding: 10,
         fontSize: 15,
     },
+
     searchList: { padding: 0 },
+
     searchResultContainer: {
         display: "flex",
         flexDirection: "row",
         padding: 5,
         paddingLeft: 20,
     },
+
+    noResultsContainer: {
+        paddingTop: SCREEN_HEIGHT / 4,
+        alignItems: "center",
+    },
+
     queried: {
         display: "flex",
         justifyContent: "center",
     },
+
     username: { fontWeight: "bold" },
     displayName: { color: "#888" },
+
     thumbnail: {
         width: 50,
         height: 50,
         borderRadius: 25,
         marginRight: 10,
     },
+
     showMore: {
         container: {
             justifyContent: "center",
             alignItems: "center"
         },
+
         button: {
             borderWidth: 1,
             borderColor: "#888",
