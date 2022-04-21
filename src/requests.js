@@ -96,6 +96,14 @@ export async function _delete(url, token = false) {
     return resp;
 }
 
+export async function verifyCredentials(domain, token) {
+    const resp = await get(
+        `https://${domain}/api/v1/accounts/verify_credentials`,
+        token
+    );
+    return resp.json();
+}
+
 export async function fetchProfile(domain, id) {
     const resp = await get(`https://${domain}/api/v1/accounts/${id}`);
     return resp.json();

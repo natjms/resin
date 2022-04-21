@@ -20,8 +20,71 @@ const AuthenticateJsx = ({navigation}) => {
     const REDIRECT_URI = Linking.makeUrl("authenticate");
     const [state, setState] = useState({
         instance: "",
-        authChecked: false,
+        renderLogin: false,
     });
+
+    const init = async () => {
+        const [instancePair, tokenJSONPair, profileJSONPair, appJSONPair] =
+            await AsyncStorage.multiGet([
+                "@user_instance",
+                "@user_token",
+                "@user_profile",
+            ]);
+
+        const instance = instancePair[1];
+        const tokenJSON = tokenJSONPair[1];
+        const profileJSON = profileJSONPair[1];
+
+        if (profileJSON == null) {
+            // The user hasn't logged in yet.
+            setState({ ...state, renderLogin: true, });
+            return;
+        }
+
+        const accessToken = JSON.parse(tokenJSON).access_token;
+
+        // Check to see if the credentials are still valid
+        const verifiedUser = await requests.verifyCredentials(
+            instance,
+            accessToken
+        ).catch(e => {
+            /* The Pixelfed API returns an HTML page when your access token gets
+             * revoked instead of the JSON error object. Since this causes a lot
+             * of problems, we're going to assume that if the response is HTML,
+             * then the user needs to log in again. See issue #27.
+             */
+            if (e instanceof SyntaxError) {
+                // Generate faux error API response
+                return { "error": true };
+            }
+        });
+
+        if(verifiedUser.error) {
+            // `error` will be undefined if the token is valid
+            // Purge the user's data
+            await AsyncStorage.multiRemove([
+                "@user_instance",
+                "@user_token",
+                "@user_profile",
+            ]);
+
+            setState({...state,
+                renderLogin: true,
+            });
+            return;
+        }
+
+        // requests.verifyCredentials returns the latest version of the
+        // profile on success, so take this opportunity to update it
+        const newProfile = verifiedUser;
+        await AsyncStorage.setItem(
+            "@user_profile",
+            JSON.stringify(newProfile)
+        );
+
+        // Since nothing went wrong, navigate to the feed.
+        navigation.navigate("Feed");
+    };
 
     const _handleUrl = async ({ url }) => {
         // When the app is foregrounded after authorizing the app from their
@@ -77,16 +140,13 @@ const AuthenticateJsx = ({navigation}) => {
     };
 
     useEffect(() => {
+        // Register the listener for the app getting foregrounded
+        // This is for when the user has navigated back from their web browser
+        // having approved the app
         Linking.addEventListener("url", _handleUrl);
-        AsyncStorage
-              .getItem("@user_profile")
-              .then(profile => {
-            if (profile) {
-                navigation.navigate("Feed");
-            } else {
-                setState({...state, authChecked: true});
-            }
-        });
+
+        // Start initialization sequence
+        init();
     }, []);
 
     const _login = async () => {
@@ -132,7 +192,7 @@ const AuthenticateJsx = ({navigation}) => {
     return (
         <SafeAreaView style = { styles.container }>
             {
-                state.authChecked
+                state.renderLogin
                     ? <View style = { styles.innerContainer }>
                         <View style = { styles.logo.container }>
                             <Image
