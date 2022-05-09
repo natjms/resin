@@ -1,32 +1,20 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
+import { ScrollView } from "react-native";
 
-import { ScreenWithBackBarJsx } from "src/components/navigation/navigators";
-import { PostByDataJsx } from "src/components/posts/post";
+import { PostByData } from "src/components/posts/post";
 
-const ViewPostJsx = ({navigation}) => {
-    const [state, setState] = useState({
-        post: navigation.getParam("post", null),
-        loaded: false,
-    });
+const ViewPost = ({ navigation, route }) => (
+    <ScrollView>
+        <PostByData
+            navigation = { navigation }
+            afterDelete = {
+                () => navigation.goBack()
+            }
+            afterModerate = {
+                () => navigation.goBack()
+            }
+            data = { route.params.post } />
+    </ScrollView>
+)
 
-    if (state.post == null) {
-        throw Error("Post not given when navigating to ViewPost!");
-    }
-
-    return (
-        <ScreenWithBackBarJsx
-              navigation = { navigation }>
-            <PostByDataJsx
-                navigation = { navigation }
-                afterDelete = {
-                    () => navigation.goBack()
-                }
-                afterModerate = {
-                    () => navigation.goBack()
-                }
-                data = { state.post } />
-        </ScreenWithBackBarJsx>
-    );
-}
-
-export default ViewPostJsx;
+export default ViewPost;

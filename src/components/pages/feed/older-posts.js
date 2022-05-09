@@ -2,13 +2,12 @@ import React, { useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import * as requests from "src/requests";
-import { ScreenWithBackBarJsx } from "src/components/navigation/navigators";
-import PagedGridJsx from "src/components/posts/paged-grid";
+import PagedGrid from "src/components/posts/paged-grid";
 
 // The number of posts to fetch at a time
 const POST_FETCH_LIMIT = 18;
 
-const OlderPostsJsx = (props) => {
+const OlderPosts = (props) => {
     const [ state, setState ] = useState({
         loaded: false,
     });
@@ -59,16 +58,16 @@ const OlderPostsJsx = (props) => {
     return (
         <>
             { state.loaded
-                ? <ScreenWithBackBarJsx navigation = { props.navigation }>
-                    <PagedGridJsx
+                ? <>
+                    <PagedGrid
                         posts = { state.posts }
                         onShowMore = { _handleShowMore }
                         navigation = { props.navigation }/>
-                </ScreenWithBackBarJsx>
+                </>
                 : <></>
             }
         </>
     );
 };
 
-export default OlderPostsJsx;
+export default OlderPosts;

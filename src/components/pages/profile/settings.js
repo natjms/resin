@@ -19,9 +19,7 @@ import * as ImagePicker from 'expo-image-picker';
 
 import { withoutHTML } from "src/interface/rendering";
 
-import { ScreenWithBackBarJsx } from "src/components/navigation/navigators";
-
-const SettingsJsx = (props) => {
+const Settings = (props) => {
     const [state, setState] = useState({
         loaded: false,
     });
@@ -136,7 +134,7 @@ const SettingsJsx = (props) => {
     return (
         <>
             { state.loaded
-                ? <ScreenWithBackBarJsx navigation = { props.navigation }>
+                ? <>
                     <View style = { styles.avatar.container }>
                         <Image
                             source = { { uri: state.newAvatar.uri } }
@@ -217,7 +215,7 @@ const SettingsJsx = (props) => {
                             </Text>
                         </TouchableOpacity>
                     </View>
-                </ScreenWithBackBarJsx>
+                </>
                 : <></>
             }
         </>
@@ -289,4 +287,4 @@ const styles = {
     },
 };
 
-export default SettingsJsx;
+export default Settings;

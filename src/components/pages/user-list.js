@@ -8,15 +8,14 @@ import {
     TouchableOpacity,
 } from "react-native";
 
-import { ScreenWithBackBarJsx } from "src/components/navigation/navigators.js";
-import ModerateMenuJsx from "src/components/moderate-menu.js";
+import ModerateMenu from "src/components/moderate-menu.js";
 
-const UserListJsx = ({navigation}) => {
+const UserList = ({navigation}) => {
     const data = navigation.getParam("data", [])
     const context = navigation.getParam("context", "");
 
     return (
-        <ScreenWithBackBarJsx navigation = { navigation }>
+        <>
             {
                 context ?
                     <Text style = { styles.context }>
@@ -50,13 +49,13 @@ const UserListJsx = ({navigation}) => {
                                 </View>
                             </View>
                         </TouchableOpacity>
-                        <ModerateMenuJsx
+                        <ModerateMenu
                             containerStyle = { styles.moderateMenu }
                             triggerStyle = { styles.ellipsis } />
                     </View>
                 )
             }
-        </ScreenWithBackBarJsx>
+        </>
     );
 };
 
@@ -100,4 +99,4 @@ const styles = {
     },
 };
 
-export { UserListJsx as default };
+export { UserList as default };

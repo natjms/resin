@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { View, Image, Dimensions, Text } from "react-native";
-import { ScreenWithBackBarJsx } from "src/components/navigation/navigators";
-import PagedGridJsx from "src/components/posts/paged-grid";
+import PagedGrid from "src/components/posts/paged-grid";
 
 import * as requests from "src/requests";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const ViewHashtagJsx = ({navigation}) => {
+const ViewHashtag = ({navigation}) => {
     const FETCH_LIMIT = 18;
     let [state, setState] = useState({
         tag: navigation.getParam("tag", null),
@@ -70,7 +69,7 @@ const ViewHashtagJsx = ({navigation}) => {
     const latest = state.tag.history[0];
 
     return (
-        <ScreenWithBackBarJsx navigation = { navigation }>
+        <>
             <View>
                 <View style = { styles.headerContainer }>
                     <View>
@@ -106,7 +105,7 @@ const ViewHashtagJsx = ({navigation}) => {
                 </View>
                 <>
                     { state.loaded && state.posts.length > 0
-                        ? <PagedGridJsx
+                        ? <PagedGrid
                             navigation = { navigation }
                             posts = { state.posts }
                             onShowMore = { _handleShowMore } />
@@ -116,7 +115,7 @@ const ViewHashtagJsx = ({navigation}) => {
                     }
                 </>
             </View>
-        </ScreenWithBackBarJsx>
+        </>
     );
 };
 
@@ -149,4 +148,4 @@ const styles = {
     },
 }
 
-export default ViewHashtagJsx;
+export default ViewHashtag;

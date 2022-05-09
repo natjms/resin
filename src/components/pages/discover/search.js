@@ -12,7 +12,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import * as requests from "src/requests";
 import { StatusBarSpace } from "src/interface/rendering";
-import { ScreenWithTrayJsx } from "src/components/navigation/navigators";
 
 import { TouchableOpacity } from "react-native-gesture-handler";
 
@@ -22,7 +21,7 @@ function navCallbackFactory(navigation, route) {
     }
 }
 
-const SearchJsx = ({navigation}) => {
+const Search = ({navigation}) => {
     // The number of additional items to fetch each time
     const FETCH_LIMIT = 5;
 
@@ -122,7 +121,7 @@ const SearchJsx = ({navigation}) => {
     ]);
 
     const AccountRenderer = () => (
-        <AccountListJsx
+        <AccountList
             callback = { navCallbackFactory(navigation, "ViewProfile") }
             onShowMore = { _handleShowMoreAccounts }
             results = { state.results.accounts }
@@ -130,7 +129,7 @@ const SearchJsx = ({navigation}) => {
     );
 
     const HashtagRenderer = () => (
-        <HashtagListJsx
+        <HashtagList
             callback = { navCallbackFactory(navigation, "ViewHashtag") }
             onShowMore = { _handleShowMoreHashtags }
             results = { state.results.hashtags }
@@ -162,10 +161,7 @@ const SearchJsx = ({navigation}) => {
     return (
         <>
             { state.loaded
-                ? <ScreenWithTrayJsx
-                      active = "Discover"
-                      statusBarColor = "white"
-                      navigation = { navigation }>
+                ? <>
                     <View style = { styles.form.container }>
                         <TextInput
                             style = { styles.form.input }
@@ -198,14 +194,14 @@ const SearchJsx = ({navigation}) => {
                             initialLayout = { { width: SCREEN_WIDTH } } />
                         : <></>
                     }
-                </ScreenWithTrayJsx>
+                </>
                 : <></>
             }
         </>
     );
 };
 
-const SearchItemJsx = (props) => {
+const SearchItem = (props) => {
     return (
         <TouchableOpacity
              onPress = { () => props.callback(props.navParams) }>
@@ -222,22 +218,22 @@ const SearchItemJsx = (props) => {
 };
 
 // Display message noting when no results turned up. This component wraps
-// AccountListJsx and HashtagListJsx.
-const SearchListContainerJsx = ({ results, children }) => results.length == 0
+// AccountList and HashtagList.
+const SearchListContainer = ({ results, children }) => results.length == 0
     ? <View style = { styles.noResultsContainer }>
         <Text>No results!</Text>
     </View>
     : children;
 
-const AccountListJsx = (props) => {
+const AccountList = (props) => {
     return (
-        <SearchListContainerJsx results = { props.results }>
+        <SearchListContainer results = { props.results }>
             <View style = { styles.searchList }>
                 <>
                     {
                         props.results.map(item => {
                             return (
-                                <SearchItemJsx
+                                <SearchItem
                                      key = { item.id }
                                      thumbnail = { { uri: item.avatar } }
                                      callback = { props.callback }
@@ -248,7 +244,7 @@ const AccountListJsx = (props) => {
                                     <Text style = { styles.displayName }>
                                         { item.display_name }
                                     </Text>
-                                </SearchItemJsx>
+                                </SearchItem>
                             );
                         })
                     }
@@ -267,19 +263,19 @@ const AccountListJsx = (props) => {
                     }
                 </>
             </View>
-        </SearchListContainerJsx>
+        </SearchListContainer>
     );
 };
 
-const HashtagListJsx = (props) => {
+const HashtagList = (props) => {
     return (
-        <SearchListContainerJsx results = { props.results }>
+        <SearchListContainer results = { props.results }>
             <View style = { styles.searchList }>
                 <>
                     {
                         props.results.map((item, i) => {
                             return (
-                                <SearchItemJsx
+                                <SearchItem
                                      key = { i }
                                      thumbnail = { require("assets/hashtag.png") }
                                      callback = { props.callback }
@@ -287,7 +283,7 @@ const HashtagListJsx = (props) => {
                                     <Text style = { styles.username }>
                                         #{ item.name }
                                     </Text>
-                                </SearchItemJsx>
+                                </SearchItem>
                             );
                         })
                     }
@@ -306,7 +302,7 @@ const HashtagListJsx = (props) => {
                     }
                 </>
             </View>
-        </SearchListContainerJsx>
+        </SearchListContainer>
     );
 }
 
@@ -388,4 +384,4 @@ const styles = {
     },
 }
 
-export default SearchJsx;
+export default Search;

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { View } from "react-native";
 
-import { PostByDataJsx } from "src/components/posts/post";
+import { PostByData } from "src/components/posts/post";
 
-const TimelineViewJsx = (props) => {
+const TimelineView = (props) => {
     // Count the number of posts that have already loaded
     const [postsLoaded, setPostsLoaded] = useState(0);
 
@@ -30,7 +30,7 @@ const TimelineViewJsx = (props) => {
             { props.posts.map((post, i) => {
                 return (
                     <View key = { i } >
-                        <PostByDataJsx
+                        <PostByData
                             navigation = { props.navigation }
                             data = { post }
                             onPostLoaded = { _handlePostLoaded }/>
@@ -41,4 +41,4 @@ const TimelineViewJsx = (props) => {
     );
 };
 
-export default TimelineViewJsx;
+export default TimelineView;

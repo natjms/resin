@@ -9,7 +9,7 @@ import {
 import { FontAwesome } from "@expo/vector-icons";
 import { activeOrNot } from "src/interface/interactions";
 
-const PostActionJsx = (props) => {
+const PostAction = (props) => {
     return (
         <TouchableOpacity
               onPress = { props.onPress }>
@@ -28,7 +28,7 @@ const PostActionJsx = (props) => {
     )
 }
 
-const PostActionBarJsx = (props) => {
+const PostActionBar = (props) => {
     const icons = {
         heart: {
             active: "heart",
@@ -45,17 +45,17 @@ const PostActionBarJsx = (props) => {
     }
     return (
         <View style = { styles.flexContainer }>
-            <PostActionJsx
+            <PostAction
                 pack = { icons.heart }
                 active = { props.favourited }
                 onPress = { props.onFavourite } />
 
-            <PostActionJsx
+            <PostAction
                 pack = { icons.reblog }
                 active = { props.reblogged }
                 onPress = { props.onReblog }/>
 
-            <PostActionJsx
+            <PostAction
                 pack = { icons.bookmark }
                 active = { props.bookmarked }
                 onPress = { props.onBookmark } />
@@ -71,4 +71,4 @@ const styles = {
     },
 }
 
-export default PostActionBarJsx;
+export default PostActionBar;

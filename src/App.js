@@ -1,73 +1,142 @@
 import 'react-native-gesture-handler';
 import React from "react";
 
-import { createAppContainer } from 'react-navigation';
-import { createStackNavigator } from "react-navigation-stack";
+import { createStackNavigator } from "@react-navigation/stack";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { NavigationContainer } from "@react-navigation/native";
 import { MenuProvider } from "react-native-popup-menu";
+import { Ionicons } from "@expo/vector-icons";
 
 import { registerRootComponent } from 'expo';
 import * as Linking from "expo-linking";
 
-import ViewPostJsx from "src/components/pages/view-post";
-import ViewCommentsJsx from "src/components/pages/view-comments.js";
+import ViewPost from "src/components/pages/view-post";
+import ViewComments from "src/components/pages/view-comments.js";
 
-import AuthenticateJsx from "src/components/pages/authenticate";
-import FeedJsx from "src/components/pages/feed";
-import PublishJsx from "src/components/pages/publish";
-import OlderPostsJsx from "src/components/pages/feed/older-posts";
-import ProfileJsx, { ViewProfileJsx } from "src/components/pages/profile";
-import DiscoverJsx from 'src/components/pages/discover';
-import SearchJsx from 'src/components/pages/discover/search';
-import ViewHashtagJsx from 'src/components/pages/discover/view-hashtag';
-import DirectJsx from "src/components/pages/direct";
-import ConversationJsx, { ComposeJsx } from "src/components/pages/direct/conversation";
-import NotificationsJsx from 'src/components/pages/profile/notifications';
-import UserListJsx from "src/components/pages/user-list.js";
-import SettingsJsx from "src/components/pages/profile/settings.js";
-
-const Stack = createStackNavigator({
-    Authenticate: {
-        screen: AuthenticateJsx,
-        path: "authenticate",
-    },
-    Feed: { screen: FeedJsx, },
-    OlderPosts: { screen: OlderPostsJsx },
-    Discover: { screen: DiscoverJsx },
-    Publish: { screen: PublishJsx },
-    Direct: { screen: DirectJsx },
-    Compose: { screen: ComposeJsx },
-    Conversation: { screen: ConversationJsx },
-    Notifications: { screen: NotificationsJsx },
-    Profile: { screen: ProfileJsx, },
-    Settings: { screen: SettingsJsx },
-    Search: { screen: SearchJsx },
-    ViewPost: { screen: ViewPostJsx },
-    ViewComments: { screen: ViewCommentsJsx },
-    ViewProfile: { screen: ViewProfileJsx },
-    ViewHashtag: { screen: ViewHashtagJsx },
-    UserList: { screen: UserListJsx }
-}, {
-    initialRouteKey: "Authenticate",
-    headerMode: "none",
-    navigationOptions: {
-        headerVisible: false
-    }
-});
-
-const AppContainer = createAppContainer(Stack);
+import Authenticate from "src/components/pages/authenticate";
+import Feed from "src/components/pages/feed";
+import Publish from "src/components/pages/publish";
+import OlderPosts from "src/components/pages/feed/older-posts";
+import Profile, { ViewProfile } from "src/components/pages/profile";
+import Discover from 'src/components/pages/discover';
+import Search from 'src/components/pages/discover/search';
+import ViewHashtag from 'src/components/pages/discover/view-hashtag';
+import Direct from "src/components/pages/direct";
+import Conversation, { Compose } from "src/components/pages/direct/conversation";
+import Notifications from 'src/components/pages/profile/notifications';
+import UserList from "src/components/pages/user-list.js";
+import Settings from "src/components/pages/profile/settings.js";
 
 const prefix = Linking.makeUrl("/");
+const Tab = createBottomTabNavigator();
+
+const MainNavigator = () => {
+    // Tabbed navigator for Feed, Discover, Publish, Direct and Profile
+
+    const bottomTabIcon = name => {
+        return ({ size }) => <Ionicons name = { name } size = { size }/>
+    };
+
+    const screenOptions = {
+        all: {
+            // Options that apply to every screen in the navigator
+            headerShown: false,
+            tabBarShowLabel: false,
+            tabBarStyle: {
+                height: 60,
+            }
+        },
+        Feed: {
+            tabBarAccessibilityLabel: "Feed",
+            tabBarIcon: bottomTabIcon("home-outline"),
+        },
+        Discover: {
+            tabBarAccessibilityLabel: "Discover",
+            tabBarIcon: bottomTabIcon("search-outline"),
+        },
+        Publish: {
+            tabBarAccessibilityLabel: "Publish",
+            tabBarIcon: bottomTabIcon("camera-outline"),
+        },
+        Direct: {
+            tabBarAccessibilityLabel: "Direct messages",
+            tabBarIcon: bottomTabIcon("mail-outline"),
+        },
+        Profile: {
+            tabBarAccessibilityLabel: "Profile",
+            tabBarIcon: bottomTabIcon("person-outline"),
+        },
+    };
+
+    return (
+        <Tab.Navigator
+              intialRouteName = "Feed"
+              screenOptions = { screenOptions.all }>
+            <Tab.Screen name = "Feed" component = { Feed }
+                options = { screenOptions.Feed }/>
+            <Tab.Screen name = "Discover" component = { Discover }
+                options = { screenOptions.Discover }/>
+            <Tab.Screen name = "Publish" component = { Publish }
+                options = { screenOptions.Publish }/>
+            <Tab.Screen name = "Direct" component = { Direct }
+                options = { screenOptions.Direct }/>
+            <Tab.Screen name = "Profile" component = { Profile }
+                options = { screenOptions.Profile }/>
+        </Tab.Navigator>
+    );
+};
+
+const Stack = createStackNavigator();
 
 const App = (props) => {
     const providerStyles = {
         backdrop: {
             backgroundColor: "black",
             opacity: 0.5
-        }
+        },
+    };
+
+    // This allows for the OAuth redirect
+    const linking = {
+        prefixes: [prefix],
+        config: {
+            screens: {
+                Authenticate: "authenticate",
+            },
+        },
+    };
+
+    const screenOptions = {
+        headerTitle: "",
     };
 
     return <MenuProvider customStyles = { providerStyles }>
-        <AppContainer uriPrefix = { prefix }/>
+        <NavigationContainer linking = { linking }>
+            <Stack.Navigator
+                  intialRouteName = "Authenticate"
+                  screenOptions = { screenOptions }>
+                <Stack.Screen
+                    name = "Authenticate"
+                    component = { Authenticate }
+                    options = { { headerShown: false } }/>
+                <Stack.Screen
+                    name = "Main"
+                    component = { MainNavigator }
+                    options = { { headerShown: false } }/>
+                <Stack.Screen name="OlderPosts" component={OlderPosts}/>
+                <Stack.Screen name="Compose" component={Compose}/>
+                <Stack.Screen name="Conversation" component={Conversation}/>
+                <Stack.Screen name="Settings" component={Settings}/>
+                <Stack.Screen name="Search" component={Search}
+                    options = { { headerShown: false } }/>
+                <Stack.Screen name="ViewPost" component={ViewPost}/>
+                <Stack.Screen name="ViewComments" component={ViewComments}/>
+                <Stack.Screen name="ViewProfile" component={ViewProfile}/>
+                <Stack.Screen name="ViewHashtag" component={ViewHashtag}/>
+                <Stack.Screen name="Notifications" component={Notifications}/>
+                <Stack.Screen name="UserList" component={UserList}/>
+            </Stack.Navigator>
+        </NavigationContainer>
     </MenuProvider>;
 };
 

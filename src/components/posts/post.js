@@ -20,13 +20,12 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as requests from "src/requests";
 import { withLeadingAcct } from "src/interface/rendering";
 
-import PostActionBarJsx from "src/components/posts/post-action-bar";
+import PostActionBar from "src/components/posts/post-action-bar";
 
 import { MenuOption } from "react-native-popup-menu";
-import ContextMenuJsx from "src/components/context-menu.js";
+import ContextMenu from "src/components/context-menu.js";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
-const TEST_IMAGE = "https://cache.desktopnexus.com/thumbseg/2255/2255124-bigthumbnail.jpg";
 
 function getDimensionsPromises(uris) {
     return uris.map(attachment => new Promise(resolve => {
@@ -52,19 +51,18 @@ function handleFavouriteFactory(state, setState) {
     };
 }
 
-const PostImageJsx = (props) => {
+const PostImage = (props) => {
     return <Image
         source = { { uri: props.uri } }
         style = {
             {
-                flex: 1,
                 width: SCREEN_WIDTH,
                 height: getAutoHeight(props.width, props.height, SCREEN_WIDTH),
             }
         } />
 };
 
-export const RawPostJsx = (props) => {
+export const RawPost = (props) => {
     const repliesCount = props.data.replies_count;
 
     let commentsText;
@@ -95,7 +93,7 @@ export const RawPostJsx = (props) => {
                     { props.data.account.acct }
                 </Text>
                 </TouchableOpacity>
-                <ContextMenuJsx
+                <ContextMenu
                       containerStyle = { styles.menu }
                       colour = "#666">
                     { props.own
@@ -116,7 +114,7 @@ export const RawPostJsx = (props) => {
                                 text = "Block" />
                         </>
                     }
-                </ContextMenuJsx>
+                </ContextMenu>
             </View>
             {
                 props.data.media_attachments.length > 1 ?
@@ -129,7 +127,7 @@ export const RawPostJsx = (props) => {
                     {
                         props.data.media_attachments
                             .map((attachment, i) => {
-                                return (<PostImageJsx
+                                return (<PostImage
                                     key = { i }
                                     uri = { attachment.url }
                                     width = { props.dimensions[i][0] }
@@ -137,12 +135,12 @@ export const RawPostJsx = (props) => {
                             })
                     }
                 </ScrollView>
-                : <PostImageJsx
+                : <PostImage
                     uri = { props.data.media_attachments[0].url }
                     width = { props.dimensions[0][0] }
                     height = { props.dimensions[0][1] } />
             }
-            <PostActionBarJsx
+            <PostActionBar
                 favourited = { props.data.favourited }
                 reblogged = { props.data.reblogged }
                 bookmarked = { props.data.bookmarked }
@@ -161,7 +159,6 @@ export const RawPostJsx = (props) => {
                 <TouchableOpacity
                       onPress = {
                         () => props.navigation.navigate("ViewComments", {
-                            originTab: props.navigation.getParam("originTab"),
                             postData: props.data
                         })
                       }>
@@ -178,7 +175,7 @@ export const RawPostJsx = (props) => {
     );
 }
 
-export const PostByDataJsx = (props) => {
+export const PostByData = (props) => {
     /*
      * Renders a post where the data is supplied directly to the element through
      * its properties, as it is in a timeline.
@@ -211,7 +208,7 @@ export const PostByDataJsx = (props) => {
             )
             .then(dimensions => {
                 setState({...state,
-                    dimensions: dimensions,
+                    dimensions,
                     instance,
                     accessToken,
                     own,
@@ -284,7 +281,6 @@ export const PostByDataJsx = (props) => {
                 state.accessToken
             );
         }
-        console.warn(newStatus.bookmarked);
 
         setState({...state,
             data: newStatus,
@@ -350,7 +346,7 @@ export const PostByDataJsx = (props) => {
     return (
         <View>
             { state.loaded && !state.deleted ?
-                <RawPostJsx
+                <RawPost
                     data = { state.data }
                     dimensions = { state.dimensions }
                     onFavourite = { _handleFavourite }
@@ -362,7 +358,7 @@ export const PostByDataJsx = (props) => {
                     onBlock = { _handleBlock }
                     own = { state.own }
                     navigation = { props.navigation }/>
-                : <View></View> }
+                : <></> }
         </View>
     );
 }

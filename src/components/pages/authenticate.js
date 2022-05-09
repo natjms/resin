@@ -16,7 +16,7 @@ import Constants from "expo-constants";
 
 import * as requests from "src/requests";
 
-const AuthenticateJsx = ({navigation}) => {
+const Authenticate = ({navigation}) => {
     const REDIRECT_URI = Linking.makeUrl("authenticate");
     const [state, setState] = useState({
         instance: "",
@@ -83,7 +83,7 @@ const AuthenticateJsx = ({navigation}) => {
         );
 
         // Since nothing went wrong, navigate to the feed.
-        navigation.navigate("Feed");
+        navigation.replace("Main");
     };
 
     const _handleUrl = async ({ url }) => {
@@ -136,7 +136,7 @@ const AuthenticateJsx = ({navigation}) => {
             ],
         ]);
 
-        navigation.navigate("Feed");
+        navigation.replace("Main");
     };
 
     useEffect(() => {
@@ -265,4 +265,4 @@ const styles = {
     },
 };
 
-export { AuthenticateJsx as default };
+export { Authenticate as default };

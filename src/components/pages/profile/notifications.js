@@ -11,8 +11,6 @@ import { FontAwesome } from "@expo/vector-icons";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import { ScreenWithBackBarJsx } from "src/components/navigation/navigators";
-
 const TEST_IMAGE = "https://cache.desktopnexus.com/thumbseg/2255/2255124-bigthumbnail.jpg";
 const TEST_NOTIFICATIONS = [
     {
@@ -139,32 +137,32 @@ function navigatePostFactory(nav, id) {
 function renderNotification(notif, navigation) {
     switch(notif.type) {
         case "follow":
-            return <FollowJsx
+            return <Follow
                 data = { notif }
                 key = { notif.id }
                 navigation = { navigation } />
         case "follow_request":
-            return <FollowRequestJsx
+            return <FollowRequest
                 data = { notif }
                 key = { notif.id }
                 navigation = { navigation } />
         case "mention":
-            return <MentionJsx
+            return <Mention
                 data = { notif }
                 key = { notif.id }
                 navigation = { navigation } />
         case "reblog":
-            return <ReblogJsx
+            return <Reblog
                 data = { notif }
                 key = { notif.id }
                 navigation = { navigation } />
         case "favourite":
-            return <FavouriteJsx
+            return <Favourite
                 data = { notif }
                 key = { notif.id }
                 navigation = { navigation } />
         case "status":
-            return <StatusJsx
+            return <Status
                 data = { notif }
                 key = { notif.id }
                 navigation = { navigation } />
@@ -174,7 +172,7 @@ function renderNotification(notif, navigation) {
     }
 }
 
-const UserTextJsx = (props) => {
+const UserText = (props) => {
     return (
         <Text
               style = { styles.bold }
@@ -190,7 +188,7 @@ const UserTextJsx = (props) => {
     );
 };
 
-const NotificationJsx = (props) => {
+const Notification = (props) => {
     return (
         <View style = { styles.notif.container }>
             <View style = { styles.notif.thumbnailContainer }>
@@ -223,25 +221,25 @@ const NotificationJsx = (props) => {
     );
 };
 
-const FollowJsx = (props) => {
+const Follow = (props) => {
     return (
-        <NotificationJsx
+        <Notification
               thumbnail = { props.data.account.avatar }
               thumbnailStyles = { styles.notif.circularThumbnail }
               thumbnailPressCallback = {
                 navigateProfileFactory(props.navigation, props.data.account.acct)
               }>
             <Text style = { styles.notif.content }>
-                <UserTextJsx acct = { props.data.account.acct } />
+                <UserText acct = { props.data.account.acct } />
                 has followed you.
             </Text>
-        </NotificationJsx>
+        </Notification>
     );
 };
 
-const FollowRequestJsx = (props) => {
+const FollowRequest = (props) => {
     return (
-        <NotificationJsx
+        <Notification
               thumbnail = { props.data.account.avatar }
               thumbnailStyles = { styles.notif.circularThumbnail }
               thumbnailPressCallback = {
@@ -251,14 +249,14 @@ const FollowRequestJsx = (props) => {
               buttonLabel = { "Accept" }
               buttonCallback = { () => console.log("Request accepted") }>
             <Text style = { styles.notif.content }>
-                <UserTextJsx acct = { props.data.account.acct } />
+                <UserText acct = { props.data.account.acct } />
                 has requested to follow you.
             </Text>
-        </NotificationJsx>
+        </Notification>
     );
 };
 
-const MentionJsx = (props) => {
+const Mention = (props) => {
     let uri;
     let imageStyle;
     let thumbnailCallback;
@@ -282,24 +280,24 @@ const MentionJsx = (props) => {
     }
 
     return (
-        <NotificationJsx
+        <Notification
               thumbnail = { uri }
               thumbnailStyles = { imageStyle }i
               thumbnailPressCallback = { thumbnailCallback }>
             <Text style = { styles.notif.content }>
-                <UserTextJsx acct = { props.data.account.acct } />
+                <UserText acct = { props.data.account.acct } />
                 mentioned you:
                 <Text style = { styles.notif.status }>
                    "{ props.data.status.content }"
                 </Text>
             </Text>
-        </NotificationJsx>
+        </Notification>
     );
 };
 
-const ReblogJsx = (props) => {
+const Reblog = (props) => {
     return (
-        <NotificationJsx
+        <Notification
               thumbnail = { props.data.status.media_attachments[0].url }
               thumbnailPressCallback = {
                 navigatePostFactory(props.navigation, props.data.status.id)
@@ -310,16 +308,16 @@ const ReblogJsx = (props) => {
                 size = { 20 }
                 style = { styles.notif.inlineIcon }/>
             <Text style = { styles.notif.content }>
-                <UserTextJsx acct = { props.data.account.acct } />
+                <UserText acct = { props.data.account.acct } />
                 shared your post.
             </Text>
-        </NotificationJsx>
+        </Notification>
     );
 };
 
-const FavouriteJsx = (props) => {
+const Favourite = (props) => {
     return (
-        <NotificationJsx
+        <Notification
               thumbnail = { props.data.status.media_attachments[0].url }
               thumbnailPressCallback = {
                 navigatePostFactory(props.navigation, props.data.status.id)
@@ -330,29 +328,29 @@ const FavouriteJsx = (props) => {
                 color = "black"
                 style = { styles.notif.inlineIcon }/>
             <Text style = { styles.notif.content }>
-                <UserTextJsx acct = { props.data.account.acct } />
+                <UserText acct = { props.data.account.acct } />
                 liked your post.
             </Text>
-        </NotificationJsx>
+        </Notification>
     );
 };
 
-const StatusJsx = (props) => {
+const Status = (props) => {
     return (
-        <NotificationJsx
+        <Notification
               thumbnail = { props.data.status.media_attachments[0].url }
               thumbnailPressCallback = {
                 navigatePostFactory(props.navigation, props.data.status.id)
               }>
             <Text style = { styles.notif.content }>
-                <UserTextJsx acct = { props.data.account.acct } />
+                <UserText acct = { props.data.account.acct } />
                 just posted.
             </Text>
-        </NotificationJsx>
+        </Notification>
     );
 };
 
-const NotificationsJsx = ({navigation}) => {
+const Notifications = ({navigation}) => {
     const [state, setState] = useState({
         loaded: false,
     });
@@ -378,7 +376,7 @@ const NotificationsJsx = ({navigation}) => {
     }, []);
 
     return (
-        <ScreenWithBackBarJsx
+        <>
               navigation = { navigation }>
             { state.loaded ?
                 <View>
@@ -390,7 +388,7 @@ const NotificationsJsx = ({navigation}) => {
                 </View>
                 : <></>
             }
-        </ScreenWithBackBarJsx>
+        </>
     );
 }
 
@@ -439,4 +437,4 @@ const styles = {
     bold: { fontWeight: "bold" },
 };
 
-export default NotificationsJsx;
+export default Notifications;

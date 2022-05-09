@@ -14,8 +14,7 @@ import * as requests from "src/requests";
 
 import { Ionicons } from "@expo/vector-icons";
 
-import { ScreenWithTrayJsx } from "src/components/navigation/navigators";
-import ModerateMenuJsx from "src/components/moderate-menu.js";
+import ModerateMenu from "src/components/moderate-menu.js";
 
 const TEST_IMAGE_1 = "https://cache.desktopnexus.com/thumbseg/2255/2255124-bigthumbnail.jpg";
 const TEST_IMAGE_2 = "https://natureproducts.net/Forest_Products/Cutflowers/Musella_cut.jpg";
@@ -37,7 +36,7 @@ function filterConversations(convs, query) {
     });
 }
 
-const DirectJsx = ({ navigation }) => {
+const Direct = ({ navigation }) => {
     const FETCH_LIMIT = 1;
 
     const [state, setState] = useState({
@@ -133,7 +132,7 @@ const DirectJsx = ({ navigation }) => {
                     </View>
                 </TouchableOpacity>
                 <View style = { styles.conv.context }>
-                    <ModerateMenuJsx
+                    <ModerateMenu
                         triggerStyle = { styles.menu.trigger } />
                 </View>
             </View>
@@ -141,9 +140,7 @@ const DirectJsx = ({ navigation }) => {
     };
 
     return (
-        <ScreenWithTrayJsx
-              navigation = { navigation }
-              originTab = "Direct">
+        <>
             { state.loaded
                 ? <>
                     <View style = { [ styles.row, styles.form.container ] }>
@@ -188,7 +185,7 @@ const DirectJsx = ({ navigation }) => {
                 </>
                 : <></>
             }
-        </ScreenWithTrayJsx>
+        </>
     );
 };
 
@@ -259,4 +256,4 @@ const styles = {
     bold: { fontWeight: "bold" },
 };
 
-export { DirectJsx as default };
+export { Direct as default };

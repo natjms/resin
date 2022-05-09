@@ -16,14 +16,10 @@ import HTML from "react-native-render-html";
 import { withLeadingAcct, withoutHTML, pluralize } from "src/interface/rendering";
 import * as requests from "src/requests";
 
-import GridViewJsx from "src/components/posts/grid-view";
-import {
-    ScreenWithTrayJsx,
-    ScreenWithBackBarJsx,
-} from "src/components/navigation/navigators";
+import GridView from "src/components/posts/grid-view";
 
 import { MenuOption } from "react-native-popup-menu";
-import ContextMenuJsx from "src/components/context-menu.js";
+import ContextMenu from "src/components/context-menu.js";
 
 function getMutuals(yourFollowing, theirFollowers) {
     // Where yours and theirs are arrays of followers, as returned by the API
@@ -60,7 +56,7 @@ const HTMLLink = ({link}) => {
     }
 }
 
-const ViewProfileJsx = ({navigation}) => {
+const ViewProfile = ({navigation}) => {
     // As rendered when opened from somewhere other than the tab bar
     const [state, setState] = useState({
         loaded: false,
@@ -163,10 +159,10 @@ const ViewProfileJsx = ({navigation}) => {
     return (
         <>
             { state.loaded
-                ? <ScreenWithBackBarJsx
+                ? <>
                       active = { navigation.getParam("originTab") }
                       navigation = { navigation }>
-                    <RawProfileJsx
+                    <RawProfile
                         navigation = { navigation }
                         onFollow = { _handleFollow }
                         onHide = { _handleHide }
@@ -176,14 +172,14 @@ const ViewProfileJsx = ({navigation}) => {
                         listedUsers = { state.listedUsers }
                         followed = { state.followed }
                         posts = { state.posts }/>
-                </ScreenWithBackBarJsx>
+                </>
                 : <></>
             }
         </>
     );
 }
 
-const ProfileJsx = ({ navigation }) => {
+const Profile = ({ navigation }) => {
     const [state, setState] = useState({
         loaded: false,
     });
@@ -230,25 +226,22 @@ const ProfileJsx = ({ navigation }) => {
     return (
         <>
             { state.loaded
-                ? <ScreenWithTrayJsx
-                      active = "Profile"
-                      navigation = { navigation }
-                      active = "Profile">
-                    <RawProfileJsx
+                ? <>
+                    <RawProfile
                         navigation = { navigation }
                         own = { true }
                         profile = { state.profile }
                         posts = { state.posts }
 		    	listedUsers = { state.listedUsers }
                         notifs = { state.notifs }/>
-                </ScreenWithTrayJsx>
+                </>
                 : <></>
             }
         </>
     )
 };
 
-const RawProfileJsx = (props) => {
+const RawProfile = (props) => {
     let profileButton;
 
     /* Some profiles won't have a note, and react-native-render-html will
@@ -317,7 +310,7 @@ const RawProfileJsx = (props) => {
                     </View>
                     {
                         !props.own
-                        ? <ContextMenuJsx
+                        ? <ContextMenu
                               containerStyle = {
                                   styles.profileContextContainer
                               }>
@@ -330,7 +323,7 @@ const RawProfileJsx = (props) => {
                             <MenuOption
                                 onSelect = { props.onBlock }
                                 text = "Block" />
-                        </ContextMenuJsx>
+                        </ContextMenu>
                         : <></>
                     }
                 </View>
@@ -389,7 +382,7 @@ const RawProfileJsx = (props) => {
                 {profileButton}
             </View>
 
-            <GridViewJsx
+            <GridView
                 posts = { props.posts }
                 navigation = { props.navigation }/>
         </View>
@@ -470,4 +463,4 @@ const styles = {
     },
 };
 
-export { ViewProfileJsx, ProfileJsx as default };
+export { ViewProfile, Profile as default };

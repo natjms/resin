@@ -24,7 +24,6 @@ import {
 
 const { SlideInMenu } = renderers;
 
-import BackBarJsx from "src/components/navigation/back-bar";
 import { timeToAge, StatusBarSpace } from "src/interface/rendering";
 
 const TEST_IMAGE_1 = "https://cache.desktopnexus.com/thumbseg/2255/2255124-bigthumbnail.jpg";
@@ -46,12 +45,12 @@ const TEST_MESSAGES = [
     { ...TEST_STATUS, id: 5 },
 ];
 
-const ConversationContainerJsx = (props) => (
+const ConversationContainer = (props) => (
     <SafeAreaView style = { { flex: 1 } }>
         <StatusBarSpace color = "white"/>
-        <BackBarJsx navigation = { props.navigation }>
+        <BackBar navigation = { props.navigation }>
             { props.renderBackBar() }
-        </BackBarJsx>
+        </BackBar>
         <ScrollView>
             { props.children }
         </ScrollView>
@@ -80,7 +79,7 @@ const ConversationContainerJsx = (props) => (
     </SafeAreaView>
 );
 
-const ComposeJsx = ({ navigation }) => {
+const Compose = ({ navigation }) => {
     const [state, setState] = useState({
         accts: [],
         newMessage: "",
@@ -98,7 +97,7 @@ const ComposeJsx = ({ navigation }) => {
             }/>
     );
 
-    return <ConversationContainerJsx
+    return <ConversationContainer
         renderBackBar = { renderBackBar }
         navigation = { navigation }
         state = { state }
@@ -110,7 +109,7 @@ const ComposeJsx = ({ navigation }) => {
         }/>;
 };
 
-const ConversationJsx = ({ navigation }) => {
+const Conversation = ({ navigation }) => {
     const conversation = navigation.getParam("conversation", {});
     const [state, setState] = useState({
         loaded: false,
@@ -227,7 +226,7 @@ const ConversationJsx = ({ navigation }) => {
     };
 
     return (
-        <ConversationContainerJsx
+        <ConversationContainer
               renderBackBar = { renderBackBar }
               navigation = { navigation }
               state = { state }
@@ -236,7 +235,7 @@ const ConversationJsx = ({ navigation }) => {
                 ? state.messages.map(renderMessage)
                 : <></>
             }
-        </ConversationContainerJsx>
+        </ConversationContainer>
     );
 };
 
@@ -327,4 +326,4 @@ const styles = {
     },
 };
 
-export { ConversationJsx as default, ComposeJsx, };
+export { Conversation as default, Compose, };

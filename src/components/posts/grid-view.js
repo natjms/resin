@@ -16,7 +16,7 @@ function partition(arr, size) {
     return newArray
 }
 
-const GridPostJsx = (props) => {
+const GridPost = (props) => {
     return (
         <TouchableOpacity
             onPress={ () => {
@@ -33,7 +33,7 @@ const GridPostJsx = (props) => {
     )
 }
 
-const GridViewJsx = (props) => {
+const GridView = (props) => {
     // Ensure only posts with media get into the grid
     const postsWithMedia = props.posts.filter(
         p => p.media_attachments != null
@@ -52,7 +52,7 @@ const GridViewJsx = (props) => {
                                 row.map((post) => {
                                     return (
                                         <View key = { post.id }>
-                                            <GridPostJsx
+                                            <GridPost
                                                 navigation = { props.navigation }
                                                 data = { post } />
                                         </View>
@@ -80,4 +80,4 @@ const styles = {
     },
 };
 
-export default GridViewJsx;
+export default GridView;

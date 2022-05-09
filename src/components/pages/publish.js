@@ -9,7 +9,6 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 
 import { getAutoHeight } from "src/interface/rendering";
-import { ScreenWithTrayJsx } from "src/components/navigation/navigators";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
 import mime from "mime";
@@ -18,7 +17,7 @@ import * as Permissions from "expo-permissions";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as requests from "src/requests";
 
-const PublishJsx = ({ navigation }) => {
+const Publish = ({ navigation }) => {
     const [ state, setState ] = useState({
         loaded: false,
     });
@@ -131,9 +130,7 @@ const PublishJsx = ({ navigation }) => {
     return (
         <>
             { state.loaded
-                ? <ScreenWithTrayJsx
-                      active = "Publish"
-                      navigation = { navigation } >
+                ? <>
                     <View style = { styles.preview.container }>
                         <Image
                             style = {[
@@ -181,7 +178,7 @@ const PublishJsx = ({ navigation }) => {
                             </Text>
                         </TouchableOpacity>
                     </View>
-                </ScreenWithTrayJsx>
+                </>
                 : <></>
             }
         </>
@@ -243,4 +240,4 @@ const styles = {
     },
 };
 
-export { PublishJsx as default };
+export { Publish as default };

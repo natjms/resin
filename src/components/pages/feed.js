@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { Dimensions, View, Image, Text } from "react-native";
+import { ScrollView, Dimensions, View, Image, Text } from "react-native";
 import { Ionicons } from '@expo/vector-icons';
 
-import TimelineViewJsx from "src/components/posts/timeline-view";
-import { ScreenWithTrayJsx } from "src/components/navigation/navigators";
+import TimelineView from "src/components/posts/timeline-view";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import * as requests from "src/requests";
+import { StatusBarSpace } from "src/interface/rendering";
 
-const FeedJsx = (props) => {
+const Feed = (props) => {
     const [state, setState] = useState({
         loaded: false,
         postsRendered: false,
@@ -69,13 +69,13 @@ const FeedJsx = (props) => {
     });
 
     let endOfTimelineMessage = <></>;
-    if (state.postsRendered) {
+    if (state.postsRendered || state.loaded && state.posts.length == 0) {
         // Only render the timeline interruption if all of the posts have been
         // rendered in the feed.
         endOfTimelineMessage = <>
             <View style = {
                 state.posts.length == 0
-                    ? {}
+                    ? styles.ifCaughtUp
                     : styles.interruption.topBorder
               }>
                 <View style = { styles.interruption.inner }>
@@ -88,7 +88,7 @@ const FeedJsx = (props) => {
                         You're all caught up.
                     </Text>
                     <Text> Wow, it sure is a lovely day outside 🌳 </Text>
-    
+
                     <TouchableWithoutFeedback
                             style = { styles.interruption.button }
                             onPress = {
@@ -103,22 +103,17 @@ const FeedJsx = (props) => {
 
     return (
         <>
+            <StatusBarSpace />
             { state.loaded
-                ? <ScreenWithTrayJsx
-                        active = "Feed"
-                        contentContainerStyle = {
-                            state.posts.length == 0
-                                ? styles.ifCaughtUp
-                                : {}
-                        }
-                        navigation = { props.navigation }>
-
-                    <TimelineViewJsx
-                            navigation = { props.navigation }
-                            posts = { state.posts }
-                            onTimelineLoaded = { _handleTimelineLoaded }/>
-                    { endOfTimelineMessage }
-                </ScreenWithTrayJsx>
+                ? state.posts.length > 0
+                    ? <ScrollView>
+                        <TimelineView
+                                navigation = { props.navigation }
+                                posts = { state.posts }
+                                onTimelineLoaded = { _handleTimelineLoaded }/>
+                        { endOfTimelineMessage }
+                    </ScrollView>
+                    : endOfTimelineMessage
                 : <></>
             }
         </>
@@ -161,4 +156,4 @@ const styles = {
     },
 };
 
-export default FeedJsx;
+export default Feed;

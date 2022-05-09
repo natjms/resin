@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, TouchableOpacity, Text } from "react-native";
 
-import GridViewJsx from "src/components/posts/grid-view";
+import GridView from "src/components/posts/grid-view";
 
 const TEST_IMAGE = "https://cache.desktopnexus.com/thumbseg/2255/2255124-bigthumbnail.jpg";
 const TEST_POSTS = [
@@ -34,7 +34,7 @@ const TEST_POSTS = [
 const PagedGridJSX = (props) => {
     return (
         <View>
-            <GridViewJsx
+            <GridView
                     posts = { props.posts }
                     navigation = { props.navigation }
                     openPostCallback = {

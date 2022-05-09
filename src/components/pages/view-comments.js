@@ -19,8 +19,7 @@ import {
 } from "src/interface/rendering";
 import { activeOrNot } from "src/interface/interactions";
 
-import TimelineViewJsx from "src/components/posts/timeline-view";
-import BackBarJsx from "src/components/navigation/back-bar";
+import TimelineView from "src/components/posts/timeline-view";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
 import * as requests from "src/requests";
@@ -124,7 +123,7 @@ function threadify(descendants) {
     return sorted;
 }
 
-const CommentJsx = (props) => {
+const Comment = (props) => {
     const menuOptionsStyles = {
         optionWrapper: { // The wrapper around a single option
             paddingLeft: SCREEN_WIDTH / 15,
@@ -234,12 +233,13 @@ const CommentJsx = (props) => {
     );
 }
 
-const ViewCommentsJsx = (props) => {
+const ViewComments = (props) => {
     let [state, setState] = useState({
-        postData: props.navigation.getParam("postData", null),
         loaded: false,
         reply: "",
     });
+
+    const postData = props.route.params.postData;
 
     useEffect(() => {
         let profile, instance, accessToken;
@@ -254,7 +254,7 @@ const ViewCommentsJsx = (props) => {
                 accessToken = JSON.parse(tokenPair[1]).access_token;
 
                 return requests
-                    .fetchStatusContext(instance, state.postData.id, accessToken)
+                    .fetchStatusContext(instance, postData.id, accessToken)
             })
             .then(context => {
                 setState({...state,
@@ -263,8 +263,8 @@ const ViewCommentsJsx = (props) => {
                     instance,
                     accessToken,
                     inReplyTo: {
-                        acct: state.postData.account.acct,
-                        id: state.postData.id,
+                        acct: postData.account.acct,
+                        id: postData.id,
                     },
                     loaded: true,
                 });
@@ -275,7 +275,7 @@ const ViewCommentsJsx = (props) => {
         // Fetch an updated context to rerender the page
         const { descendants } = await requests.fetchStatusContext(
             state.instance,
-            state.postData.id,
+            postData.id,
             state.accessToken,
         );
 
@@ -291,7 +291,7 @@ const ViewCommentsJsx = (props) => {
          * Returns a new collection of threads without the comment with the
          * given id
          */
-        
+
         return state.descendants.map(thread =>
             thread.filter(comment => comment.id != id)
         ).filter(thread => thread.length > 0);
@@ -351,8 +351,8 @@ const ViewCommentsJsx = (props) => {
     const _handleCancelSubReply = () => {
         setState({...state,
             inReplyTo: {
-                acct: state.postData.account.acct,
-                id: state.postData.id,
+                acct: postData.account.acct,
+                id: postData.id,
             },
         });
     };
@@ -371,8 +371,8 @@ const ViewCommentsJsx = (props) => {
             setState({...state,
                 // Reset the comment form
                 inReplyTo: {
-                    acct: state.postData.account.acct,
-                    id: state.postData.id,
+                    acct: postData.account.acct,
+                    id: postData.id,
                 },
                 reply: "",
 
@@ -383,7 +383,7 @@ const ViewCommentsJsx = (props) => {
     };
 
     const PartialComment = (props) => (
-        <CommentJsx
+        <Comment
             { ...props }
             profile = { state.profile }
             onFavouriteFactory = { onFavouriteFactory }
@@ -397,14 +397,12 @@ const ViewCommentsJsx = (props) => {
         <>
             { state.loaded ?
                 <SafeAreaView style = { { flex: 1 } }>
-                    <StatusBarSpace color = "white"/>
-                    <BackBarJsx navigation = { props.navigation }/>
                     <ScrollView>
                         { state.loaded
                             ? <View>
                                 <View style = { styles.parentPost }>
                                     <PartialComment
-                                        data = { state.postData } />
+                                        data = { postData } />
                                 </View>
                                 <View>
                                     { state.descendants.length != 0
@@ -443,7 +441,7 @@ const ViewCommentsJsx = (props) => {
                     </ScrollView>
                     <View style = { styles.form.container }>
                         <>
-                            { state.inReplyTo.id != state.postData.id
+                            { state.inReplyTo.id != postData.id
                                 ? <TouchableOpacity onPress = { _handleCancelSubReply }>
                                     <View style = { styles.form.inReplyTo.container }>
                                         <Ionicons name="close" size={24} color="#666" />
@@ -582,4 +580,4 @@ const styles = {
     },
 };
 
-export default ViewCommentsJsx;
+export default ViewComments;

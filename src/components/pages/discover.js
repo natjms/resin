@@ -8,12 +8,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import * as requests from "src/requests";
 
-import PagedGridJsx from "src/components/posts/paged-grid";
-import { ScreenWithTrayJsx } from "src/components/navigation/navigators";
+import PagedGrid from "src/components/posts/paged-grid";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 
 
-const DiscoverJsx = (props) => {
+const Discover = (props) => {
     const POST_FETCH_PARAMS = {
         only_media: true,
         limit: 18,
@@ -103,7 +102,7 @@ const DiscoverJsx = (props) => {
     };
 
     const LocalTimeline = () => (
-        <PagedGridJsx
+        <PagedGrid
             navigation = { props.navigation }
             posts = { state.localPosts }
             onShowMore = { _handleLocalTabUpdate }
@@ -111,7 +110,7 @@ const DiscoverJsx = (props) => {
     );
 
     const FederatedTimeline = () => (
-        <PagedGridJsx
+        <PagedGrid
             navigation = { props.navigation }
             posts = { state.federatedPosts }
             onShowMore = { _handleFederatedTabUpdate }
@@ -143,10 +142,7 @@ const DiscoverJsx = (props) => {
     return (
         <>
             { state.loaded
-                ? <ScreenWithTrayJsx
-                        active = "Discover"
-                        navigation = { props.navigation }
-                        statusBarColor = "white">
+                ? <>
                     <TouchableWithoutFeedback
                         onPress = { () => props.navigation.navigate("Search") }>
                         <View style = { styles.form }>
@@ -163,7 +159,7 @@ const DiscoverJsx = (props) => {
                         renderTabBar =  { renderTabBar }
                         onIndexChange = { setIndex }
                         initialLayout = { { width: SCREEN_WIDTH } } />
-                </ScreenWithTrayJsx>
+                </>
                 : <></>
             }
         </>
@@ -191,4 +187,4 @@ const styles = {
     },
 };
 
-export default DiscoverJsx;
+export default Discover;

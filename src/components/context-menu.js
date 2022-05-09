@@ -13,7 +13,7 @@ const { SlideInMenu } = renderers;
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
-const ContextMenuJsx = (props) => {
+const ContextMenu = (props) => {
     const optionsStyles = {
         optionWrapper: { // The wrapper around a single option
             paddingLeft: SCREEN_WIDTH / 15,
@@ -47,4 +47,4 @@ const ContextMenuJsx = (props) => {
     );
 }
 
-export { ContextMenuJsx as default };
+export { ContextMenu as default };

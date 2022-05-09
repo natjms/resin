@@ -13,7 +13,7 @@ const { SlideInMenu } = renderers;
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
-const ModerateMenuJsx = (props) => {
+const ModerateMenu = (props) => {
     const optionsStyles = {
         optionWrapper: { // The wrapper around a single option
             paddingLeft: SCREEN_WIDTH / 15,
@@ -50,4 +50,4 @@ const ModerateMenuJsx = (props) => {
     );
 }
 
-export { ModerateMenuJsx as default };
+export { ModerateMenu as default };
