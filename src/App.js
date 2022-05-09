@@ -1,6 +1,8 @@
 import 'react-native-gesture-handler';
 import React from "react";
 
+import { LogBox } from "react-native";
+
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
@@ -26,6 +28,10 @@ import Conversation, { Compose } from "src/components/pages/direct/conversation"
 import Notifications from 'src/components/pages/profile/notifications';
 import UserList from "src/components/pages/user-list.js";
 import Settings from "src/components/pages/profile/settings.js";
+
+LogBox.ignoreLogs([
+  "[react-native-gesture-handler] Seems like you\'re using an old API with gesture components, check out new Gestures system!",
+]);
 
 const prefix = Linking.makeUrl("/");
 const Tab = createBottomTabNavigator();
