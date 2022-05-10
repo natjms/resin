@@ -40,7 +40,11 @@ const MainNavigator = () => {
     // Tabbed navigator for Feed, Discover, Publish, Direct and Profile
 
     const bottomTabIcon = name => {
-        return ({ size }) => <Ionicons name = { name } size = { size }/>
+        return ({ size, focused }) =>
+            <Ionicons
+                name = { name }
+                size = { size }
+                color = { focused ? "black" : "#666" }/>
     };
 
     const screenOptions = {
@@ -50,7 +54,7 @@ const MainNavigator = () => {
             tabBarShowLabel: false,
             tabBarStyle: {
                 height: 60,
-            }
+            },
         },
         Feed: {
             tabBarAccessibilityLabel: "Feed",
