@@ -201,16 +201,16 @@ const ProfileJsx = ({ navigation }) => {
                 "@user_instance",
                 "@user_token",
             ])
-            .then(([profilePair, notifPair, domainPair, tokenPair]) => {
+            .then(async([profilePair, notifPair, domainPair, tokenPair]) => {
                 profile = JSON.parse(profilePair[1]);
                 notifs = JSON.parse(notifPair[1]);
                 domain = domainPair[1];
                 accessToken = JSON.parse(tokenPair[1]).access_token;
-
+                
                 return Promise.all([
-                    requests.fetchProfile(domain, profile.id),
-                    requests.fetchAccountStatuses(domain, profile.id, accessToken),
-		    requests.fetchFollowers(domain, profile.id, accessToken),
+                  requests.fetchProfile(domain, profile.id,accessToken),
+                  requests.fetchAccountStatuses(domain, profile.id, accessToken),
+                  requests.fetchFollowers(domain, profile.id, accessToken),
                 ]);
             })
             .then(([latestProfile, posts, followers]) => {
@@ -231,7 +231,6 @@ const ProfileJsx = ({ navigation }) => {
         <>
             { state.loaded
                 ? <ScreenWithTrayJsx
-                      active = "Profile"
                       navigation = { navigation }
                       active = "Profile">
                     <RawProfileJsx
