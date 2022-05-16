@@ -8,7 +8,9 @@
     "eject": "expo eject"
   },
   "dependencies": {
+    "@expo/ngrok": "^4.1.0",
     "@react-native-async-storage/async-storage": "~1.17.3",
+    "@react-native-masked-view/masked-view": "0.2.6",
     "@react-navigation/bottom-tabs": "^6.3.1",
     "@react-navigation/core": "^6.2.1",
     "@react-navigation/native": "^6.0.10",
@@ -22,7 +24,7 @@
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "react-native": "https://github.com/expo/react-native/archive/sdk-45.0.0.tar.gz",
-    "react-native-gesture-handler": "~2.2.0",
+    "react-native-gesture-handler": "~2.2.1",
     "react-native-pager-view": "5.4.15",
     "react-native-popup-menu": "^0.15.10",
     "react-native-reanimated": "~2.8.0",
@@ -31,8 +33,7 @@
     "react-native-screens": "~3.11.1",
     "react-native-tab-view": "^2.16.0",
     "react-native-web": "0.17.7",
-    "react-navigation-stack": "^2.8.2",
-    "@react-native-masked-view/masked-view": "0.2.6"
+    "react-navigation-stack": "^2.8.2"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
