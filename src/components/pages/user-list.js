@@ -1,5 +1,6 @@
 import React from "react";
 import {
+    ScrollView,
     SafeAreaView,
     View,
     Image,
@@ -10,12 +11,12 @@ import {
 
 import ModerateMenu from "src/components/moderate-menu.js";
 
-const UserList = ({navigation}) => {
-    const data = navigation.getParam("data", [])
-    const context = navigation.getParam("context", "");
+const UserList = ({ navigation, route}) => {
+    const data = route.params.data;
+    const context = route.params.context;
 
     return (
-        <>
+        <ScrollView>
             {
                 context ?
                     <Text style = { styles.context }>
@@ -55,7 +56,7 @@ const UserList = ({navigation}) => {
                     </View>
                 )
             }
-        </>
+        </ScrollView>
     );
 };
 

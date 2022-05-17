@@ -110,7 +110,7 @@ const Compose = ({ navigation }) => {
 };
 
 const Conversation = ({ navigation }) => {
-    const conversation = navigation.getParam("conversation", {});
+    const conversation = route.params.conversation
     const [state, setState] = useState({
         loaded: false,
         newMessage: "",

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {
+    ScrollView,
     View,
     Text,
     TouchableOpacity,
@@ -142,7 +143,7 @@ const Direct = ({ navigation }) => {
     return (
         <>
             { state.loaded
-                ? <>
+                ? <ScrollView>
                     <View style = { [ styles.row, styles.form.container ] }>
                         <TextInput
                             placeholder = "Search..."
@@ -182,7 +183,7 @@ const Direct = ({ navigation }) => {
                             : <></>
                         }
                     </>
-                </>
+                </ScrollView>
                 : <></>
             }
         </>

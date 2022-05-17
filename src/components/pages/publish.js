@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {
+    ScrollView,
     Dimensions,
     View,
     Image,
@@ -126,62 +127,57 @@ const Publish = ({ navigation }) => {
         );
     };
 
-    return (
-        <>
-            { state.loaded
-                ? <>
-                    <View style = { styles.preview.container }>
-                        <Image
-                            style = {[
-                                styles.preview.image,
-                                {
-                                    width: state.image.width,
-                                    height: state.image.height,
-                                },
-                            ]}
-                            source = { { uri: state.image.data.uri } } />
-                    </View>
-                    <View style = { styles.form.container }>
-                        <TextInput
-                            placeholder = "Caption this post..."
-                            value = { state.caption }
-                            multiline
-                            autoFocus
-                            onChangeText = {
-                                caption => setState({ ...state, caption })
-                            }
-                            style = { [ styles.form.input, { height: 100, } ] } />
+    return state.loaded
+        ? <ScrollView>
+            <View style = { styles.preview.container }>
+                <Image
+                    style = {[
+                        styles.preview.image,
+                        {
+                            width: state.image.width,
+                            height: state.image.height,
+                        },
+                    ]}
+                    source = { { uri: state.image.data.uri } } />
+            </View>
+            <View style = { styles.form.container }>
+                <TextInput
+                    placeholder = "Caption this post..."
+                    value = { state.caption }
+                    multiline
+                    autoFocus
+                    onChangeText = {
+                        caption => setState({ ...state, caption })
+                    }
+                    style = { [ styles.form.input, { height: 100, } ] } />
 
-                        <Text style = { styles.form.label }>Visibility</Text>
-                        <Selector
-                            visibility = "public"
-                            active = { state.visibility }
-                            icon = "globe-outline"
-                            message = "Anyone can see this post" />
-                        <Selector
-                            visibility = "unlisted"
-                            active = { state.visibility }
-                            icon = "lock-open-outline"
-                            message = "Keep this post off public timelines" />
-                        <Selector
-                            visibility = "private"
-                            active = { state.visibility }
-                            icon = "lock-closed-outline"
-                            message = "Only share this with my followers" />
+                <Text style = { styles.form.label }>Visibility</Text>
+                <Selector
+                    visibility = "public"
+                    active = { state.visibility }
+                    icon = "globe-outline"
+                    message = "Anyone can see this post" />
+                <Selector
+                    visibility = "unlisted"
+                    active = { state.visibility }
+                    icon = "lock-open-outline"
+                    message = "Keep this post off public timelines" />
+                <Selector
+                    visibility = "private"
+                    active = { state.visibility }
+                    icon = "lock-closed-outline"
+                    message = "Only share this with my followers" />
 
-                        <TouchableOpacity
-                              onPress = { _handlePublish }
-                              style = { styles.form.button.container }>
-                            <Text style = { styles.form.button.label }>
-                                Publish
-                            </Text>
-                        </TouchableOpacity>
-                    </View>
-                </>
-                : <></>
-            }
-        </>
-    );
+                <TouchableOpacity
+                      onPress = { _handlePublish }
+                      style = { styles.form.button.container }>
+                    <Text style = { styles.form.button.label }>
+                        Publish
+                    </Text>
+                </TouchableOpacity>
+            </View>
+        </ScrollView>
+        : <></>;
 };
 
 const SCREEN_WIDTH = Dimensions.get("window").width;

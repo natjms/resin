@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { ScrollView } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import * as requests from "src/requests";
@@ -56,7 +57,7 @@ const OlderPosts = (props) => {
     };
 
     return (
-        <>
+        <ScrollView>
             { state.loaded
                 ? <>
                     <PagedGrid
@@ -66,7 +67,7 @@ const OlderPosts = (props) => {
                 </>
                 : <></>
             }
-        </>
+        </ScrollView>
     );
 };
 
