@@ -104,8 +104,8 @@ export async function verifyCredentials(domain, token) {
     return resp.json();
 }
 
-export async function fetchProfile(domain, id) {
-    const resp = await get(`https://${domain}/api/v1/accounts/${id}`);
+export async function fetchProfile(domain, id, token) {
+    const resp = await get(`https://${domain}/api/v1/accounts/${id}`, token);
     return resp.json();
 }
 

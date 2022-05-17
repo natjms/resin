@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 import {
+    ScrollView,
     SafeAreaView,
     View,
     TextInput,
@@ -134,7 +135,7 @@ const Settings = (props) => {
     return (
         <>
             { state.loaded
-                ? <>
+                ? <ScrollView>
                     <View style = { styles.avatar.container }>
                         <Image
                             source = { { uri: state.newAvatar.uri } }
@@ -215,7 +216,7 @@ const Settings = (props) => {
                             </Text>
                         </TouchableOpacity>
                     </View>
-                </>
+                </ScrollView>
                 : <></>
             }
         </>

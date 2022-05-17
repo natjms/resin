@@ -6,6 +6,7 @@ import {
     Text,
     TouchableOpacity,
     FlatList,
+    ScrollView,
 } from "react-native";
 
 import * as Linking from "expo-linking";
@@ -13,7 +14,12 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { activeOrNot } from "src/interface/interactions";
 import HTML from "react-native-render-html";
-import { withLeadingAcct, withoutHTML, pluralize } from "src/interface/rendering";
+import {
+    withLeadingAcct,
+    withoutHTML,
+    pluralize,
+    StatusBarSpace,
+} from "src/interface/rendering";
 import * as requests from "src/requests";
 
 import GridView from "src/components/posts/grid-view";
@@ -56,11 +62,11 @@ const HTMLLink = ({link}) => {
     }
 }
 
-const ViewProfile = ({navigation}) => {
+const ViewProfile = ({ navigation, route }) => {
     // As rendered when opened from somewhere other than the tab bar
     const [state, setState] = useState({
         loaded: false,
-        profile: navigation.getParam("profile"),
+        profile: route.params.profile,
     });
 
     useEffect(() => {
@@ -159,9 +165,7 @@ const ViewProfile = ({navigation}) => {
     return (
         <>
             { state.loaded
-                ? <>
-                      active = { navigation.getParam("originTab") }
-                      navigation = { navigation }>
+                ? <ScrollView>
                     <RawProfile
                         navigation = { navigation }
                         onFollow = { _handleFollow }
@@ -172,7 +176,7 @@ const ViewProfile = ({navigation}) => {
                         listedUsers = { state.listedUsers }
                         followed = { state.followed }
                         posts = { state.posts }/>
-                </>
+                </ScrollView>
                 : <></>
             }
         </>
@@ -184,57 +188,65 @@ const Profile = ({ navigation }) => {
         loaded: false,
     });
 
-    useEffect(() => {
-        let profile;
-        let notifs;
-        let domain;
-        let accessToken;
+    const init = async () => {
+        const [
+            profilePair,
+            notifPair,
+            instancePair,
+            tokenPair
+        ] = await AsyncStorage.multiGet([
+            "@user_profile",
+            "@user_notifications",
+            "@user_instance",
+            "@user_token",
+        ]);
 
-        AsyncStorage
-            .multiGet([
+        const profile = JSON.parse(profilePair[1]);
+        const notifs = JSON.parse(notifPair[1]);
+        const instance = instancePair[1];
+        const accessToken = JSON.parse(tokenPair[1]).access_token;
+
+        const latestProfile =
+            await requests.fetchProfile(instance, profile.id, accessToken);
+        const posts =
+            await requests.fetchAccountStatuses(instance, profile.id, accessToken);
+		const followers =
+            await requests.fetchFollowers(instance, profile.id, accessToken);
+
+        const latestProfileString = JSON.stringify(latestProfile);
+
+        // Update the profile in AsyncStorage if it's changed
+        if(latestProfileString != JSON.stringify(profile)) {
+            await AsyncStorage.setItem(
                 "@user_profile",
-                "@user_notifications",
-                "@user_instance",
-                "@user_token",
-            ])
-            .then(([profilePair, notifPair, domainPair, tokenPair]) => {
-                profile = JSON.parse(profilePair[1]);
-                notifs = JSON.parse(notifPair[1]);
-                domain = domainPair[1];
-                accessToken = JSON.parse(tokenPair[1]).access_token;
+                latestProfileString
+            );
+        }
 
-                return Promise.all([
-                    requests.fetchProfile(domain, profile.id),
-                    requests.fetchAccountStatuses(domain, profile.id, accessToken),
-		    requests.fetchFollowers(domain, profile.id, accessToken),
-                ]);
-            })
-            .then(([latestProfile, posts, followers]) => {
-                if(JSON.stringify(latestProfile) != JSON.stringify(profile)) {
-                    profile = latestProfile
-                }
-
-                setState({...state,
-                    profile: profile,
-                    notifs: notifs,
-                    posts: posts,
+        setState({...state,
+            profile: latestProfile,
+            notifs: notifs,
+            posts: posts,
 		    listedUsers: followers,
-                    loaded: true,
-                });
-            });
-    }, []);
+            loaded: true,
+        });
+    };
+
+    useEffect(() => { init(); }, []);
+
     return (
         <>
+            <StatusBarSpace/>
             { state.loaded
-                ? <>
+                ? <ScrollView>
                     <RawProfile
                         navigation = { navigation }
                         own = { true }
                         profile = { state.profile }
                         posts = { state.posts }
-		    	listedUsers = { state.listedUsers }
+	        	    	listedUsers = { state.listedUsers }
                         notifs = { state.notifs }/>
-                </>
+                </ScrollView>
                 : <></>
             }
         </>

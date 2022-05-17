@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { View, Image, Dimensions, Text } from "react-native";
+import { ScrollView, View, Image, Dimensions, Text } from "react-native";
 import PagedGrid from "src/components/posts/paged-grid";
 
 import * as requests from "src/requests";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const ViewHashtag = ({navigation}) => {
+const ViewHashtag = ({ navigation, route }) => {
     const FETCH_LIMIT = 18;
     let [state, setState] = useState({
-        tag: navigation.getParam("tag", null),
+        tag: route.params.tag,
         posts: [],
         offset: 0,
         followed: false,
@@ -66,10 +66,16 @@ const ViewHashtag = ({navigation}) => {
         });
     };
 
-    const latest = state.tag.history[0];
+    // A hashtag's history describes how actively it's being used. There's
+    // one element in the history array for every set interval of time.
+    // state.tag.history may be undefined, and its length might be 0.
+    let latest = null;
+    if (state.tag.history && state.tag.history.length > 0) {
+        latest = state.tag.history[0];
+    }
 
     return (
-        <>
+        <ScrollView>
             <View>
                 <View style = { styles.headerContainer }>
                     <View>
@@ -105,17 +111,19 @@ const ViewHashtag = ({navigation}) => {
                 </View>
                 <>
                     { state.loaded && state.posts.length > 0
-                        ? <PagedGrid
-                            navigation = { navigation }
-                            posts = { state.posts }
-                            onShowMore = { _handleShowMore } />
-                        : <Text style = { styles.nothing }>
-                            Nothing to show
-                        </Text>
+                        ? state.posts.length > 0
+                            ? <PagedGrid
+                                navigation = { navigation }
+                                posts = { state.posts }
+                                onShowMore = { _handleShowMore } />
+                            : <Text style = { styles.nothing }>
+                                Nothing to show
+                            </Text>
+                        : <></>
                     }
                 </>
             </View>
-        </>
+        </ScrollView>
     );
 };
 

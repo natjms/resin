@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {
+    ScrollView,
     View,
     TextInput,
     Text,
@@ -7,7 +8,7 @@ import {
     Image,
 } from "react-native";
 import { TabView, TabBar, SceneMap } from "react-native-tab-view";
-import { FontAwesome } from '@expo/vector-icons';
+import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import * as requests from "src/requests";
@@ -112,7 +113,7 @@ const Search = ({navigation}) => {
     const [ routes ] = useState([
         {
             key: "accounts",
-            icon: "user",
+            icon: "user-alt",
         },
         {
             key: "hashtags",
@@ -152,7 +153,7 @@ const Search = ({navigation}) => {
     );
 
     const renderIcon = ({ route, color }) => (
-        <FontAwesome
+        <FontAwesome5
             name = { route.icon }
             size = { 24 }
             color = { color } />
@@ -161,7 +162,7 @@ const Search = ({navigation}) => {
     return (
         <>
             { state.loaded
-                ? <>
+                ? <ScrollView>
                     <View style = { styles.form.container }>
                         <TextInput
                             style = { styles.form.input }
@@ -182,7 +183,7 @@ const Search = ({navigation}) => {
                         <TouchableOpacity
                               onPress = { _handleSearch }
                               style = { styles.form.submit }>
-                            <FontAwesome name="search" size={24} color="black" />
+                              <Ionicons name="search" size={24} color="black" />
                         </TouchableOpacity>
                     </View>
                     { state.results
@@ -194,7 +195,7 @@ const Search = ({navigation}) => {
                             initialLayout = { { width: SCREEN_WIDTH } } />
                         : <></>
                     }
-                </>
+                </ScrollView>
                 : <></>
             }
         </>

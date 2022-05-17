@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { View, TextInput, Text, Dimensions } from "react-native";
+import {
+    ScrollView,
+    TouchableOpacity,
+    View,
+    TextInput,
+    Text,
+    Dimensions
+} from "react-native";
 
 import { TabView, TabBar, SceneMap } from "react-native-tab-view";
 
@@ -142,24 +149,26 @@ const Discover = (props) => {
     return (
         <>
             { state.loaded
-                ? <>
-                    <TouchableWithoutFeedback
-                        onPress = { () => props.navigation.navigate("Search") }>
-                        <View style = { styles.form }>
-                            <View style = { styles.searchBarContainer }>
-                                <Text style = { styles.searchBar }>
-                                    Search...
-                                </Text>
-                            </View>
-                        </View>
-                    </TouchableWithoutFeedback>
+                ? <ScrollView>
+                    <View style = { styles.form.container }>
+                        <TextInput
+                            style = { styles.form.input }
+                            placeholder = "Search..."
+                            onPressIn = {
+                                () => props.navigation.navigate("Search")
+                            }/>
+                        <TouchableOpacity
+                              style = { styles.form.submit }>
+                              <Ionicons name="search" size={24} color="black" />
+                        </TouchableOpacity>
+                    </View>
                     <TabView
                         navigationState = { { index, routes } }
                         renderScene = { renderScene }
                         renderTabBar =  { renderTabBar }
                         onIndexChange = { setIndex }
                         initialLayout = { { width: SCREEN_WIDTH } } />
-                </>
+                </ScrollView>
                 : <></>
             }
         </>
@@ -169,10 +178,25 @@ const Discover = (props) => {
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const styles = {
     form: {
-        justifyContent: "center",
-        backgroundColor: "white",
-        padding: 20
+        container: {
+            flexDirection: "row",
+            justifyContent: "center",
+            backgroundColor: "white",
+            padding: 20,
+        },
+
+        input: {
+            flexGrow: 1,
+            padding: 10,
+            fontSize: 17,
+            color: "#888"
+        },
+
+        submit: {
+            padding: 20,
+        }
     },
+
     searchBar: {
         padding: 10,
         fontSize: 17,

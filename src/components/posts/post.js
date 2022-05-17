@@ -80,6 +80,12 @@ export const RawPost = (props) => {
         });
     };
 
+    useEffect(() => {
+        if (props.onRendered != null) {
+            props.onRendered();
+        }
+    }, []);
+
     return (
         <View>
             <View style = { styles.postHeader }>
@@ -349,6 +355,7 @@ export const PostByData = (props) => {
                 <RawPost
                     data = { state.data }
                     dimensions = { state.dimensions }
+                    onRendered = { props.onRendered }
                     onFavourite = { _handleFavourite }
                     onReblog = { _handleReblog }
                     onBookmark = { _handleDelete }

@@ -40,7 +40,7 @@ const GridView = (props) => {
           && p.media_attachments.length > 0
     );
 
-    let rows = partition(props.posts, 3);
+    let rows = partition(postsWithMedia, 3);
     return (
         <View>
             {
