@@ -69,13 +69,13 @@ const Feed = (props) => {
     });
 
     let endOfTimelineMessage = <></>;
-    if (state.postsRendered || state.loaded && state.posts.length == 0) {
+    if (state.postsRendered) {
         // Only render the timeline interruption if all of the posts have been
         // rendered in the feed.
         endOfTimelineMessage = <>
             <View style = {
                 state.posts.length == 0
-                    ? styles.ifCaughtUp
+                    ? styles.interruption.container
                     : styles.interruption.topBorder
               }>
                 <View style = { styles.interruption.inner }>
@@ -103,17 +103,14 @@ const Feed = (props) => {
 
     return (
         <>
-            <StatusBarSpace />
             { state.loaded
-                ? state.posts.length > 0
-                    ? <ScrollView>
-                        <TimelineView
-                                navigation = { props.navigation }
-                                posts = { state.posts }
-                                onTimelineLoaded = { _handleTimelineLoaded }/>
-                        { endOfTimelineMessage }
-                    </ScrollView>
-                    : endOfTimelineMessage
+                ? <ScrollView contentContainerStyles = { styles.container }>
+                    <TimelineView
+                            navigation = { props.navigation }
+                            posts = { state.posts }
+                            onTimelineLoaded = { _handleTimelineLoaded }/>
+                    { endOfTimelineMessage }
+                </ScrollView>
                 : <></>
             }
         </>
@@ -123,14 +120,20 @@ const Feed = (props) => {
 const screen_width = Dimensions.get("window").width;
 const screen_height = Dimensions.get("window").height;
 const styles = {
-    timeline: {
-        height: screen_height - (screen_height / 12)
-    },
-    ifCaughtUp: {
-        flexGrow: 1,
-        justifyContent: "center",
-    },
     interruption: {
+        container: {
+            /* HACK: The space between the top of the screen and the bottom
+             * tabs bar is about `screen_height - 100. See issue #7359 on the
+             * react-navigation github repository. There is supposed to be
+             * a way make a ScrollView's height at least the available viewport
+             * using flexGrow, which we need as a container to use
+             * justifyContent, but that doesn't seem to work here for some
+             * reason. It'll be slightly off-center but the user never should
+             * be able to accidentally scroll on this page.
+             */
+            height: screen_height - 100,
+            justifyContent: "center",
+        },
         topBorder: {
             borderTopWidth: 1,
             borderTopColor: "#CCC",
