@@ -220,12 +220,13 @@ export const PostByData = (props) => {
                     own,
                     loaded: true
                 });
-
-                if (props.onPostLoaded != null) {
-                    props.onPostLoaded();
-                }
             });
     }, []);
+
+    useEffect(() => {
+        // This is run after the state has been updated
+        props.onPostLoaded();
+    }, [state])
 
     const _handleFavourite = async () => {
         let newStatus;

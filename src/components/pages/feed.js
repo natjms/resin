@@ -64,9 +64,11 @@ const Feed = (props) => {
             );
     }, []);
 
-    const _handleTimelineLoaded = () => setState({...state,
-        postsRendered: true,
-    });
+    const _handleTimelineLoaded = () => {
+        setState({...state,
+            postsRendered: true,
+        });
+    };
 
     let endOfTimelineMessage = <></>;
     if (state.postsRendered) {

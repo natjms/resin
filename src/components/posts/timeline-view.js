@@ -23,7 +23,9 @@ const TimelineView = (props) => {
         }
     }, [postsLoaded]);
 
-    _handlePostLoaded = () => setPostsLoaded(postsLoaded + 1);
+    const _handlePostLoaded = () => { 
+        setPostsLoaded(postsLoaded + 1);
+    }
 
     return (
         <View>
