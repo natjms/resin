@@ -66,7 +66,7 @@ export async function post(url, token = false) {
     return resp;
 }
 
-export async function get(url, token = false, data = false) {
+export async function get(url, token , data = false) {
     let completeURL;
     if (data) {
         let params = new URLSearchParams(data);
@@ -85,7 +85,7 @@ export async function get(url, token = false, data = false) {
     return resp;
 }
 
-export async function _delete(url, token = false) {
+export async function _delete(url, token) {
     const resp = await fetch(url, {
         method: "DELETE",
         headers: token
