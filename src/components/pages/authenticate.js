@@ -125,16 +125,7 @@ const Authenticate = ({navigation}) => {
             token.access_token
         ).then(resp => resp.json());
 
-        await AsyncStorage.multiSet([
-            [ "@user_profile", JSON.stringify(profile), ],
-            [ // TODO: Enable storing notifications
-                "@user_notifications",
-                JSON.stringify({
-                    unread: false,
-                    memory: []
-                }),
-            ],
-        ]);
+        await AsyncStorage.setItem("@user_profile", JSON.stringify(profile));
 
         navigation.replace("Main");
     };

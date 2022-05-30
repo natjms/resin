@@ -37,7 +37,6 @@ const Settings = (props) => {
 
         await AsyncStorage.multiRemove([
                 "@user_profile",
-                "@user_notifications",
                 "@user_instance",
                 "@user_token",
         ]);

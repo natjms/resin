@@ -25,7 +25,6 @@ import Search from 'src/components/pages/discover/search';
 import ViewHashtag from 'src/components/pages/discover/view-hashtag';
 import Direct from "src/components/pages/direct";
 import Conversation, { Compose } from "src/components/pages/direct/conversation";
-import Notifications from 'src/components/pages/profile/notifications';
 import UserList from "src/components/pages/user-list.js";
 import Settings from "src/components/pages/profile/settings.js";
 

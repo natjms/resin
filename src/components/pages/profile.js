@@ -191,18 +191,15 @@ const Profile = ({ navigation }) => {
     const init = async () => {
         const [
             profilePair,
-            notifPair,
             instancePair,
             tokenPair
         ] = await AsyncStorage.multiGet([
             "@user_profile",
-            "@user_notifications",
             "@user_instance",
             "@user_token",
         ]);
 
         const profile = JSON.parse(profilePair[1]);
-        const notifs = JSON.parse(notifPair[1]);
         const instance = instancePair[1];
         const accessToken = JSON.parse(tokenPair[1]).access_token;
 
@@ -225,7 +222,6 @@ const Profile = ({ navigation }) => {
 
         setState({...state,
             profile: latestProfile,
-            notifs: notifs,
             posts: posts,
 		    listedUsers: followers,
             loaded: true,
@@ -244,8 +240,7 @@ const Profile = ({ navigation }) => {
                         own = { true }
                         profile = { state.profile }
                         posts = { state.posts }
-	        	    	listedUsers = { state.listedUsers }
-                        notifs = { state.notifs }/>
+	        	    	listedUsers = { state.listedUsers }/>
                 </ScrollView>
                 : <></>
             }
