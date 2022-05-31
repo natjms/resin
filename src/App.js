@@ -142,7 +142,6 @@ const App = (props) => {
                 <Stack.Screen name="ViewComments" component={ViewComments}/>
                 <Stack.Screen name="ViewProfile" component={ViewProfile}/>
                 <Stack.Screen name="ViewHashtag" component={ViewHashtag}/>
-                <Stack.Screen name="Notifications" component={Notifications}/>
                 <Stack.Screen name="UserList" component={UserList}/>
             </Stack.Navigator>
         </NavigationContainer>
