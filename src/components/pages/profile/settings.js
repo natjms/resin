@@ -10,11 +10,11 @@ import {
     TouchableOpacity,
     Dimensions,
 } from "react-native";
-import { FontAwesome } from '@expo/vector-icons';
 import mime from "mime";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as requests from "src/requests";
+import Icon from "src/components/icons.js";
 
 import * as ImagePicker from 'expo-image-picker';
 
@@ -190,8 +190,8 @@ const Settings = (props) => {
                             <View style = { styles.check.container }>
                                 <>
                                     { !state.locked
-                                        ? <FontAwesome name="square-o" size={24} color="black" />
-                                        : <FontAwesome name="check-square-o" size={24} color="black" />
+                                        ? <Icon name="square" size={24}/>
+                                        : <Icon name="checkbox" size={24}/>
                                     }
                                 </>
                                 <Text style = { styles.check.label }>

@@ -6,8 +6,6 @@ import {
     Dimensions,
     TouchableOpacity
 } from "react-native";
-import { FontAwesome } from "@expo/vector-icons";
-import { activeOrNot } from "src/interface/interactions";
 
 const PostAction = (props) => {
     return (
@@ -15,48 +13,29 @@ const PostAction = (props) => {
               onPress = { props.onPress }>
             <View style = { { marginLeft: SCREEN_WIDTH / 20 } }>
                 <FontAwesome
-                    name = { activeOrNot(props.active, props.pack) }
+                    name = { props.icon }
                     size = { 24 }
-                    color = {
-                        activeOrNot(props.active, {
-                            active: "#000",
-                            inactive: "#888",
-                        })
-                    }/>
+                    focused = { props.active }/>
             </View>
         </TouchableOpacity>
     )
 }
 
 const PostActionBar = (props) => {
-    const icons = {
-        heart: {
-            active: "heart",
-            inactive: "heart-o",
-        },
-        reblog: {
-            active: "retweet",
-            inactive: "retweet",
-        },
-        bookmark: {
-            active: "bookmark",
-            inactive: "bookmark-o",
-        }
-    }
     return (
         <View style = { styles.flexContainer }>
             <PostAction
-                pack = { icons.heart }
+                icon = { "heart" }
                 active = { props.favourited }
                 onPress = { props.onFavourite } />
 
             <PostAction
-                pack = { icons.reblog }
+                icon = { "boost" }
                 active = { props.reblogged }
                 onPress = { props.onReblog }/>
 
             <PostAction
-                pack = { icons.bookmark }
+                icon = { "bookmark" }
                 active = { props.bookmarked }
                 onPress = { props.onBookmark } />
         </View>

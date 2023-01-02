@@ -1,6 +1,5 @@
 import React from "react";
 import { Dimensions, View, Image } from "react-native";
-import { Ionicons } from '@expo/vector-icons';
 import {
     Menu,
     MenuOptions,
@@ -8,6 +7,8 @@ import {
     MenuTrigger,
     renderers
 } from "react-native-popup-menu";
+
+import Icon from "src/components/icons.js";
 
 const { SlideInMenu } = renderers;
 
@@ -34,10 +35,8 @@ const ContextMenu = (props) => {
         <View style = { props.containerStyle }>
             <Menu renderer = { SlideInMenu }>
                 <MenuTrigger>
-                    <Ionicons
-                        name = "ellipsis-horizontal"
-                        size = { props.size ? props.size : 24 }
-                        color = { props.colour ? props.colour : "#666" } />
+                    <Icon name = "ellipsis"
+                        size = { props.size ? props.size : 24 }/>
                 </MenuTrigger>
                 <MenuOptions customStyles = { optionsStyles }>
                     { props.children }

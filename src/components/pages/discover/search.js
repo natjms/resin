@@ -8,11 +8,11 @@ import {
     Image,
 } from "react-native";
 import { TabView, TabBar, SceneMap } from "react-native-tab-view";
-import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import * as requests from "src/requests";
 import { StatusBarSpace } from "src/interface/rendering";
+import Icon from "src/components/icons.js";
 
 import { TouchableOpacity } from "react-native-gesture-handler";
 
@@ -113,7 +113,7 @@ const Search = ({navigation}) => {
     const [ routes ] = useState([
         {
             key: "accounts",
-            icon: "user-alt",
+            icon: "profile",
         },
         {
             key: "hashtags",
@@ -152,11 +152,11 @@ const Search = ({navigation}) => {
             style = { styles.tabBar.tab } />
     );
 
-    const renderIcon = ({ route, color }) => (
-        <FontAwesome5
+    const renderIcon = ({ route, focused }) => (
+        <Icon
             name = { route.icon }
             size = { 24 }
-            color = { color } />
+            focused = { focused }/>
     );
 
     return (
@@ -183,7 +183,7 @@ const Search = ({navigation}) => {
                         <TouchableOpacity
                               onPress = { _handleSearch }
                               style = { styles.form.submit }>
-                              <Ionicons name="search" size={24} color="black" />
+                              <Icon name="search" size={24}/>
                         </TouchableOpacity>
                     </View>
                     { state.results

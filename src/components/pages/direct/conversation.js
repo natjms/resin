@@ -11,8 +11,7 @@ import {
 } from "react-native";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
-import { Ionicons } from "@expo/vector-icons";
+import Icon from "src/components/icons.js";
 
 import {
     Menu,
@@ -70,10 +69,7 @@ const ConversationContainer = (props) => (
             <TouchableOpacity
                   style = { styles.send.button }
                   onPress = { props.onSubmit }>
-                <Ionicons
-                    name = "paper-plane-outline"
-                    size = { 24 }
-                    color = "black" />
+                <Icon name="paper-plane" size={24}/>
             </TouchableOpacity>
         </View>
     </SafeAreaView>

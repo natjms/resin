@@ -7,9 +7,9 @@ import {
     MenuTrigger,
     renderers
 } from "react-native-popup-menu";
-import { Ionicons } from "@expo/vector-icons";
 
 const { SlideInMenu } = renderers;
+import Icon from "src/components/icons.js";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
@@ -34,10 +34,7 @@ const ModerateMenu = (props) => {
         <View style = { props.containerStyle }>
             <Menu renderer = { SlideInMenu }>
                 <MenuTrigger>
-                    <Ionicons
-                        name = "ellipsis-horizontal"
-                        color = "#000"
-                        style = { props.triggerStyle }/>
+                    <Icon name = "ellipsis"/>
                 </MenuTrigger>
                 <MenuOptions customStyles = { optionsStyles }>
                     <MenuOption text="Hide" />

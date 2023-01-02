@@ -12,9 +12,7 @@ import {
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as requests from "src/requests";
-
-import { Ionicons } from "@expo/vector-icons";
-
+import Icon from "src/components/icons.js";
 import ModerateMenu from "src/components/moderate-menu.js";
 
 const TEST_IMAGE_1 = "https://cache.desktopnexus.com/thumbseg/2255/2255124-bigthumbnail.jpg";
@@ -159,7 +157,7 @@ const Direct = ({ navigation }) => {
                         <TouchableOpacity
                               style = { styles.form.compose }
                               onPress = { () => { navigation.navigate("Compose") } }>
-                            <Ionicons name = "md-create" size = { 24 } color = "black"/>
+                            <Icon name = "create" size = { 24 }/>
                         </TouchableOpacity>
                     </View>
                     <>

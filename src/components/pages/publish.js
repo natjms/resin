@@ -7,7 +7,6 @@ import {
     Text,
     TextInput,
 } from "react-native";
-import { Ionicons } from '@expo/vector-icons';
 
 import { getAutoHeight } from "src/interface/rendering";
 import { TouchableOpacity } from "react-native-gesture-handler";
@@ -16,6 +15,7 @@ import mime from "mime";
 import * as ImagePicker from 'expo-image-picker';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as requests from "src/requests";
+import Icon from "src/components/icons.js";
 
 const Publish = ({ navigation }) => {
     const [ state, setState ] = useState({
@@ -105,7 +105,7 @@ const Publish = ({ navigation }) => {
     };
 
     const Selector = (props) => {
-        const color = props.active == props.visibility ? "black" : "#888";
+        const color = props.active == props.visibility ? "black" : "#666";
 
         return (
             <TouchableOpacity
@@ -114,9 +114,9 @@ const Publish = ({ navigation }) => {
                       () => setState({ ...state, visibility: props.visibility })
                   }>
                 <View style = { styles.form.option.inner }>
-                    <Ionicons
+                    <Icon
                         name = { props.icon }
-                        color = { color }
+                        focused = { props.active }
                         size={24} />
                     <Text style = { { color } }>
                         &nbsp;
@@ -155,17 +155,17 @@ const Publish = ({ navigation }) => {
                 <Selector
                     visibility = "public"
                     active = { state.visibility }
-                    icon = "globe-outline"
+                    icon = "planet"
                     message = "Anyone can see this post" />
                 <Selector
                     visibility = "unlisted"
                     active = { state.visibility }
-                    icon = "lock-open-outline"
+                    icon = "lock-open"
                     message = "Keep this post off public timelines" />
                 <Selector
                     visibility = "private"
                     active = { state.visibility }
-                    icon = "lock-closed-outline"
+                    icon = "lock-closed"
                     message = "Only share this with my followers" />
 
                 <TouchableOpacity

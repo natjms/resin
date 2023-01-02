@@ -10,11 +10,11 @@ import {
 
 import { TabView, TabBar, SceneMap } from "react-native-tab-view";
 
-import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import * as requests from "src/requests";
 
+import Icon from "src/components/icons.js";
 import PagedGrid from "src/components/posts/paged-grid";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 
@@ -32,11 +32,11 @@ const Discover = (props) => {
     const [ routes ] = useState([
         {
             key: "local",
-            icon: "md-home",
+            icon: "feed",
         },
         {
             key: "federated",
-            icon: "md-planet",
+            icon: "planet",
         },
     ]);
 
@@ -139,11 +139,11 @@ const Discover = (props) => {
             style = { styles.tabBar.tab } />
     );
 
-    const renderIcon = ({ route, color }) => (
-        <Ionicons
+    const renderIcon = ({ route, focused }) => (
+        <Icon
             name = { route.icon }
             size = { 24 }
-            color = { color } />
+            focused = { focused } />
     );
 
     return (
@@ -159,7 +159,7 @@ const Discover = (props) => {
                             }/>
                         <TouchableOpacity
                               style = { styles.form.submit }>
-                              <Ionicons name="search" size={24} color="black" />
+                              <Icon name="search" size={24} color="black" />
                         </TouchableOpacity>
                     </View>
                     <TabView

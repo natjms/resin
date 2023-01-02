@@ -7,7 +7,6 @@ import {
     TextInput,
     Text
 } from "react-native";
-import { Ionicons } from '@expo/vector-icons';
 import { ScrollView } from "react-native-gesture-handler";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -17,6 +16,7 @@ import {
     timeToAge,
     StatusBarSpace
 } from "src/interface/rendering";
+import Icon from "src/components/icons.js";
 import { activeOrNot } from "src/interface/interactions";
 
 import TimelineView from "src/components/posts/timeline-view";
@@ -169,7 +169,7 @@ const Comment = (props) => {
                             {
                                 timeToAge(
                                     Date.now(),
-                                    (new Date(props.data.created_at)).getTime()
+                                    (new Date(proIconcreated_at)).getTime()
                                 )
                             }
                         </Text>
@@ -189,18 +189,15 @@ const Comment = (props) => {
                     </TouchableOpacity>
                     <TouchableOpacity
                           onPress = { props.onFavouriteFactory(props.data) }>
-                        <Ionicons
-                            name = { activeOrNot(props.data.favourited, packs.favourited) }
-                            size = { 15 }
-                            style = { styles.action }/>
+                        <Icon
+                            name = { "heart" }
+                            focused = { props.data.favourited }
+                            size = { 15 }/>
                     </TouchableOpacity>
                     <View style = { { paddingLeft: 10, } }>
                         <Menu renderer = { SlideInMenu }>
                             <MenuTrigger>
-                                <Ionicons
-                                    name="ellipsis-horizontal"
-                                    size={18}
-                                    color="#666" />
+                                <Icon name="ellipsis" size={18}/>
                             </MenuTrigger>
                             <MenuOptions customStyles = { menuOptionsStyles }>
                                 { props.profile.acct == props.data.account.acct
@@ -444,7 +441,7 @@ const ViewComments = (props) => {
                             { state.inReplyTo.id != postData.id
                                 ? <TouchableOpacity onPress = { _handleCancelSubReply }>
                                     <View style = { styles.form.inReplyTo.container }>
-                                        <Ionicons name="close" size={24} color="#666" />
+                                        <Icon name="close" size={24}/>
                                         <Text style = { styles.form.inReplyTo.message }>
                                             &nbsp;Replying to&nbsp;
                                             <Text style = { styles.bold }>
@@ -468,10 +465,7 @@ const ViewComments = (props) => {
                                 onChangeText = { c => setState({...state, reply: c }) }/>
                             <View style = { styles.submitContainer }>
                                 <TouchableOpacity onPress = { _handleSubmitReply }>
-                                    <Ionicons
-                                        name = "paper-plane-outline"
-                                        color = "black"
-                                        size = { 30 }/>
+                                    <Icon name="paper-plane" size={30}/>
                                 </TouchableOpacity>
                             </View>
                         </View>

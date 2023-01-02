@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { ScrollView, Dimensions, View, Image, Text } from "react-native";
-import { Ionicons } from '@expo/vector-icons';
 
 import TimelineView from "src/components/posts/timeline-view";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
@@ -81,10 +80,8 @@ const Feed = (props) => {
                     : styles.interruption.topBorder
               }>
                 <View style = { styles.interruption.inner }>
-                    <Ionicons
-                        name="ios-checkmark-circle-outline"
-                        size= { 150 }
-                        color="black" />
+                    <Image style = {{ width: 150, height: 150 }}
+                        source = { require("assets/images/checkmark-circle.png") }/>
 
                     <Text style = { styles.interruption.header }>
                         You're all caught up.
