@@ -7,11 +7,11 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
 import { MenuProvider } from "react-native-popup-menu";
-import { Ionicons } from "@expo/vector-icons";
 
 import { registerRootComponent } from 'expo';
 import * as Linking from "expo-linking";
 
+import Icon from "src/components/icons.js";
 import ViewPost from "src/components/pages/view-post";
 import ViewComments from "src/components/pages/view-comments.js";
 
@@ -40,10 +40,10 @@ const MainNavigator = () => {
 
     const bottomTabIcon = name => {
         return ({ size, focused }) =>
-            <Ionicons
+            <Icon 
                 name = { name }
                 size = { size }
-                color = { focused ? "black" : "#666" }/>
+                focused = { focused }/>
     };
 
     const screenOptions = {
@@ -57,23 +57,23 @@ const MainNavigator = () => {
         },
         Feed: {
             tabBarAccessibilityLabel: "Feed",
-            tabBarIcon: bottomTabIcon("home-outline"),
+            tabBarIcon: bottomTabIcon("feed"),
         },
         Discover: {
             tabBarAccessibilityLabel: "Discover",
-            tabBarIcon: bottomTabIcon("search-outline"),
+            tabBarIcon: bottomTabIcon("search"),
         },
         Publish: {
             tabBarAccessibilityLabel: "Publish",
-            tabBarIcon: bottomTabIcon("camera-outline"),
+            tabBarIcon: bottomTabIcon("camera"),
         },
         Direct: {
             tabBarAccessibilityLabel: "Direct messages",
-            tabBarIcon: bottomTabIcon("mail-outline"),
+            tabBarIcon: bottomTabIcon("mail"),
         },
         Profile: {
             tabBarAccessibilityLabel: "Profile",
-            tabBarIcon: bottomTabIcon("person-outline"),
+            tabBarIcon: bottomTabIcon("person"),
         },
     };
 
